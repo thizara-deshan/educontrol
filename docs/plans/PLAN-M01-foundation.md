@@ -2807,7 +2807,7 @@ describe("token-names", () => {
 ---
 
 ### T19 — shadcn configuration with `ui/` as the components path
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/components.json`, `apps/kiosk/src/lib/utils.ts`, `apps/kiosk/src/styles/index.css`
 (modify), `apps/kiosk/package.json` (deps)
