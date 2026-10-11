@@ -1652,7 +1652,7 @@ describe("sameOriginWsUrl", () => {
 ---
 
 ### T14 — Pending store
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/commands/pending-store.ts`, `apps/kiosk/src/data/commands/pending-store.test.ts`
 
