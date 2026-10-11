@@ -1123,7 +1123,7 @@ describe("ClientSession", () => {
 ---
 
 ### T10 — Domain: schedule and system info
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/schedule.ts`, `packages/contracts/src/domain/system.ts`,
 `packages/contracts/src/index.ts`, `packages/contracts/test/schedule-system.test.ts`
