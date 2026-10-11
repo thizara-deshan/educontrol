@@ -3,6 +3,7 @@ import "@fontsource-variable/jetbrains-mono";
 import "@/styles/index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { TokenSwatches } from "@/app/TokenSwatches";
 
 const rootElement = document.getElementById("root");
 if (rootElement === null) {
@@ -10,6 +11,6 @@ if (rootElement === null) {
 }
 createRoot(rootElement).render(
   <StrictMode>
-    <main className="p-4 font-mono text-clock">eduscope</main>
+    <TokenSwatches />
   </StrictMode>,
 );

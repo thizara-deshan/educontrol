@@ -2907,7 +2907,7 @@ fill)". The core-api stub has no `typecheck`/`test` scripts; root scripts use `-
 ---
 
 ### T21 — Temporary token swatch page at `/`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/TokenSwatches.tsx`, `apps/kiosk/src/main.tsx` (modify)
 
