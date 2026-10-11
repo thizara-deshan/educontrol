@@ -288,7 +288,7 @@ describe("cn", () => {
 ---
 
 ### T5 — `lib/store.ts`: tiny external store
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/store.ts`, `apps/kiosk/src/lib/store.test.ts`
 
