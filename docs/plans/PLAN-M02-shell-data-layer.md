@@ -5445,7 +5445,7 @@ export const router = createBrowserRouter(routes);
 ---
 
 ### T48 — Acceptance walk-through (M02 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan (checkbox only). No code changes; if a check fails, write a Blocker (don't fix in this task).
 
