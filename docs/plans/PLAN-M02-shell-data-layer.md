@@ -3832,7 +3832,7 @@ export function StateDot({ tone, stale = false, className }: { tone: StateTone; 
 ---
 
 ### T26 — `ObservedLine`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/ObservedLine.tsx`
 
