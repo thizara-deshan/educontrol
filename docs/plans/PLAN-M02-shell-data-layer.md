@@ -5086,7 +5086,7 @@ createRoot(rootElement).render(
 ---
 
 ### T46 — Live demo section (real command flow)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/LiveDemo.tsx`
 
