@@ -4105,7 +4105,7 @@ export function ToggleRow({ label, on, onToggle, pending = false, disabled = fal
 ---
 
 ### T31 — `LevelSlider`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/LevelSlider.tsx`
 
