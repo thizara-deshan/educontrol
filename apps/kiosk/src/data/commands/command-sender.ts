@@ -1,4 +1,5 @@
 import type { CommandBody } from "@eduscope/contracts";
+import { uuidV4 } from "@/lib/uuid";
 import type { ApiClient } from "@/data/api-client";
 import { MESSAGE_FAILED, type InlineErrorStore } from "./inline-errors";
 import type { ControlKey, PendingStore } from "./pending-store";
@@ -15,7 +16,7 @@ export interface CommandSenderDeps {
 export type SendOutcome = "sent" | "ignored";
 
 export function createCommandSender(deps: CommandSenderDeps) {
-  const newId = deps.newId ?? (() => crypto.randomUUID());
+  const newId = deps.newId ?? uuidV4;
   const now = deps.now ?? Date.now;
 
   return async function send(key: ControlKey, body: CommandBody): Promise<SendOutcome> {

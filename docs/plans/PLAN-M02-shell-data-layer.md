@@ -5525,7 +5525,7 @@ note) in the commit message body.
 From `docs/reviews/REVIEW-M02.md`. Same executor notes as above.
 
 ### FX1 — Command ids that work on plain HTTP (F1)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/uuid.ts`, `apps/kiosk/src/lib/uuid.test.ts`,
 `apps/kiosk/src/data/commands/command-sender.ts`
