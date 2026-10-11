@@ -226,7 +226,7 @@ Inputs read for this plan: M01, SPEC §2.2, §3.1–3.4, §4 (S1/S2 values), §6
 ---
 
 ### T2 — Contracts package scaffold
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/package.json`, `packages/contracts/tsconfig.json`,
 `packages/contracts/vitest.config.ts`, `packages/contracts/src/index.ts`, `packages/contracts/test/helpers.ts`
