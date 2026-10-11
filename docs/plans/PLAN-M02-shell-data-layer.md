@@ -4447,7 +4447,7 @@ export function LockBadge() {
 ---
 
 ### T37 — `DashedAddButton`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/DashedAddButton.tsx`
 
