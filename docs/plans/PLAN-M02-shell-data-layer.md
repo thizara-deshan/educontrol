@@ -3716,7 +3716,7 @@ export const useRealtime = (): RealtimeRuntime => useDataContext().realtime;
 ---
 
 ### T24 — Data hooks (`useRoomState`, `useCommand`, `useControlGate` …)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/hooks.ts`
 
