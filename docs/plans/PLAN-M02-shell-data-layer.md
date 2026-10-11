@@ -4923,7 +4923,7 @@ export function MockPanel() {
 ---
 
 ### T44 — `AppShell`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/AppShell.tsx`
 
