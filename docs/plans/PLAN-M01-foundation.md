@@ -1848,7 +1848,7 @@ describe("ClientMessage", () => {
 ---
 
 ### T14 — hw contract schemas (core-api ↔ hw-service)
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/hw/common.ts`, `hw/commands.ts`, `hw/data.ts`, `hw/snapshot.ts`,
 `hw/events.ts`, `hw/index.ts` (under `packages/contracts/src/`), `packages/contracts/src/index.ts`,
