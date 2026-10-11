@@ -1187,7 +1187,7 @@ describe("SPEC §3.4 class maps", () => {
 ---
 
 ### T11 — `ApiClient` interface, query keys and typed queries
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/api-client.ts`, `apps/kiosk/src/data/query-keys.ts`,
 `apps/kiosk/src/data/queries.ts`, `apps/kiosk/src/data/query-client.ts`
