@@ -3043,7 +3043,7 @@ Layout:
 ---
 
 ### T22 — Acceptance walk-through (M01 criteria + CLAUDE.md commands)
-- [ ] done
+- [x] done
 
 **Files:** `docs/plans/PLAN-M01-foundation.md` (tick boxes only). No code changes. If any check fails, do
 not fix it here: write a Blocker naming the failing criterion and stop.
