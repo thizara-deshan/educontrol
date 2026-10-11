@@ -428,7 +428,7 @@ describe("Level and AccessLevel", () => {
 ---
 
 ### T4 — Domain: room and device registry
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/room.ts`, `packages/contracts/src/domain/device.ts`,
 `packages/contracts/src/index.ts`, `packages/contracts/test/device.test.ts`
