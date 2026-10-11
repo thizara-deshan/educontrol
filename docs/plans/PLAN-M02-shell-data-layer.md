@@ -4795,7 +4795,7 @@ export function ConnectionBanner() {
 ---
 
 ### T42 — Route error boundary
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/ErrorBoundary.tsx`
 
