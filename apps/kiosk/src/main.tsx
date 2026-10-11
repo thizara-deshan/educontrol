@@ -1,3 +1,6 @@
+import "@fontsource-variable/inter";
+import "@fontsource-variable/jetbrains-mono";
+import "@/styles/index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -7,6 +10,6 @@ if (rootElement === null) {
 }
 createRoot(rootElement).render(
   <StrictMode>
-    <main>eduscope</main>
+    <main className="p-4 font-mono text-clock">eduscope</main>
   </StrictMode>,
 );

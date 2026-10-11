@@ -2564,7 +2564,7 @@ describe("generated/hw.schema.json", () => {
 ---
 
 ### T18 — Design tokens, Tailwind v4 and self-hosted fonts
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/styles/tokens.css`, `apps/kiosk/src/styles/index.css`,
 `apps/kiosk/src/styles/token-names.ts`, `apps/kiosk/src/styles/token-names.test.ts`,

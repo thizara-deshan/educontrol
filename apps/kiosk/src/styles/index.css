@@ -1,0 +1,13 @@
+@import "./tokens.css";
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+  body {
+    @apply bg-bg font-sans text-text-1 antialiased;
+    overflow-x: clip;
+  }
+}
