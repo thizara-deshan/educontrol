@@ -1762,7 +1762,7 @@ describe("IR, schedule, devices, settings, errors", () => {
 ---
 
 ### T13 — WebSocket frames
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/ws.ts`, `packages/contracts/src/index.ts`, `packages/contracts/test/ws.test.ts`
 
