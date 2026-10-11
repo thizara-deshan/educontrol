@@ -3,7 +3,9 @@ import "@fontsource-variable/jetbrains-mono";
 import "@/styles/index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { TokenSwatches } from "@/app/TokenSwatches";
+import { RouterProvider } from "react-router";
+import { AppProviders } from "@/app/providers";
+import { router } from "@/app/router";
 
 const rootElement = document.getElementById("root");
 if (rootElement === null) {
@@ -11,6 +13,8 @@ if (rootElement === null) {
 }
 createRoot(rootElement).render(
   <StrictMode>
-    <TokenSwatches />
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>
   </StrictMode>,
 );

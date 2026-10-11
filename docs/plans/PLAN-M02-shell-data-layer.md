@@ -4972,7 +4972,7 @@ export function AppShell() {
 ---
 
 ### T45 — Router, providers and entry point
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/router.tsx`, `apps/kiosk/src/app/providers.tsx`, `apps/kiosk/src/main.tsx`,
 `apps/kiosk/src/app/TokenSwatches.tsx` (delete)
