@@ -758,7 +758,7 @@ describe("AcState", () => {
 ---
 
 ### T7 — Domain: zigbee mesh and interlock
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/zigbee.ts`, `packages/contracts/src/domain/interlock.ts`,
 `packages/contracts/src/index.ts`, `packages/contracts/test/zigbee.test.ts`
