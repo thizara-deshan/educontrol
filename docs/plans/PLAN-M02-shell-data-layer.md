@@ -224,7 +224,7 @@ declare module "react" {
 ---
 
 ### T4 — `cn()` that knows our design tokens
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/utils.ts`, `apps/kiosk/src/lib/utils.test.ts`
 
