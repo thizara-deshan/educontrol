@@ -4570,7 +4570,7 @@ export function SettingsPage({ tab }: { tab: SettingsTab }) {
 ---
 
 ### T39 — `StatusIndicator` (S1.E4, phone sheet)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/StatusIndicator.tsx`
 
