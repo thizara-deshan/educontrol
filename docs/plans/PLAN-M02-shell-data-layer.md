@@ -2886,7 +2886,7 @@ describe("connection manager", () => {
 ---
 
 ### T20 — Mock domain rules
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-rules.ts`, `apps/kiosk/src/data/adapters/mock/mock-rules.test.ts`
 
