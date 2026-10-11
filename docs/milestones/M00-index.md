@@ -1,0 +1,154 @@
+# M00 — Milestone index
+
+Inputs: `docs/SPEC.md`, `docs/ARCHITECTURE.md`, `CLAUDE.md` · Status: v1, 2026-10-11
+
+| ID | Title | Depends on | Machine | Est | Status |
+|---|---|---|---|---|---|
+| [M01](M01-foundation.md) | Foundation | — | Arch | ½ day | todo |
+| [M02](M02-shell-data-layer.md) | App shell & data layer | M01 | Arch | 1 day | todo |
+| [M03](M03-access-kiosk.md) | Access & kiosk behaviour | M02 | Arch | ½ day | todo |
+| [M04](M04-control-page.md) | Control page (S1) | M03 | Arch | 1 day | todo |
+| [M05](M05-devices-page.md) | Devices page (S2) | M04 | Arch | ½ day | todo |
+| [M06](M06-settings.md) | Settings (S3, S3b–S3e) | M05 | Arch | 1 day | todo |
+| | **── FRONTEND COMPLETE GATE ──** click through every screen with `VITE_API_MODE=mock` at 1280×800 in `chromium --kiosk` and at 390px | | | | |
+| [M07](M07-hw-service-skeleton.md) | hw-service skeleton (fake drivers) | M01 | Arch | ½ day | todo |
+| [M08](M08-core-api-live.md) | core-api: live state & control | M06, M07 | Arch | 1 day | todo |
+| [M09](M09-core-api-settings.md) | core-api: settings & scheduler | M08 | Arch | ½ day | todo |
+| [M10](M10-pi-deploy.md) | Pi deploy | M09 | Pi | ½ day | todo |
+| Hxx | *(reserved — created by hardware intake, prompt 07)* | M10 | Pi | — | — |
+| [M99](M99-hardening.md) | Hardening & final acceptance | M10, all Hxx done | Pi | ½ day | todo |
+
+**Schedule fit:** Day 1 M01 + start M02 · Day 2 M02, M03, M04 · Day 3 M05, M06 (frontend
+gate) · Day 4 M07–M10 · Days 5–6 Hxx · Day 7 M99. Days 2 and 4 are tight; overflow uses the
+Day 7 buffer.
+
+Status values: `todo` · `planned` (PLAN exists) · `in progress` · `review` · `done`.
+
+---
+
+## Coverage check: every SPEC element → milestone
+
+UI milestones build the element against the mock; server milestones make it real. "Hxx" = the
+real hardware driver arrives through intake. No SPEC element is unassigned.
+
+### Cross-cutting sections
+
+| SPEC | Milestone(s) |
+|---|---|
+| §1 core principle (server truth + confidence) | M02 (data layer, `state-styles`), M08 (server) |
+| §2.1 client types, URL | M03 (kiosk vs remote), M08 (localhost detection), M10 (`r-101.local`) |
+| §2.2 breakpoints, phone layouts | M02 (frame, Header), M04 (S1 phone), M05 (S2 phone), M06 (S3 phone), M03 (S4 phone) |
+| §2.3 access levels, session ends | M03 (UI), M08 (enforcement, expiry), M09 (class-block end) |
+| §2.4 multi-client, LWW, slider rules | M02 (pending, toasts), M04 (LevelSlider), M08 (fan-out, LWW) |
+| §2.5 connection states | M02 (UI), M08 (real WS), M99 (end-to-end) |
+| §2.6 kiosk specifics | M03 (app), M10 (Chromium flags, OS blanking) |
+| §3.1–3.3 tokens, typography, shape | M01 (tokens.css), M02 (components) |
+| §3.4 state language | M02 (`state-styles`, StateDot, ObservedLine) |
+| §6 domain model | M01 (zod), M08/M09 (DB + store) |
+
+### S1 Control
+
+| ID | Milestone(s) | | ID | Milestone(s) |
+|---|---|---|---|---|
+| S1.E1 | M02 | | S1.E23 | M04, M08 |
+| S1.E2 | M02, M08 (server time) | | S1.E30 | M04 |
+| S1.E3 | M02, M08 | | S1.E31 | M04, M08, Hxx |
+| S1.E4 | M02 (header slot), M04 (tap → S2), M08 (status) | | S1.E32 | M04, M08, Hxx |
+| S1.E5 | M02 | | S1.E33 | M04, M08, Hxx |
+| S1.E6 | M02 | | S1.E34 | M04, M08 |
+| S1.E7 | M02 (button), M03 (technician gate) | | S1.E35 | M04, M08, Hxx |
+| S1.E8 | M03, M08 | | S1.E36 | M04, M08, Hxx |
+| S1.E9 | M02, M08 | | S1.E37 | M04 |
+| S1.E10 | M04 | | S1.E38 | M04, M08 |
+| S1.E11 | M04, M08, Hxx (Q1) | | S1.E39 | M04, M08 |
+| S1.E12 | M04, M08, Hxx (Q1) | | S1.E40 | M04, M08 |
+| S1.E13 | M04, M08, Hxx | | S1.E41 | M04, M08 |
+| S1.E14 | M04, M08, Hxx | | S1.E42 | M04, M08, Hxx |
+| S1.E15 | M04, M08, Hxx | | S1.E43 | M04, M08, Hxx |
+| S1.E16 | M04 | | S1.E44 | M04, M08, Hxx |
+| S1.E17 | M04, M08, Hxx (Q2) | | S1.E45 | M04, M08, Hxx |
+| S1.E18 | M04, M08, Hxx (Q2) | | S1 view-only presentation | M03 (padlocks), M04 (per card) |
+| S1.E20 | M04 | | S1 phone BottomNav | M04 |
+| S1.E21 | M04, M08, Hxx (Q8) | | | |
+| S1.E22 | M04, M08, Hxx (Q8) | | | |
+
+### S2 Zigbee devices
+
+| ID | Milestone(s) | | ID | Milestone(s) |
+|---|---|---|---|---|
+| S2.E1 | M05 | | S2.E13 | M05 |
+| S2.E2 | M05 | | S2.E14 | M05 |
+| S2.E3 | M05, M08, Hxx | | S2.E15 | M05 |
+| S2.E4 | M05 (reuses M03 gate) | | S2.E16 | M05, M08, Hxx |
+| S2.E5 | M05 | | S2.E17 | M05, M08, Hxx |
+| S2.E6 | M05, M08, Hxx | | S2.E18 | M05, M08, Hxx |
+| S2.E7 | M05, M08 | | S2.E19 | M05 |
+| S2.E8 | M05, M08 | | S2.E20 | M05, M08, Hxx |
+| S2.E9 | M05 | | S2.E21 | M05, M08, M09 (permit join), Hxx (Q4) |
+| S2.E10 | M05, M08, Hxx | | S2.E22 | M05, M08 (R7) |
+| S2.E11 | M05, M08, Hxx | | S2.E23 | M05, M08 (R11), Hxx (Q7) |
+| S2.E12 | M05, M08 (kWh today), Hxx | | | |
+
+### S3 Settings, S4 PIN, S5 banner
+
+| ID | Milestone(s) | | ID | Milestone(s) |
+|---|---|---|---|---|
+| S3.E1 | M06 | | S3.E12 | M06, M09 |
+| S3.E2 | M06 | | S3.E13 | M06 |
+| S3.E3 | M06 (+ M03 Lock) | | S3.E14 | M06, M09, Hxx |
+| S3.E4 | M06 | | S3.E15 | M06, M09, Hxx |
+| S3.E5 | M06 | | S3.E16 | M06, M09 |
+| S3.E6 | M06 | | S3.E17 | M06 |
+| S3.E7 | M06, M09 | | S3b Network | M06, M09 |
+| S3.E8 | M06, M09 | | S3c Schedule | M06, M09 |
+| S3.E9 | M06, M09 | | S3d Devices + PINs | M06, M09 |
+| S3.E10 | M06, M08 (blaster state), Hxx | | S3e About | M06, M09, M10 (restart unit) |
+| S3.E11 | M06 | | S5 banner | M02, M08 |
+| S4.E1–E5 | M03, M08 (login, throttle) | | | |
+
+### Hidden states
+
+| ID | Milestone(s) | | ID | Milestone(s) |
+|---|---|---|---|---|
+| H1 | M02, M08 | | H13 | M02, M08 |
+| H2 | M02, M08, M99 | | H14 | M04, M08 |
+| H3 | M02, M08, M99 | | H15 | M04, M05, M08 |
+| H4 | M02, M08, M99 | | H16 | M05, M08 |
+| H5 | M02, M08 | | H17 | M03, M08 |
+| H6a | M02, M08 | | H18 | M04, M08 |
+| H6b | M02, M08 | | H19 | M04, M08 |
+| H7 | M04, M08 | | H20 | M06, M09 |
+| H7b | M04, M08 | | H21 | M06, M09, Hxx |
+| H8 | M04, M05, M08, M99 | | H22 | M06, M09 |
+| H9 | M04, M05, M08, M99 | | H23 | M03, M10 |
+| H10 | M04, M05, M08 | | H24 | M03, M08 |
+| H11 | M04, M05, M08 | | H25 | M04, M06, M08, M09 |
+| H12 | M03, M04 | | | |
+
+### Rules
+
+| ID | Milestone(s) | | ID | Milestone(s) |
+|---|---|---|---|---|
+| R1 | M04 (mock), M08 | | R9 | M04 (mock), M08 |
+| R2 | M04, M08, Hxx | | R10 | M04, M08 |
+| R3 | M04, M08 | | R11 | M05, M08, Hxx (Q7) |
+| R4 | M04, M08, M09 (setpoint data) | | R12 | M02, M08 |
+| R5 | M06, M09 | | R13 | M04, M05, M08 |
+| R6 | M04, M08, Hxx | | R14 | M03, M08 |
+| R7 | M05, M08 | | R15 | M03 |
+| R8 | M06, M09, Hxx | | | |
+
+### Provisional (assigned, but blocked on an open question)
+
+| Element | Question | Built as | Settled in |
+|---|---|---|---|
+| S1.E11/E12 read-back | Q1 | confirmed + assumed variants both supported | Hxx |
+| S1.E17/E18 screen | Q2 | two-state, confirmed | Hxx |
+| S2.E21 mesh count | Q4 | whatever the coordinator reports | Hxx |
+| AC −/+ while off | Q5 | disabled | decision record if changed |
+| S2.E23, R11 interlock | Q7 | ARCHITECTURE §6.4 guess | Hxx |
+| Slider while muted | Q8b | unmute all | decision record if changed |
+| Timeouts, staleness | Q12 | ARCHITECTURE §6.3 defaults | Hxx |
+| Client labels | Q19 | auto form factor + `?podium=1` | — |
+| AC setpoints | Q23 | 13 setpoints, cool, auto fan (seed) | Hxx |
+| H23 real backlight | D-16 | in-app overlay only | future Hxx if wanted |
