@@ -997,7 +997,7 @@ describe("IR", () => {
 ---
 
 ### T9 — Domain: commands and client sessions
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/command.ts`, `packages/contracts/src/domain/session.ts`,
 `packages/contracts/src/index.ts`, `packages/contracts/test/command-session.test.ts`
