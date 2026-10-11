@@ -4422,7 +4422,7 @@ export function InlineError({ message, className }: { message: string | null; cl
 ---
 
 ### T36 — `LockBadge`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/LockBadge.tsx`
 
