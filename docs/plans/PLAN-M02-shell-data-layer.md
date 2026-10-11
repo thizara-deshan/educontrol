@@ -4733,7 +4733,7 @@ export function Header() {
 ---
 
 ### T41 — `ConnectionBanner`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/ConnectionBanner.tsx`
 
