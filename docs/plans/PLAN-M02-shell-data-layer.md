@@ -4032,7 +4032,7 @@ export function CommandButton({
 ---
 
 ### T30 — `ToggleRow`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/ToggleRow.tsx`
 
