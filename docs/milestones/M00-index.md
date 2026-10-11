@@ -166,3 +166,9 @@ LATER items from reviews. Not scheduled; a milestone plan picks one up only by l
 | M01-L3 | REVIEW-M01 | "No hex outside `tokens.css`" is only a manual grep; enforce it in `pnpm verify` (ESLint `no-restricted-syntax` or a `check:tokens` script) | root scripts / `eslint.config.js` |
 | M01-L4 | REVIEW-M01 | Radius demo on the temporary swatch page can't show 10/8/6px at 360px width (moot once M02 replaces the page) | `apps/kiosk/src/app/TokenSwatches.tsx` |
 | M01-L5 | REVIEW-M01 | `--radius: 8px` duplicates `--radius-btn`; use `var(--radius-btn)` | `apps/kiosk/src/styles/tokens.css` |
+| M02-L1 | REVIEW-M02 | Mock adapter + mock panel are in the production bundle (582 kB chunk); code-split behind `VITE_API_MODE` | `apps/kiosk/src/data/create-api-client.ts`, `app/dev/` |
+| M02-L2 | REVIEW-M02 | Kiosk Vite dev server binds 0.0.0.0 (`server.host: true`); make LAN exposure opt-in | `apps/kiosk/vite.config.ts` |
+| M02-L3 | REVIEW-M02 | Mock tabs don't share state, so two-browser sync can't be checked before M08; optionally share `FakeRoom` via `BroadcastChannel` | `apps/kiosk/src/data/adapters/mock/` |
+| M02-L4 | REVIEW-M02 | Floating mock panel covers gallery content at 1280 and 390; start collapsed or dock to the bottom | `apps/kiosk/src/app/dev/MockPanel.tsx` |
+| M02-L5 | REVIEW-M02 | Sheet close button keeps shadcn `hover:` styling and a 16px target (unused today) | `apps/kiosk/src/ui/sheet.tsx` |
+| M02-L6 | REVIEW-M02 | `sendCommand` throws a `ZodError` on an invalid request instead of `ApiRequestError("bad_response")` | `apps/kiosk/src/data/adapters/http/http-client.ts` |

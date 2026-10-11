@@ -5519,3 +5519,64 @@ note) in the commit message body.
 - Screenshot 01 puts the clock slightly left of centre (~43% of the width); the plan centres it.
 - ESLint rule against hex/rgb literals in `apps/kiosk/src` (REVIEW-M01 L3), now that real components exist.
 - A test-only `?mock-latency=` knob so AC3 (skeletons) is easier to see than with a Performance recording.
+
+## Fix tasks (review 1)
+
+From `docs/reviews/REVIEW-M02.md`. Same executor notes as above.
+
+### FX1 — Command ids that work on plain HTTP (F1)
+- [ ] done
+
+**Files:** `apps/kiosk/src/lib/uuid.ts`, `apps/kiosk/src/lib/uuid.test.ts`,
+`apps/kiosk/src/data/commands/command-sender.ts`
+
+**Context:** REVIEW-M02 F1. `crypto.randomUUID()` exists only in secure contexts. Every LAN client loads
+`http://r-101.local` (SPEC §2.1), so `newId()` throws and taps do nothing. `crypto.getRandomValues()` works in
+non-secure contexts. The contract requires an RFC 4122 UUID (`client_cmd_id: z.uuid()`), so we build a v4 from
+16 random bytes.
+
+**Do:**
+1. Create `apps/kiosk/src/lib/uuid.ts`:
+```ts
+// RFC 4122 v4 from getRandomValues: crypto.randomUUID() is secure-context only, and the room UI
+// is plain http://r-101.local (SPEC §2.1). Review M02 F1.
+export function uuidV4(fill: (bytes: Uint8Array) => void = (bytes) => crypto.getRandomValues(bytes)): string {
+  const bytes = new Uint8Array(16);
+  fill(bytes);
+  bytes[6] = ((bytes[6] ?? 0) & 0x0f) | 0x40; // version 4
+  bytes[8] = ((bytes[8] ?? 0) & 0x3f) | 0x80; // variant 10
+  const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+```
+2. Create `apps/kiosk/src/lib/uuid.test.ts`:
+```ts
+import { CommandRequest } from "@eduscope/contracts";
+import { describe, expect, it } from "vitest";
+import { uuidV4 } from "./uuid";
+
+describe("uuidV4", () => {
+  it("formats bytes as a v4 UUID", () => {
+    expect(uuidV4((bytes) => bytes.fill(0xff))).toBe("ffffffff-ffff-4fff-bfff-ffffffffffff");
+    expect(uuidV4((bytes) => bytes.fill(0))).toBe("00000000-0000-4000-8000-000000000000");
+  });
+  it("is accepted by the command contract", () => {
+    const id = uuidV4();
+    expect(CommandRequest.safeParse({ client_cmd_id: id, body: { kind: "projector.power", on: true } }).success).toBe(true);
+  });
+  it("differs between calls", () => {
+    expect(uuidV4()).not.toBe(uuidV4());
+  });
+});
+```
+3. In `apps/kiosk/src/data/commands/command-sender.ts`:
+   - add `import { uuidV4 } from "@/lib/uuid";` after the `@eduscope/contracts` import;
+   - replace `const newId = deps.newId ?? (() => crypto.randomUUID());` with `const newId = deps.newId ?? uuidV4;`.
+4. `grep -rn randomUUID apps/kiosk/src` → no output.
+
+**Verify:** `pnpm --filter @eduscope/kiosk exec vitest run src/lib/uuid.test.ts` → 3 passed. `pnpm verify` → exit 0.
+Manual: run `pnpm --filter @eduscope/kiosk dev` and open `http://<this machine's LAN IP>:5173/dev/components`
+(not localhost). Tap "Power off": the button pulses, then the projector shows `standby`, and the console has no
+`randomUUID` error.
+
+**Commit:** `git commit -m "fix(kiosk): generate command ids without secure-context crypto"`
