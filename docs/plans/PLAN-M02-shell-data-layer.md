@@ -3101,7 +3101,7 @@ describe("mock rules", () => {
 ---
 
 ### T21 — `FakeRoom` and the mock ApiClient
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/mock-client.ts`,
 `apps/kiosk/src/data/adapters/mock/fake-room.test.ts`
