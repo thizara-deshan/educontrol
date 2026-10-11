@@ -296,7 +296,7 @@ Consumers import TypeScript source directly (`exports` → `src/index.ts`); `bui
 ---
 
 ### T3 — `common.ts`: Observed and shared primitives
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/common.ts`, `packages/contracts/src/index.ts`,
 `packages/contracts/test/common.test.ts`
