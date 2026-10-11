@@ -2326,7 +2326,7 @@ describe("applyEvent", () => {
 ---
 
 ### T18 — Cache port over TanStack Query
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/realtime/cache-port.ts`, `apps/kiosk/src/data/realtime/cache-port.test.ts`
 
