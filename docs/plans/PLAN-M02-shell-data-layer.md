@@ -1822,7 +1822,7 @@ describe("pending store", () => {
 ---
 
 ### T15 — Inline error store (6 s)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/commands/inline-errors.ts`, `apps/kiosk/src/data/commands/inline-errors.test.ts`
 
