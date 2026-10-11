@@ -69,6 +69,13 @@
   --text-sensor-label--letter-spacing: 0.1em;
 
   --tracking-wordmark: 0.12em;
+
+  /* H5 pending: the tapped control's border pulses text-2 (SPEC §3.4). */
+  --animate-pending: pending-pulse 1.2s ease-in-out infinite;
+  @keyframes pending-pulse {
+    0%, 100% { border-color: var(--color-border-strong); }
+    50% { border-color: var(--color-text-2); }
+  }
 }
 
 /* shadcn variables mapped onto our tokens: never new colours. */

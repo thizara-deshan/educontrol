@@ -980,7 +980,7 @@ describe("sliderReducer", () => {
 ---
 
 ### T10 — `components/state-styles.ts` and the pending pulse token
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/state-styles.ts`, `apps/kiosk/src/components/state-styles.test.ts`,
 `apps/kiosk/src/styles/tokens.css`
