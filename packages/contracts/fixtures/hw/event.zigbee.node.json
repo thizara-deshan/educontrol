@@ -1,0 +1,15 @@
+{
+  "type": "zigbee.node",
+  "at": "2026-10-05T10:42:09Z",
+  "data": {
+    "ieee": "0x00124b0029b70005",
+    "friendly_name": "r101_door",
+    "model": "SNZB-04PR2",
+    "role": "end_device",
+    "power_source": "battery",
+    "lqi": 155,
+    "battery_pct": 87,
+    "last_seen": "2026-10-05T10:33:10Z",
+    "online": false
+  }
+}

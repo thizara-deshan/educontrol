@@ -1,0 +1,9 @@
+{
+  "type": "audio.state",
+  "at": "2026-10-05T10:42:07Z",
+  "data": {
+    "channel": "mic",
+    "level": 62,
+    "muted": false
+  }
+}

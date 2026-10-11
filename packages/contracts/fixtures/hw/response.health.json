@@ -1,0 +1,14 @@
+{
+  "ok": true,
+  "mode": "fake",
+  "modules": {
+    "lights": "fake",
+    "projector_power": "fake",
+    "ir": "fake",
+    "hdmi": "fake",
+    "projection_screen": "fake",
+    "audio": "fake",
+    "sensors": "fake",
+    "zigbee_status": "fake"
+  }
+}

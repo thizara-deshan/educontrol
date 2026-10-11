@@ -1,0 +1,7 @@
+{
+  "ok": false,
+  "error": {
+    "code": "device_offline",
+    "message": "r101_lights is offline"
+  }
+}

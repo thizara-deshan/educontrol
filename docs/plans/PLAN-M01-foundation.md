@@ -2134,7 +2134,7 @@ If `pnpm typecheck` reports the `Record<string, z.ZodType>` line, a non-schema v
 ---
 
 ### T15 — hw golden fixtures and the naming rule
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/fixtures/README.md`, `packages/contracts/fixtures/hw/*.json` (31 files),
 `packages/contracts/test/hw-fixture-name.ts`, `packages/contracts/test/hw-fixture-name.test.ts`,

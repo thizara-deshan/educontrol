@@ -1,0 +1,8 @@
+{
+  "type": "lights.state",
+  "at": "2026-10-05T10:42:03Z",
+  "data": {
+    "gang": "rear",
+    "on": true
+  }
+}

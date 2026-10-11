@@ -1,0 +1,9 @@
+{
+  "type": "sensors.reading",
+  "at": "2026-10-05T10:42:08Z",
+  "data": {
+    "node": "r101_temp",
+    "kind": "temperature",
+    "value": 26.4
+  }
+}

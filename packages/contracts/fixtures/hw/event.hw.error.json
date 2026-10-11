@@ -1,0 +1,9 @@
+{
+  "type": "hw.error",
+  "at": "2026-10-05T10:42:14Z",
+  "data": {
+    "module": "lights",
+    "code": "timeout",
+    "message": "No reply from r101_lights within 5 s"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "type": "projector_power.reading",
+  "at": "2026-10-05T10:42:30Z",
+  "data": {
+    "watts": 287,
+    "volts": 231,
+    "energy_kwh_total": 412.68
+  }
+}

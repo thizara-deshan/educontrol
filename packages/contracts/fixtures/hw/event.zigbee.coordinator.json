@@ -1,0 +1,14 @@
+{
+  "type": "zigbee.coordinator",
+  "at": "2026-10-05T10:42:10Z",
+  "data": {
+    "model": "ZG-808Z",
+    "chipset": "CC2652P1",
+    "firmware": "Z-Stack 3.x.0",
+    "channel": 25,
+    "tx_power_dbm": 20,
+    "port": "zigbee-coord",
+    "antenna": "SMA, external",
+    "status": "starting"
+  }
+}

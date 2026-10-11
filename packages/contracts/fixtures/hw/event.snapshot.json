@@ -1,0 +1,145 @@
+{
+  "type": "snapshot",
+  "at": "2026-10-05T10:42:00Z",
+  "data": {
+    "lights": {
+      "front": true,
+      "rear": false
+    },
+    "projector_power": {
+      "relay": true,
+      "reading": {
+        "at": "2026-10-05T10:41:30Z",
+        "watts": 287,
+        "volts": 231,
+        "energy_kwh_total": 412.67
+      }
+    },
+    "hdmi": {
+      "input": "podium_pc"
+    },
+    "projection_screen": {
+      "position": "lowered"
+    },
+    "audio": {
+      "mic": {
+        "level": 62,
+        "muted": false
+      },
+      "pc": {
+        "level": 38,
+        "muted": false
+      }
+    },
+    "sensors": [
+      {
+        "at": "2026-10-05T10:41:48Z",
+        "reading": {
+          "node": "r101_temp",
+          "kind": "temperature",
+          "value": 26.4
+        }
+      },
+      {
+        "at": "2026-10-05T10:41:48Z",
+        "reading": {
+          "node": "r101_temp",
+          "kind": "humidity",
+          "value": 61
+        }
+      },
+      {
+        "at": "2026-10-05T10:38:02Z",
+        "reading": {
+          "node": "r101_motion",
+          "kind": "occupancy",
+          "value": "detected"
+        }
+      },
+      {
+        "at": "2026-10-05T09:12:40Z",
+        "reading": {
+          "node": "r101_door",
+          "kind": "contact",
+          "value": "closed"
+        }
+      }
+    ],
+    "zigbee": {
+      "coordinator": {
+        "model": "ZG-808Z",
+        "chipset": "CC2652P1",
+        "firmware": "Z-Stack 3.x.0",
+        "channel": 25,
+        "tx_power_dbm": 20,
+        "port": "zigbee-coord",
+        "antenna": "SMA, external",
+        "status": "online"
+      },
+      "nodes": [
+        {
+          "ieee": "0xa4c1380f2b9e0001",
+          "friendly_name": "r101_lights",
+          "model": "ZBM5-2C-86W",
+          "role": "router",
+          "power_source": "mains",
+          "lqi": 214,
+          "battery_pct": null,
+          "last_seen": "2026-10-05T10:41:55Z",
+          "online": true
+        },
+        {
+          "ieee": "0xa4c1380f2b9e0002",
+          "friendly_name": "r101_proj_plug",
+          "model": "S60ZBTPG",
+          "role": "router",
+          "power_source": "mains",
+          "lqi": 231,
+          "battery_pct": null,
+          "last_seen": "2026-10-05T10:41:30Z",
+          "online": true
+        },
+        {
+          "ieee": "0x00124b0029b70003",
+          "friendly_name": "r101_temp",
+          "model": "SNZB-02P",
+          "role": "end_device",
+          "power_source": "battery",
+          "lqi": 168,
+          "battery_pct": 98,
+          "last_seen": "2026-10-05T10:41:48Z",
+          "online": true
+        },
+        {
+          "ieee": "0x00124b0029b70004",
+          "friendly_name": "r101_motion",
+          "model": "SNZB-03P",
+          "role": "end_device",
+          "power_source": "battery",
+          "lqi": 142,
+          "battery_pct": 91,
+          "last_seen": "2026-10-05T10:38:02Z",
+          "online": true
+        },
+        {
+          "ieee": "0x00124b0029b70005",
+          "friendly_name": "r101_door",
+          "model": "SNZB-04PR2",
+          "role": "end_device",
+          "power_source": "battery",
+          "lqi": 155,
+          "battery_pct": 87,
+          "last_seen": "2026-10-05T10:33:10Z",
+          "online": true
+        }
+      ],
+      "joining_until": null
+    },
+    "ir": {
+      "blaster": {
+        "online": true,
+        "lqi": 196
+      }
+    }
+  }
+}
