@@ -3914,7 +3914,7 @@ export function Card({ variant = "solid", className, children }: { variant?: Car
 ---
 
 ### T28 — `SectionLabel`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/SectionLabel.tsx`
 
