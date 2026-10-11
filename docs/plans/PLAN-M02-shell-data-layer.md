@@ -386,7 +386,7 @@ describe("createStore", () => {
 ---
 
 ### T6 — `lib/format.ts`: formatters
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/format.ts`, `apps/kiosk/src/lib/format.test.ts`
 
