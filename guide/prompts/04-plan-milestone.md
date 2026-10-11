@@ -67,6 +67,10 @@ After T<n>: "Human: run `pnpm dev`, compare with screen 01 at <resolution>"
   exactly which state, which token, which copy, which error message.
 - UI tasks must name every state: default, pending, confirmed, assumed,
   failed, offline/stale (where SPEC defines them).
+- UI tasks must specify the phone-width (390px) layout as well as the wide
+  one (exact Tailwind breakpoint classes).
+- Every mutating API route task includes its role check and a test that
+  it rejects calls without a session.
 - Tokens only. Never raw hex in components.
 - Hardware tasks: real + fake driver, pytest against the fake, plus one
   manual verify step on the Pi for the real driver (marked `[ON PI]`).
@@ -83,5 +87,5 @@ in the milestone you think is wrong. STOP.
 ## Gate checklist (read the plan, ~5 min)
 - [ ] Task order is sane, and contracts/schemas come before their consumers
 - [ ] Hard logic has full code. No "appropriately" or "as needed"
-- [ ] UI tasks list all states and point to a screenshot region
+- [ ] UI tasks list all states, point to a screenshot region, and specify the phone layout
 - [ ] Commit: `git commit -am "docs: PLAN-Mxx"`

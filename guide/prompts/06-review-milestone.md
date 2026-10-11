@@ -14,7 +14,7 @@ doesn't count.
 {{MILESTONE}}  — docs/milestones/M03-control-page.md
 {{PLAN}}       — docs/plans/PLAN-M03-control-page.md
 {{START_TAG}}  — m03-start
-{{RESOLUTION}} — e.g. 1280x800
+{{RESOLUTION}} — kiosk/wide size, e.g. 1280x800 (phone is always 390x844)
 ```
 
 ## The prompt
@@ -28,17 +28,21 @@ You are a strict reviewer verifying a milestone before it is accepted.
 ### Process
 1. Run Verify-all (typecheck, tests, lint, build). Report the results.
 2. Check each acceptance criterion: PASS / FAIL / CAN'T VERIFY, with evidence.
-3. UI milestones: start the dev server, take a screenshot at {{RESOLUTION}}
+3. UI milestones: start the dev server, take screenshots at {{RESOLUTION}}
+   AND 390x844
    (use Playwright via `pnpm dlx playwright screenshot` or a small script),
-   and compare it against the matching `reference/screens/` image. List
+   and compare them against the matching `reference/screens/` image. List
    visible differences: layout, spacing, color, type, copy, missing states.
+   At 390px, check: no horizontal scroll, everything reachable, ≥48px targets.
+   Open two browser contexts: a change in one must appear in the other.
    Also check that pending/assumed/failed/offline states render (switch the
    mock adapter into those states).
 4. Code review of the diff. Look only for: contract violations (no zod at a
    boundary), raw hex / off-token styles, duplicated components that should
    reuse existing ones, logic without tests, hardware code outside the module
    pattern, secrets/pins hardcoded, anything that breaks on a Pi (paths,
-   arch-specific deps, ports).
+   arch-specific deps, ports), mutating routes without a role check,
+   anything other than core-api listening on 0.0.0.0.
 5. Classify each finding: MUST-FIX (blocks acceptance) or LATER.
 
 ### Output
@@ -56,6 +60,7 @@ Summarize: PASS/FAIL per criterion, number of fix tasks. STOP.
 ## After the review
 - Fix tasks present → run **05** (Sonnet) on the same plan, then run 06 again (ideally once).
 - All PASS → update status in `M00-index.md`, `git tag mxx-done`, next milestone.
-- **Frontend complete gate (after M05):** on Arch run
-  `chromium --kiosk --window-size={{RESOLUTION}} http://localhost:5173` and use
-  it like a lecturer would for 5 minutes.
+- **Frontend complete gate (after M05):** run `pnpm dev --host`, then use it for
+  5 minutes like a lecturer would, from your phone on the same Wi-Fi AND from
+  `chromium --kiosk --window-size={{RESOLUTION}}`. Keep both open and check that
+  they stay in sync.

@@ -20,18 +20,22 @@ Read `docs/SPEC.md`, `docs/ARCHITECTURE.md`, `CLAUDE.md`.
 - M01 Foundation: workspace, kiosk Vite app, Tailwind + shadcn, design tokens,
   packages/contracts, Vitest, root scripts
 - M02 Shell & data layer: app header (brand, clock, status, room, nav),
-  routing, shared components, ApiClient + mock adapter + WS simulation,
-  kiosk hardening (no select, no context menu, touch sizes)
+  routing, responsive layout frame (wide + phone), shared components,
+  ApiClient + mock adapter + WS simulation, connection-status indicator,
+  PIN screen + session handling against the mock, touch hardening
 - M03 Control page (S1)
 - M04 Devices page (S2)
 - M05 Settings page (S3 + inferred tabs, technician gate)
   ── FRONTEND COMPLETE GATE ──
 - M06 core-api: Fastify, Drizzle schema + seed for the room, routes per
-  contracts, WS fan-out, serves kiosk build, kiosk http adapter
+  contracts, PIN auth + role enforcement, WS fan-out to all clients with
+  snapshot on connect, serves the SPA, frontend http adapter
 - M07 hw-service skeleton: FastAPI, module pattern, all modules with fake
   drivers, event stream, core-api integration
-- M08 Pi deploy: install script, systemd units, Chromium kiosk autostart,
-  screen blanking, logs
+- M08 Pi deploy: install script, systemd units, core-api on 0.0.0.0:80,
+  hostname/mDNS, optional Chromium kiosk autostart, screen blanking, logs.
+  Acceptance includes: a phone on the LAN opens http://<host>.local, and
+  the hw-service port is NOT reachable from another machine
 - Hxx: (reserved, created by hardware intake)
 - M99 Hardening: restart/recovery, hw offline states end-to-end, watchdog,
   log rotation, final acceptance against SPEC
@@ -63,5 +67,6 @@ Present the index table + coverage gaps. STOP for approval. Then write files.
 
 ## Gate checklist
 - [ ] Frontend (M01–M05) fits in ~2.5 days
+- [ ] UI milestones (M03–M05) list acceptance criteria at both phone and kiosk widths
 - [ ] Every SPEC element is covered
 - [ ] Commit: `git commit -am "docs: milestones"`
