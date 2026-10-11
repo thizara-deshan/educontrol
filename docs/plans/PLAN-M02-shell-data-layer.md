@@ -103,7 +103,7 @@ the shadcn CLI.
 ---
 
 ### T2 — Contracts: export the fixtures subpath
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/package.json`
 
