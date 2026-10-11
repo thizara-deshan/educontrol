@@ -74,7 +74,7 @@ Inputs read for this plan: M01, SPEC §2.2, §3.1–3.4, §4 (S1/S2 values), §6
 ## Tasks
 
 ### T1 — Root workspace and tooling
-- [ ] done
+- [x] done
 
 **Files:** `package.json`, `pnpm-workspace.yaml`, `tsconfig.base.json`, `eslint.config.js`, `.gitignore`,
 `.editorconfig`, `.nvmrc`

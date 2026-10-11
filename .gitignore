@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+# env: secrets never committed; apps/kiosk/.env.development (non-secret) IS committed
+.env
+.env.local
+.env.*.local
+deploy/pi/env/*.env
+# SQLite
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+# python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
