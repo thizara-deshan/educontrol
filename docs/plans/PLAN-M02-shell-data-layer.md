@@ -2048,7 +2048,7 @@ describe("command sender", () => {
 ---
 
 ### T17 — `apply-event.ts`: ServerEvent → client state
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/realtime/apply-event.ts`, `apps/kiosk/src/data/realtime/apply-event.test.ts`
 
