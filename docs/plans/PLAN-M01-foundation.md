@@ -3111,3 +3111,7 @@ When every row passes and the human confirms the checkpoint, tick this task.
 - `eslint-plugin-react-refresh` once shadcn primitives exist.
 - Vite dev proxy for `/api` and `/ws` (lands with M02/M08 anyway).
 - A `pre-commit` hook that runs `export-hw-schema` and fails on diff.
+
+## Fix tasks (review 1)
+Source: `docs/reviews/REVIEW-M01.md` (2026-10-12). No MUST-FIX findings — **0 fix tasks**. The five LATER
+items (L1–L5) are in `docs/milestones/M00-index.md` › Backlog and are not part of this plan.

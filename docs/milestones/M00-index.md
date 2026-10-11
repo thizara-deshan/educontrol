@@ -152,3 +152,17 @@ real hardware driver arrives through intake. No SPEC element is unassigned.
 | Client labels | Q19 | auto form factor + `?podium=1` | — |
 | AC setpoints | Q23 | 13 setpoints, cool, auto fan (seed) | Hxx |
 | H23 real backlight | D-16 | in-app overlay only | future Hxx if wanted |
+
+---
+
+## Backlog
+
+LATER items from reviews. Not scheduled; a milestone plan picks one up only by listing it as a task.
+
+| ID | From | Item | Where |
+|---|---|---|---|
+| M01-L1 | REVIEW-M01 | `engines.node` is `>=22`, not a Node 22 pin; pin to `22.x` (+ `engine-strict`) or record a decision allowing newer majors | `package.json` |
+| M01-L2 | REVIEW-M01 | Contracts `src/` gets Node types from `tsconfig.json`; split so only `test/`, `scripts/` see `types: ["node"]` (contracts are bundled into the browser) | `packages/contracts/tsconfig.json` |
+| M01-L3 | REVIEW-M01 | "No hex outside `tokens.css`" is only a manual grep; enforce it in `pnpm verify` (ESLint `no-restricted-syntax` or a `check:tokens` script) | root scripts / `eslint.config.js` |
+| M01-L4 | REVIEW-M01 | Radius demo on the temporary swatch page can't show 10/8/6px at 360px width (moot once M02 replaces the page) | `apps/kiosk/src/app/TokenSwatches.tsx` |
+| M01-L5 | REVIEW-M01 | `--radius: 8px` duplicates `--radius-btn`; use `var(--radius-btn)` | `apps/kiosk/src/styles/tokens.css` |
