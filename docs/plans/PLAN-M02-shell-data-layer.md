@@ -1308,7 +1308,7 @@ export function createQueryClient(): QueryClient {
 ---
 
 ### T12 — `data/env.ts`: zod-parsed env
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/env.ts`, `apps/kiosk/src/data/env.test.ts`
 
