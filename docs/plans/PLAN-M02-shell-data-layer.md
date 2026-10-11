@@ -4839,7 +4839,7 @@ export function RouteErrorBoundary() {
 ---
 
 ### T43 — Mock dev panel
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/MockPanel.tsx`, `apps/kiosk/src/app/mock-panel-flag.ts`
 
