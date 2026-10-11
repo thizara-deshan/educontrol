@@ -3885,7 +3885,7 @@ export function ObservedLine({ tone, text, staleAgo = null, loading = false, sho
 ---
 
 ### T27 — `Card`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/Card.tsx`
 
