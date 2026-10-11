@@ -2368,7 +2368,7 @@ tests and 4 name-rule tests pass; `ls packages/contracts/fixtures/hw | wc -l` pr
 ---
 
 ### T16 — `export-hw-schema` and the committed JSON Schema
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/scripts/hw-json-schema.ts`, `packages/contracts/scripts/export-hw-schema.ts`,
 `packages/contracts/package.json`, `packages/contracts/generated/hw.schema.json` (generated),
