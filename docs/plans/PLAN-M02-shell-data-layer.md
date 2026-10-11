@@ -4390,7 +4390,7 @@ export function KeyValueRow({ label, value, mono = true, tone = "default", loadi
 ---
 
 ### T35 — `InlineError`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/InlineError.tsx`
 
