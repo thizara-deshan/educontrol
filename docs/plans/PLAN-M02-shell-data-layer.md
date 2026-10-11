@@ -4300,7 +4300,7 @@ export function SensorTile({ label, value, caption, tone = "default", staleAgo =
 ---
 
 ### T33 — `MetricTile`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/MetricTile.tsx`
 
