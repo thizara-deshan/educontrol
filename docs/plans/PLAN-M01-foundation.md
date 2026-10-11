@@ -2443,7 +2443,7 @@ describe("generated/hw.schema.json", () => {
 ---
 
 ### T17 — Kiosk app scaffold (Vite + React + Vitest)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/package.json`, `apps/kiosk/index.html`, `apps/kiosk/vite.config.ts`,
 `apps/kiosk/vitest.config.ts`, `apps/kiosk/tsconfig.json`, `apps/kiosk/tsconfig.node.json`,
