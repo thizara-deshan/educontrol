@@ -712,7 +712,7 @@ describe("createServerClock", () => {
 ---
 
 ### T9 — `lib/level-slider.ts`: throttle and drag rules
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/level-slider.ts`, `apps/kiosk/src/lib/level-slider.test.ts`
 
