@@ -2427,7 +2427,7 @@ describe("cache port", () => {
 ---
 
 ### T19 — Connection state machine
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/realtime/connection.ts`, `apps/kiosk/src/data/realtime/connection.test.ts`,
 `apps/kiosk/src/data/realtime/connection-store.ts`
