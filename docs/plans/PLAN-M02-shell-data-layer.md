@@ -5225,7 +5225,7 @@ export function LiveDemo() {
 ---
 
 ### T47 — `/dev/components` gallery (dev builds only)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/ComponentGallery.tsx`, `apps/kiosk/src/app/router.tsx`
 
