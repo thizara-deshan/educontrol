@@ -668,7 +668,7 @@ describe("AudioState", () => {
 ---
 
 ### T6 — Domain: environment (lights, AC, sensors)
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/environment.ts`, `packages/contracts/src/index.ts`,
 `packages/contracts/test/environment.test.ts`
