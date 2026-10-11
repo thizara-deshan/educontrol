@@ -1927,7 +1927,7 @@ describe("inline error store", () => {
 ---
 
 ### T16 — Command sender
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/commands/command-sender.ts`, `apps/kiosk/src/data/commands/command-sender.test.ts`
 
