@@ -133,7 +133,7 @@ change first (CLAUDE.md).
 ---
 
 ### T3 — shadcn primitives: sheet, sonner, skeleton
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/ui/sheet.tsx`, `apps/kiosk/src/ui/sonner.tsx`, `apps/kiosk/src/ui/skeleton.tsx`,
 `apps/kiosk/src/types/css-custom-properties.d.ts`, `apps/kiosk/package.json`, `pnpm-lock.yaml`
