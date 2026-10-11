@@ -82,7 +82,7 @@ the current code (`apps/kiosk`, `packages/contracts`).
 ## Tasks
 
 ### T1 — Kiosk runtime dependencies
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/package.json`, `pnpm-lock.yaml`
 
