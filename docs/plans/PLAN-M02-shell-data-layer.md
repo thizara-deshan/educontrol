@@ -627,7 +627,7 @@ describe("detectClientLabel", () => {
 ---
 
 ### T8 — `lib/server-time.ts`: server clock offset
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/server-time.ts`, `apps/kiosk/src/lib/server-time.test.ts`
 
