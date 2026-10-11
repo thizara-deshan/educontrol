@@ -1,0 +1,106 @@
+{
+  "rev": 1,
+  "server_time": "2026-10-05T10:42:00Z",
+  "room": {
+    "id": "R-101",
+    "hostname": "r-101.local",
+    "status": { "level": "normal", "text": "All systems normal" }
+  },
+  "connection": { "hw": "up" },
+  "display": {
+    "source": { "value": "podium_pc", "confidence": "confirmed", "source": "hdmi_switch", "updated_at": "2026-10-05T08:55:20Z", "stale": false, "changed_by": "podium PC" },
+    "projector": {
+      "state": { "value": "running", "confidence": "confirmed", "source": "power_meter", "updated_at": "2026-10-05T08:56:40Z", "stale": false, "changed_by": "room screen" },
+      "power": {
+        "value": { "watts": 287, "volts": 231, "kwh_today": 1.84, "rating_a": 13, "at": "2026-10-05T10:41:30Z" },
+        "confidence": "confirmed", "source": "power_meter", "updated_at": "2026-10-05T10:41:30Z", "stale": false, "changed_by": null
+      },
+      "feedback": { "last_ir": "power_on", "sent_at": "2026-10-05T08:55:12Z", "phase": "idle" },
+      "mains": { "value": true, "confidence": "confirmed", "source": "power_meter", "updated_at": "2026-10-05T07:30:00Z", "stale": false, "changed_by": null }
+    },
+    "screen": { "value": "lowered", "confidence": "confirmed", "source": "switch", "updated_at": "2026-10-05T08:55:40Z", "stale": false, "changed_by": "room screen" }
+  },
+  "audio": {
+    "channels": {
+      "mic": { "value": 62, "confidence": "confirmed", "source": "mixer", "updated_at": "2026-10-05T09:01:05Z", "stale": false, "changed_by": "room screen" },
+      "pc": { "value": 38, "confidence": "confirmed", "source": "mixer", "updated_at": "2026-10-05T09:01:12Z", "stale": false, "changed_by": "room screen" }
+    },
+    "muted_all": { "value": false, "confidence": "confirmed", "source": "mixer", "updated_at": "2026-10-05T07:30:00Z", "stale": false, "changed_by": null },
+    "saved_levels": { "mic": null, "pc": null }
+  },
+  "environment": {
+    "lights": {
+      "front": { "value": true, "confidence": "confirmed", "source": "switch", "updated_at": "2026-10-05T08:50:02Z", "stale": false, "changed_by": "by hand" },
+      "rear": { "value": false, "confidence": "confirmed", "source": "switch", "updated_at": "2026-10-05T08:50:02Z", "stale": false, "changed_by": null }
+    },
+    "ac": {
+      "power": { "value": "on", "confidence": "assumed", "source": "ir", "updated_at": "2026-10-05T08:58:30Z", "stale": false, "changed_by": "room screen" },
+      "setpoint_c": { "value": 24, "confidence": "assumed", "source": "ir", "updated_at": "2026-10-05T08:58:30Z", "stale": false, "changed_by": "room screen" },
+      "available_setpoints": [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    },
+    "sensors": {
+      "temperature": { "kind": "temperature", "value": 26.4, "node": "r101_temp", "at": "2026-10-05T10:41:48Z", "stale": false },
+      "humidity": { "kind": "humidity", "value": 61, "node": "r101_temp", "at": "2026-10-05T10:41:48Z", "stale": false },
+      "occupancy": { "kind": "occupancy", "value": "detected", "node": "r101_motion", "at": "2026-10-05T10:38:02Z", "stale": false },
+      "contact": { "kind": "contact", "value": "closed", "node": "r101_door", "at": "2026-10-05T09:12:40Z", "stale": false },
+      "reporting": { "count": 3, "of": 3 }
+    }
+  },
+  "zigbee": {
+    "coordinator": {
+      "model": "ZG-808Z", "chipset": "CC2652P1", "firmware": "Z-Stack 3.x.0", "channel": 25,
+      "tx_power_dbm": 20, "port": "zigbee-coord", "antenna": "SMA, external", "status": "online"
+    },
+    "mesh": { "paired": 5, "routers": 2, "end_devices": 3, "joining": { "state": "closed" } },
+    "nodes": [
+      { "ieee": "0xa4c1380f2b9e0001", "friendly_name": "r101_lights", "model": "ZBM5-2C-86W", "role": "router", "power_source": "mains", "lqi": 214, "battery_pct": null, "last_seen": "2026-10-05T10:41:55Z", "online": true },
+      { "ieee": "0xa4c1380f2b9e0002", "friendly_name": "r101_proj_plug", "model": "S60ZBTPG", "role": "router", "power_source": "mains", "lqi": 231, "battery_pct": null, "last_seen": "2026-10-05T10:41:30Z", "online": true },
+      { "ieee": "0x00124b0029b70003", "friendly_name": "r101_temp", "model": "SNZB-02P", "role": "end_device", "power_source": "battery", "lqi": 168, "battery_pct": 98, "last_seen": "2026-10-05T10:41:48Z", "online": true },
+      { "ieee": "0x00124b0029b70004", "friendly_name": "r101_motion", "model": "SNZB-03P", "role": "end_device", "power_source": "battery", "lqi": 142, "battery_pct": 91, "last_seen": "2026-10-05T10:38:02Z", "online": true },
+      { "ieee": "0x00124b0029b70005", "friendly_name": "r101_door", "model": "SNZB-04PR2", "role": "end_device", "power_source": "battery", "lqi": 155, "battery_pct": 87, "last_seen": "2026-10-05T10:33:10Z", "online": true }
+    ]
+  },
+  "ir_blaster": {
+    "id": "ZS06", "topic": "r101_ir", "lqi": 196, "coverage": "360°, 12 m", "power": "mains",
+    "online": { "value": true, "confidence": "confirmed", "source": "ir", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null }
+  },
+  "interlock": { "status": "armed", "rule_text": "Projector mains stays on until draw is below 5 W." },
+  "devices": [
+    { "id": "projector", "name": "Projector", "kind": "projector", "transport": "ir_zs06", "brand": "Epson", "model": null, "hw_ref": null,
+      "online": { "value": true, "confidence": "confirmed", "source": "power_meter", "updated_at": "2026-10-05T10:41:30Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "projector.ir", "name": "Projector power", "kind": "momentary" }] },
+    { "id": "hdmi_switch", "name": "HDMI switch", "kind": "hdmi_switch", "transport": "local", "brand": null, "model": null, "hw_ref": null,
+      "online": { "value": true, "confidence": "confirmed", "source": "hdmi_switch", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "display.source", "name": "Source", "kind": "select" }] },
+    { "id": "projection_screen", "name": "Projection screen", "kind": "projection_screen", "transport": "local", "brand": null, "model": null, "hw_ref": null,
+      "online": { "value": true, "confidence": "confirmed", "source": "switch", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "screen", "name": "Projection screen", "kind": "position" }] },
+    { "id": "lights", "name": "Lighting switch", "kind": "lights", "transport": "zigbee", "brand": null, "model": "ZBM5-2C-86W", "hw_ref": "r101_lights",
+      "online": { "value": true, "confidence": "confirmed", "source": "switch", "updated_at": "2026-10-05T10:41:55Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "lights.front", "name": "Front of room", "kind": "switch" }, { "id": "lights.rear", "name": "Rear of room", "kind": "switch" }] },
+    { "id": "ac", "name": "Air conditioning", "kind": "ac", "transport": "ir_zs06", "brand": "Panasonic", "model": null, "hw_ref": null,
+      "online": { "value": true, "confidence": "assumed", "source": "ir", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "ac", "name": "Air conditioning", "kind": "momentary" }] },
+    { "id": "audio", "name": "Audio mixer", "kind": "audio", "transport": "local", "brand": null, "model": null, "hw_ref": null,
+      "online": { "value": true, "confidence": "confirmed", "source": "mixer", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "audio.mic", "name": "Lecturer microphone", "kind": "level" }, { "id": "audio.pc", "name": "PC audio", "kind": "level" }] },
+    { "id": "projector_socket", "name": "Projector socket", "kind": "power_socket", "transport": "zigbee", "brand": null, "model": "S60ZBTPG", "hw_ref": "r101_proj_plug",
+      "online": { "value": true, "confidence": "confirmed", "source": "power_meter", "updated_at": "2026-10-05T10:41:30Z", "stale": false, "changed_by": null },
+      "outputs": [{ "id": "projector.mains", "name": "Mains to projector", "kind": "switch" }] },
+    { "id": "room_climate", "name": "Room climate", "kind": "sensor", "transport": "zigbee", "brand": null, "model": "SNZB-02P", "hw_ref": "r101_temp",
+      "online": { "value": true, "confidence": "confirmed", "source": "sensor", "updated_at": "2026-10-05T10:41:48Z", "stale": false, "changed_by": null },
+      "outputs": [] },
+    { "id": "motion", "name": "Motion", "kind": "sensor", "transport": "zigbee", "brand": null, "model": "SNZB-03P", "hw_ref": "r101_motion",
+      "online": { "value": true, "confidence": "confirmed", "source": "sensor", "updated_at": "2026-10-05T10:38:02Z", "stale": false, "changed_by": null },
+      "outputs": [] },
+    { "id": "door", "name": "Door", "kind": "sensor", "transport": "zigbee", "brand": null, "model": "SNZB-04PR2", "hw_ref": "r101_door",
+      "online": { "value": true, "confidence": "confirmed", "source": "sensor", "updated_at": "2026-10-05T10:33:10Z", "stale": false, "changed_by": null },
+      "outputs": [] },
+    { "id": "ir_blaster", "name": "ZS06", "kind": "ir_blaster", "transport": "zigbee", "brand": null, "model": "ZS06", "hw_ref": "r101_ir",
+      "online": { "value": true, "confidence": "confirmed", "source": "ir", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null },
+      "outputs": [] },
+    { "id": "coordinator", "name": "Coordinator", "kind": "coordinator", "transport": "local", "brand": null, "model": "ZG-808Z", "hw_ref": "zigbee-coord",
+      "online": { "value": true, "confidence": "confirmed", "source": "none", "updated_at": "2026-10-05T10:40:00Z", "stale": false, "changed_by": null },
+      "outputs": [] }
+  ]
+}

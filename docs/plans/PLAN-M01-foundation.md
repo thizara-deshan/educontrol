@@ -1265,7 +1265,7 @@ describe("system", () => {
 ---
 
 ### T11 — RoomState and the `room-normal` fixture
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/state.ts`, `packages/contracts/src/index.ts`,
 `packages/contracts/fixtures/state/room-normal.json`, `packages/contracts/test/helpers.ts` (modify),
