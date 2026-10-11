@@ -872,7 +872,7 @@ describe("zigbee", () => {
 ---
 
 ### T8 — Domain: IR devices and commands
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/ir.ts`, `packages/contracts/src/index.ts`,
 `packages/contracts/test/ir.test.ts`
