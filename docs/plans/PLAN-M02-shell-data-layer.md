@@ -3519,7 +3519,7 @@ describe("FakeRoom", () => {
 ---
 
 ### T22 — Control gate
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/gate.ts`, `apps/kiosk/src/data/gate.test.ts`
 
