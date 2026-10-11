@@ -3941,7 +3941,7 @@ export function SectionLabel({ children, className }: { children: ReactNode; cla
 ---
 
 ### T29 — `usePressed` and `CommandButton`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/use-pressed.ts`, `apps/kiosk/src/components/CommandButton.tsx`
 
