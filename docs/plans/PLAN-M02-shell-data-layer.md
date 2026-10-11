@@ -4238,7 +4238,7 @@ export function LevelSlider({ label, value, onChange, disabled = false, pending 
 ---
 
 ### T32 — `SensorTile`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/SensorTile.tsx`
 
