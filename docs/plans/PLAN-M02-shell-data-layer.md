@@ -4642,7 +4642,7 @@ export function StatusIndicator() {
 ---
 
 ### T40 — `Header`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/Header.tsx`
 
