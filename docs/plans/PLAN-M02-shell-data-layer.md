@@ -544,7 +544,7 @@ describe("attribution", () => {
 ---
 
 ### T7 — `lib/client-label.ts`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/client-label.ts`, `apps/kiosk/src/lib/client-label.test.ts`
 
