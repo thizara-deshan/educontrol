@@ -3800,7 +3800,7 @@ export function useCommand(key: ControlKey, deviceId?: string) {
 ---
 
 ### T25 — `StateDot`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/StateDot.tsx`
 
