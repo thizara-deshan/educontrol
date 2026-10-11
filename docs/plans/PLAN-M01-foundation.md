@@ -2867,7 +2867,7 @@ interactive and rewrites the CSS with new colour literals. Writing its two outpu
 ---
 
 ### T20 — Folder skeleton and placeholder packages
-- [ ] done
+- [x] done
 
 **Files:** `.gitkeep` files listed below; `apps/core-api/package.json`
 

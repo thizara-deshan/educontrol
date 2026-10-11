@@ -1,0 +1,11 @@
+{
+  "name": "@eduscope/core-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node -e \"console.log('@eduscope/core-api: placeholder until M08')\"",
+    "build": "node -e \"console.log('@eduscope/core-api: placeholder until M08')\"",
+    "db:generate": "node -e \"console.log('@eduscope/core-api: db:generate arrives in M08')\""
+  }
+}
