@@ -3595,7 +3595,7 @@ describe("computeControlGate", () => {
 ---
 
 ### T23 — Realtime runtime, adapter choice and data context
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/realtime/runtime.ts`, `apps/kiosk/src/data/create-api-client.ts`,
 `apps/kiosk/src/data/api-context.tsx`
