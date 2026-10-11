@@ -568,7 +568,7 @@ describe("DevicePatch", () => {
 ---
 
 ### T5 — Domain: display and audio
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/domain/display.ts`, `packages/contracts/src/domain/audio.ts`,
 `packages/contracts/src/index.ts`, `packages/contracts/test/display-audio.test.ts`
