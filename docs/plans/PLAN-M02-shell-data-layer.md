@@ -1363,7 +1363,7 @@ describe("readEnv", () => {
 ---
 
 ### T13 — http adapter (fetch + WebSocket)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/http/http-client.ts`, `apps/kiosk/src/data/adapters/http/http-client.test.ts`,
 `apps/kiosk/src/data/test/room-state.ts`
