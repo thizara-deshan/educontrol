@@ -80,3 +80,8 @@ Pi-specific paths in this range.
 
 AC1–AC9: **PASS** (AC7 on localhost only, because of F1). **1 fix task** (F1) appended to the plan as
 `## Fix tasks (review 1)`. 6 LATER items added to `docs/milestones/M00-index.md` → Backlog.
+
+## 6 Acceptance
+
+2026-10-12: FX1 done (`579f28b`). Commands verified from a non-localhost origin (`isSecureContext=false`),
+`pnpm verify` green (kiosk 172 tests). 0 MUST-FIX open. **M02 accepted.**
