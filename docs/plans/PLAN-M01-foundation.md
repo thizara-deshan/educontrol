@@ -1517,7 +1517,7 @@ describe("room-normal.json", () => {
 ---
 
 ### T12 — REST API schemas
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/api/errors.ts`, `api/session.ts`, `api/state.ts`, `api/commands.ts`,
 `api/ir.ts`, `api/schedule.ts`, `api/devices.ts`, `api/settings.ts`, `api/system.ts` (all under
