@@ -4346,7 +4346,7 @@ export function MetricTile({ label, value, tone = "default", loading = false }: 
 ---
 
 ### T34 — `KeyValueRow`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/KeyValueRow.tsx`
 
