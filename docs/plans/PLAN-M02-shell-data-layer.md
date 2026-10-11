@@ -4497,7 +4497,7 @@ export function DashedAddButton({ label, onPress, disabled = false, className }:
 ---
 
 ### T38 — Placeholder pages for S1, S2 and S3
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/PlaceholderPage.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`,
 `apps/kiosk/src/features/devices/DevicesPage.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
