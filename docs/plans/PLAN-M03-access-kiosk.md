@@ -956,7 +956,7 @@ describe("pin requests", () => {
 **Commit:** `git commit -m "feat(kiosk): pin request store"`
 
 ### T7 — Session actions: login outcome and Lock
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/access/session-actions.ts`, `apps/kiosk/src/data/access/session-actions.test.ts`
 
