@@ -9,8 +9,8 @@ describe("token-names", () => {
   it("lists every colour token defined with a literal in tokens.css", () => {
     expect(captured(/--color-([a-z0-9-]+):\s*#/g)).toEqual([...COLOR_TOKENS].sort());
   });
-  it("has all 27 SPEC §3.1 colours", () => {
-    expect(COLOR_TOKENS).toHaveLength(27);
+  it("has all 27 SPEC §3.1 colours plus sleep (SPEC §2.6)", () => {
+    expect(COLOR_TOKENS).toHaveLength(28);
   });
   it("lists every type-scale token", () => {
     expect(captured(/--text-([a-z]+(?:-[a-z]+)*):\s*\d+px/g)).toEqual([...TYPE_TOKENS].sort());

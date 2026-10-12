@@ -36,6 +36,8 @@
   --color-callout-border: #2F7A50;
   --color-badge-router-fill: #1F4A33;
   --color-badge-router-text: #4ADE80;
+  /* H23 / SPEC §2.6 kiosk dim (80% of it) and blank screen. Not a SPEC §3.1 colour. */
+  --color-sleep: #000000;
 
   --radius-card: 10px;
   --radius-btn: 8px;
@@ -75,6 +77,14 @@
   @keyframes pending-pulse {
     0%, 100% { border-color: var(--color-border-strong); }
     50% { border-color: var(--color-text-2); }
+  }
+
+  /* S4.E3 wrong PIN: the dots shake once. */
+  --animate-shake: pin-shake 0.4s ease-in-out;
+  @keyframes pin-shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
   }
 }
 

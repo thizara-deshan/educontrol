@@ -1468,7 +1468,7 @@ describe("PIN input reducer", () => {
 **Commit:** `git commit -m "feat(kiosk): pin input reducer"`
 
 ### T11 — Tokens: `sleep` colour and the wrong-PIN shake
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/styles/tokens.css`, `apps/kiosk/src/styles/token-names.ts`, `apps/kiosk/src/styles/token-names.test.ts`
 

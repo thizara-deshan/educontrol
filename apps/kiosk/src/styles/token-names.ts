@@ -3,7 +3,7 @@ export const COLOR_TOKENS = [
   "bg", "header", "surface", "surface-2", "control", "border", "border-strong", "border-dashed",
   "text-1", "text-2", "text-3", "accent", "accent-fill", "accent-border", "selected-fill",
   "toggle-on", "toggle-off", "knob", "warn", "warn-fill", "brand", "danger", "danger-fill",
-  "callout-fill", "callout-border", "badge-router-fill", "badge-router-text",
+  "callout-fill", "callout-border", "badge-router-fill", "badge-router-text", "sleep",
 ] as const;
 export type ColorToken = (typeof COLOR_TOKENS)[number];
 
