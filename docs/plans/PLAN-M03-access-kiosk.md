@@ -1294,7 +1294,7 @@ export function useCommand(key: ControlKey, deviceId?: string) {
 **Commit:** `git commit -m "feat(kiosk): access hooks and locked command taps"`
 
 ### T10 — PIN input reducer (auto-submit, backspace, wrong, lockout countdown)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/pin/pin-input.ts`, `apps/kiosk/src/features/pin/pin-input.test.ts`, `apps/kiosk/src/features/pin/.gitkeep`
 
