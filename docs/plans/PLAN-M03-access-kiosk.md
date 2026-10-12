@@ -1913,7 +1913,7 @@ describe("sessionChangeEffects", () => {
 **Commit:** `git commit -m "feat(kiosk): session change rule"`
 
 ### T17 — `useSessionWatcher`: apply the session change effects
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/session/use-session-watcher.ts`
 
