@@ -3155,7 +3155,7 @@ export function MockPanel() {
 **Commit:** `git commit -m "feat(kiosk): mock panel session, kiosk and occupancy actions"`
 
 ### T32 — Acceptance walk-through (M03 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan (checkbox only). No code changes; if a check fails, write a Blocker (don't fix it in
 this task).
