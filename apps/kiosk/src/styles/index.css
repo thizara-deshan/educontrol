@@ -11,4 +11,18 @@
     @apply bg-bg font-sans text-text-1 antialiased;
     overflow-x: clip;
   }
+  /* SPEC §2.6, all clients: no double-tap zoom / tap delay. Utilities (e.g. touch-none) still win. */
+  *,
+  ::before,
+  ::after {
+    touch-action: manipulation;
+  }
+  /* SPEC §2.6, kiosk only (KioskBehaviour sets html.kiosk): no selection, callout or cursor. */
+  html.kiosk,
+  html.kiosk * {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    cursor: none !important;
+  }
 }

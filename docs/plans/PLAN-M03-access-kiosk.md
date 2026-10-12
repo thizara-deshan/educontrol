@@ -2989,7 +2989,7 @@ export function KioskBehaviour() {
 **Commit:** `git commit -m "feat(kiosk): kiosk idle, wake and occupancy behaviour"`
 
 ### T29 — Touch hardening CSS (all clients + kiosk) and hover audit
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/styles/index.css`
 
