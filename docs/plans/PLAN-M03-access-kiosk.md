@@ -1962,7 +1962,7 @@ export function useSessionWatcher(): void {
 **Commit:** `git commit -m "feat(kiosk): session watcher"`
 
 ### T18 — `HeaderLockButton` (S1.E8 visibility)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/session/HeaderLockButton.tsx`
 
