@@ -2779,7 +2779,7 @@ describe("wake-tap guard", () => {
 **Commit:** `git commit -m "feat(kiosk): wake-tap guard"`
 
 ### T26 — `?idle-scale` and the occupancy wake rule
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/kiosk/kiosk-params.ts`, `apps/kiosk/src/features/kiosk/kiosk-params.test.ts`
 
