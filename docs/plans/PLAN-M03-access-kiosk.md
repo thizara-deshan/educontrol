@@ -1838,7 +1838,7 @@ export function PinOverlay() {
 **Commit:** `git commit -m "feat(kiosk): pin overlay"`
 
 ### T16 — Session change rule (H24 toast, leave settings)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/session/session-change.ts`, `apps/kiosk/src/features/session/session-change.test.ts`, `apps/kiosk/src/features/session/.gitkeep`
 
