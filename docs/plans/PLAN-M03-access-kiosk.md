@@ -2532,7 +2532,7 @@ export function LiveDemo() {
 **Commit:** `git commit -m "feat(kiosk): view-only padlocks in the live demo"`
 
 ### T24 — Kiosk idle timer (2 / 5 / 15 min)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/kiosk/idle-timer.ts`, `apps/kiosk/src/features/kiosk/idle-timer.test.ts`, `apps/kiosk/src/features/kiosk/.gitkeep`
 
