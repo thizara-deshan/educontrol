@@ -2097,7 +2097,7 @@ export function Header() {
 **Commit:** `git commit -m "feat(kiosk): technician gate on the header settings button"`
 
 ### T20 — `SettingsGuard` on every `/settings/*` route
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/SettingsGuard.tsx`, `apps/kiosk/src/app/router.tsx`
 
