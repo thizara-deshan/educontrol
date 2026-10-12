@@ -101,7 +101,7 @@ view-only presentation, S3.E1–E3, S4.E1–E5, H12, H17, H23, H24, R14, R15; AR
 ## Tasks
 
 ### T1 — Mock: PIN login, lockout and Lock in `FakeRoom`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room.test.ts`
 

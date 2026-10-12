@@ -124,3 +124,57 @@ describe("FakeRoom", () => {
     expect(handlers.onClose).not.toHaveBeenCalled();
   });
 });
+
+/** login() waits one mock latency (600 ms with random = 1). */
+async function login(room: FakeRoom, level: "control" | "technician", pin: string) {
+  const result = room.login({ level, pin, label: "phone" });
+  await vi.advanceTimersByTimeAsync(MOCK_LATENCY_MAX_MS);
+  return result;
+}
+const sessionEvents = (events: ServerEvent[]) => events.flatMap((e) => (e.type === "session" ? [e.session] : []));
+
+describe("FakeRoom sessions", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("starts as a remote view session labelled from hello", async () => {
+    const { room } = connected();
+    const session = room.getSession();
+    await vi.advanceTimersByTimeAsync(MOCK_LATENCY_MAX_MS);
+    expect(await session).toMatchObject({ client_type: "remote", label: "phone", access: "view" });
+  });
+
+  it("room PIN 1234 gives control, technician PIN 123456 gives technician", async () => {
+    const { room } = connected();
+    expect(await login(room, "control", "1234")).toMatchObject({ access: "control" });
+    expect(await login(room, "technician", "123456")).toMatchObject({ access: "technician" });
+  });
+
+  it("counts wrong PINs down, locks for 60 s on the fifth, then accepts again (H17)", async () => {
+    const { room } = connected();
+    for (const left of [4, 3, 2, 1]) {
+      expect(await login(room, "control", "0000")).toEqual({ reason: "wrong", retry_after_s: null, attempts_left: left });
+    }
+    expect(await login(room, "control", "0000")).toEqual({ reason: "locked", retry_after_s: 60, attempts_left: 0 });
+    // The right PIN is refused while locked; the remaining time counts down.
+    await vi.advanceTimersByTimeAsync(9_400);
+    expect(await login(room, "control", "1234")).toEqual({ reason: "locked", retry_after_s: 50, attempts_left: 0 });
+    // The other level has its own counter.
+    expect(await login(room, "technician", "123456")).toMatchObject({ access: "technician" });
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(await login(room, "control", "1234")).toMatchObject({ access: "control" });
+  });
+
+  it("lock drops a remote session to view and pushes it", async () => {
+    const { room, events } = connected();
+    await login(room, "control", "1234");
+    const locked = room.lock();
+    await vi.advanceTimersByTimeAsync(MOCK_LATENCY_MAX_MS);
+    expect(await locked).toMatchObject({ access: "view", unlocked_at: null });
+    expect(sessionEvents(events).at(-1)).toMatchObject({ access: "view" });
+  });
+});

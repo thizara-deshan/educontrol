@@ -1,5 +1,6 @@
 import {
-  ClientSession, Command, CommandRequest, RoomState, ServerEvent, type ClientLabel,
+  ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ClientLabel,
+  type LoginResult,
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
@@ -15,6 +16,16 @@ export const MOCK_PING_MS = 10_000;
 export const MOCK_COMMAND_TIMEOUT_MS = 5_000;
 /** How long a refused connect takes to fail. */
 export const MOCK_REFUSE_MS = 300;
+/** ARCHITECTURE §4.4: the mock's PINs (the real ones are hashed in core-api, M08). */
+export const MOCK_ROOM_PIN = "1234";
+export const MOCK_TECHNICIAN_PIN = "123456";
+/** H17 / ARCHITECTURE §5: 5 wrong → locked for 60 s (per level, like core-api's per (ip, level)). */
+export const MOCK_MAX_PIN_ATTEMPTS = 5;
+export const MOCK_PIN_LOCKOUT_S = 60;
+/** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
+const CONTROL_SESSION_MS = 2 * 60 * 60_000;
+const TECHNICIAN_SESSION_MS = 15 * 60_000;
+const KIOSK_TECHNICIAN_SESSION_MS = 2 * 60_000;
 const OWN_PUBLIC_ID = "mock-self";
 const PHONE_PUBLIC_ID = "mock-phone";
 
@@ -31,6 +42,11 @@ export interface FakeRoomOptions {
 export class FakeRoom {
   private state: RoomState;
   private session: ClientSession;
+  /** The label from the last `hello` (a remote client's own label; the kiosk is "room screen"). */
+  private helloLabel: ClientLabel = "laptop";
+  private readonly pinFailures = { control: 0, technician: 0 };
+  /** Epoch ms until which PIN entry is locked, per level. */
+  private readonly lockedUntil = { control: 0, technician: 0 };
   private readonly listeners = new Set<Listener>();
   private reachable = true;
   private silent = false;
@@ -45,9 +61,9 @@ export class FakeRoom {
     this.random = options.random ?? Math.random;
     this.now = options.now ?? Date.now;
     this.state = RoomState.parse(roomNormal);
-    // M02: the mock client may control. M03 makes `view` the default and adds PIN login.
+    // SPEC §2.3: a remote browser without a PIN starts at `view`.
     this.session = ClientSession.parse({
-      public_id: OWN_PUBLIC_ID, client_type: "remote", label: "laptop", access: "control",
+      public_id: OWN_PUBLIC_ID, client_type: "remote", label: this.helloLabel, access: "view",
       unlocked_at: null, last_activity: null, expires_at: null,
     });
   }
@@ -56,6 +72,44 @@ export class FakeRoom {
 
   async getSession(): Promise<ClientSession> {
     await this.delay();
+    return this.session;
+  }
+
+  /** Room PIN → `control`, technician PIN → `technician` (upgrades the session in place). */
+  async login(request: LoginRequest): Promise<LoginResult> {
+    const { level, pin } = LoginRequest.parse(request);
+    await this.delay();
+    const now = this.now();
+    if (now < this.lockedUntil[level]) {
+      return { reason: "locked", retry_after_s: Math.ceil((this.lockedUntil[level] - now) / 1000), attempts_left: 0 };
+    }
+    const expected = level === "control" ? MOCK_ROOM_PIN : MOCK_TECHNICIAN_PIN;
+    if (pin !== expected) {
+      this.pinFailures[level] += 1;
+      if (this.pinFailures[level] >= MOCK_MAX_PIN_ATTEMPTS) {
+        this.pinFailures[level] = 0;
+        this.lockedUntil[level] = now + MOCK_PIN_LOCKOUT_S * 1000;
+        return { reason: "locked", retry_after_s: MOCK_PIN_LOCKOUT_S, attempts_left: 0 };
+      }
+      return { reason: "wrong", retry_after_s: null, attempts_left: MOCK_MAX_PIN_ATTEMPTS - this.pinFailures[level] };
+    }
+    this.pinFailures[level] = 0;
+    const kiosk = this.session.client_type === "kiosk";
+    const lengthMs = level === "control" ? CONTROL_SESSION_MS : kiosk ? KIOSK_TECHNICIAN_SESSION_MS : TECHNICIAN_SESSION_MS;
+    this.session = {
+      ...this.session,
+      access: level,
+      unlocked_at: this.iso(),
+      last_activity: this.iso(),
+      expires_at: new Date(now + lengthMs).toISOString(),
+    };
+    return this.session;
+  }
+
+  /** Lock (S1.E8): remote → `view`, kiosk → `control`; pushes `session` like core-api does. */
+  async lock(): Promise<ClientSession> {
+    await this.delay();
+    this.setSession(this.downgraded());
     return this.session;
   }
 
@@ -88,7 +142,8 @@ export class FakeRoom {
       }, MOCK_REFUSE_MS);
       return { close: () => { listener.open = false; } };
     }
-    this.session = { ...this.session, label };
+    this.helloLabel = label;
+    if (this.session.client_type === "remote") this.session = { ...this.session, label };
     this.listeners.add(listener);
     this.ensurePing();
     setTimeout(() => {
@@ -177,6 +232,16 @@ export class FakeRoom {
   }
 
   // ── internals ────────────────────────────────────────────────────────────────────────
+
+  private downgraded(): ClientSession {
+    const access = this.session.client_type === "kiosk" ? "control" : "view";
+    return { ...this.session, access, unlocked_at: null, last_activity: null, expires_at: null };
+  }
+
+  private setSession(next: ClientSession): void {
+    this.session = next;
+    this.emitAll({ type: "session", session: next });
+  }
 
   private process(command: Command): void {
     if (this.timeoutNext) {
