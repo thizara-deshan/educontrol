@@ -2252,7 +2252,7 @@ export function SettingsPage({ tab }: { tab: SettingsTab }) {
 **Commit:** `git commit -m "feat(kiosk): technician access row with lock"`
 
 ### T22 — `LevelSlider`: a locked press opens S4 instead of dragging
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/LevelSlider.tsx`
 

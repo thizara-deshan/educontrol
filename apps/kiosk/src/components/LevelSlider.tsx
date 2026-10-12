@@ -17,11 +17,15 @@ export interface LevelSliderProps {
   pending?: boolean;
   /** H18: track dimmed; the thumb stays at the saved level. */
   muted?: boolean;
+  /** H12: set while locked. A press (or arrow key) calls it instead of moving the thumb. */
+  onPressLocked?: (() => void) | undefined;
   className?: string;
 }
 
 /** SPEC §2.4 / §3.3: track 8px, thumb 30px visual inside a 48px hit area, full width. */
-export function LevelSlider({ label, value, onChange, disabled = false, pending = false, muted = false, className }: LevelSliderProps) {
+export function LevelSlider({
+  label, value, onChange, disabled = false, pending = false, muted = false, onPressLocked, className,
+}: LevelSliderProps) {
   const [state, dispatch] = useReducer(sliderReducer, SLIDER_IDLE);
   const trackRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
@@ -47,6 +51,10 @@ export function LevelSlider({ label, value, onChange, disabled = false, pending 
   };
   const onPointerDown = (event: PointerEvent<HTMLDivElement>): void => {
     if (disabled) return;
+    if (onPressLocked !== undefined) {
+      onPressLocked();
+      return;
+    }
     event.currentTarget.setPointerCapture(event.pointerId);
     const level = levelAt(event);
     dispatch({ type: "down", level });
@@ -69,6 +77,10 @@ export function LevelSlider({ label, value, onChange, disabled = false, pending 
     const step = event.key === "ArrowRight" || event.key === "ArrowUp" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowDown" ? -1 : 0;
     if (step === 0) return;
     event.preventDefault();
+    if (onPressLocked !== undefined) {
+      onPressLocked();
+      return;
+    }
     onChange(clampLevel(value + step), true);
   };
 
