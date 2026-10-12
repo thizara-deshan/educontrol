@@ -1579,7 +1579,7 @@ export function PinDots({ length, filled, error = false, shakeKey = 0 }: PinDots
 **Commit:** `git commit -m "feat(kiosk): pin dots"`
 
 ### T13 — `PinPad` (S4.E4, 64×64 keys)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/PinPad.tsx`
 
