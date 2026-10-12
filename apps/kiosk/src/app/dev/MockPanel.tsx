@@ -12,13 +12,23 @@ const ACTIONS: { label: string; run: () => void }[] = [
   { label: "Toggle audio offline", run: () => fakeRoom.toggleDeviceOffline("audio") },
   { label: "Fail next command", run: () => fakeRoom.failNextCommand() },
   { label: "Time out next command", run: () => fakeRoom.timeOutNextCommand() },
+  { label: "Expire session", run: () => fakeRoom.expireSession() },
+  { label: "Be kiosk", run: () => fakeRoom.setClientType("kiosk") },
+  { label: "Be remote", run: () => fakeRoom.setClientType("remote") },
+  { label: "Occupancy detected", run: () => fakeRoom.occupancyDetected() },
 ];
 
-/** Dev-only panel (`?mock-panel`) that drives the FakeRoom directly. */
+/**
+ * Dev-only panel (`?mock-panel`) that drives the FakeRoom directly. It sits above the kiosk sleep
+ * overlay and is exempt from the wake guard, so "Occupancy detected" can be tested while dimmed.
+ */
 export function MockPanel() {
   const [open, setOpen] = useState(true);
   return (
-    <aside className="fixed right-4 bottom-4 z-50 w-64 rounded-card border border-border-strong bg-surface p-2 shadow-lg">
+    <aside
+      data-wake-exempt
+      className="fixed right-4 bottom-4 z-[1000000001] max-h-[calc(100dvh-2rem)] w-64 overflow-y-auto rounded-card border border-border-strong bg-surface p-2 shadow-lg"
+    >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

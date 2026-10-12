@@ -3086,7 +3086,7 @@ export function AppShell() {
 **Commit:** `git commit -m "feat(kiosk): mount pin overlay, session watcher and kiosk behaviour"`
 
 ### T31 — Mock panel: expire session, be kiosk / remote, occupancy detected
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/MockPanel.tsx`
 
