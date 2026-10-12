@@ -1156,7 +1156,7 @@ describe("gateDisablesControl", () => {
 **Commit:** `git commit -m "feat(kiosk): keep locked controls tappable"`
 
 ### T9 — Hooks: `useRequireAccess`, `useSessionActions`, `useLock`; `useCommand` opens S4 when locked
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/hooks.ts`
 
