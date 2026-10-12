@@ -2850,7 +2850,7 @@ describe("occupancyWakes", () => {
 **Commit:** `git commit -m "feat(kiosk): idle scale param and occupancy wake rule"`
 
 ### T27 — `SleepOverlay` (dim 80% / black)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/kiosk/SleepOverlay.tsx`
 
