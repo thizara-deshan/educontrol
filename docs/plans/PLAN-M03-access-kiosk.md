@@ -1999,7 +1999,7 @@ export function HeaderLockButton() {
 **Commit:** `git commit -m "feat(kiosk): header lock button"`
 
 ### T19 — Header: guarded Settings button and Lock
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/Header.tsx`
 

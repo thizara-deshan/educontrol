@@ -1,36 +1,59 @@
 import { Settings, Wifi, type LucideIcon } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { kioskEnv } from "@/data/env";
-import { useRoomState } from "@/data/hooks";
+import { useRequireAccess, useRoomState } from "@/data/hooks";
+import { HeaderLockButton } from "@/features/session/HeaderLockButton";
 import { formatDate, formatTime } from "@/lib/format";
 import { useServerNow } from "@/lib/server-time";
 import { usePressed } from "@/lib/use-pressed";
 import { Skeleton } from "@/ui/skeleton";
 import { StatusIndicator } from "./StatusIndicator";
 
+const HEADER_BUTTON_CLASS =
+  "flex h-12 min-w-12 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 sm:px-4";
+
 function HeaderLink({ to, icon: Icon, label }: { to: string; icon: LucideIcon; label: string }) {
   const pressed = usePressed();
   return (
-    <Link
-      to={to}
-      aria-label={label}
-      {...pressed}
-      className="flex h-12 min-w-12 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 sm:px-4"
-    >
+    <Link to={to} aria-label={label} {...pressed} className={HEADER_BUTTON_CLASS}>
       <Icon aria-hidden="true" className="size-5" />
       <span className="hidden sm:inline">{label}</span>
     </Link>
   );
 }
 
-/** S1.E1–E7 (Lock S1.E8 arrives in M03). Phone (<600): one 56px row (SPEC §2.2). */
+/** S1.E7: technician → S3; otherwise S4 (technician PIN) first. Cancel stays where you are. */
+function SettingsButton() {
+  const pressed = usePressed();
+  const { ensure } = useRequireAccess("technician");
+  const navigate = useNavigate();
+  return (
+    <button
+      type="button"
+      aria-label="Settings"
+      {...pressed}
+      onClick={() => {
+        void ensure().then((granted) => {
+          if (granted) void navigate("/settings/remote");
+        });
+      }}
+      className={HEADER_BUTTON_CLASS}
+    >
+      <Settings aria-hidden="true" className="size-5" />
+      <span className="hidden sm:inline">Settings</span>
+    </button>
+  );
+}
+
+/** S1.E1–E8. Phone (<600): one 56px row (SPEC §2.2). */
 export function Header() {
   const roomId = useRoomState((state) => state.room.id) ?? kioskEnv.VITE_ROOM_ID;
   const now = useServerNow();
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-header px-4 sm:h-16 lg:px-6">
-      <p className="min-w-0 flex-1 truncate text-caption font-bold text-text-1 sm:text-wordmark">
+      {/* Phone: two short lines so the row fits status, R-101, Devices, Settings and Lock (SPEC §2.2). */}
+      <p className="flex min-w-0 flex-1 flex-col text-caption font-bold text-text-1 sm:block sm:truncate sm:text-wordmark">
         eduscope <span className="tracking-wordmark text-brand">CENTRAL</span>
       </p>
 
@@ -51,7 +74,8 @@ export function Header() {
           {roomId}
         </span>
         <HeaderLink to="/devices" icon={Wifi} label="Devices" />
-        <HeaderLink to="/settings" icon={Settings} label="Settings" />
+        <SettingsButton />
+        <HeaderLockButton />
       </div>
     </header>
   );
