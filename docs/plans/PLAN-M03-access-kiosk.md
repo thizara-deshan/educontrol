@@ -2883,7 +2883,7 @@ export function SleepOverlay({ level }: { level: SleepLevel }) {
 **Commit:** `git commit -m "feat(kiosk): sleep overlay"`
 
 ### T28 — `KioskBehaviour`: timers, guard, occupancy, kiosk CSS hook, no context menu
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/kiosk/KioskBehaviour.tsx`
 
