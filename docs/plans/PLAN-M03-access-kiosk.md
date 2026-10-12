@@ -2685,7 +2685,7 @@ describe("kiosk idle timer", () => {
 **Commit:** `git commit -m "feat(kiosk): kiosk idle timer"`
 
 ### T25 — Wake-tap guard (R15)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/kiosk/wake-guard.ts`, `apps/kiosk/src/features/kiosk/wake-guard.test.ts`
 
