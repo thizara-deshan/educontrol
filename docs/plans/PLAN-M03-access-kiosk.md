@@ -837,7 +837,7 @@ describe("decideAccess (useRequireAccess decision table)", () => {
 **Commit:** `git commit -m "feat(kiosk): access decision table"`
 
 ### T6 — PIN request store (the one open S4)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/access/pin-requests.ts`, `apps/kiosk/src/data/access/pin-requests.test.ts`
 
