@@ -3035,7 +3035,7 @@ Do not change `ui/sheet.tsx` in this task (it is backlog item L5).
 **Commit:** `git commit -m "feat(kiosk): touch hardening css"`
 
 ### T30 — Wire `AppShell`: S4 overlay, session watcher, kiosk behaviour
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/AppShell.tsx`
 
