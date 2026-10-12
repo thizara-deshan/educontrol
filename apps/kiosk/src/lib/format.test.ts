@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  formatActivity, formatAgo, formatAttribution, formatCelsius, formatDate, formatPercent,
+  formatActivity, formatAgo, formatAttribution, formatCelsius, formatCountdown, formatDate, formatPercent,
   formatTime, formatWatts,
 } from "./format";
 
@@ -75,5 +75,19 @@ describe("attribution", () => {
   });
   it("builds the H13 toast text", () => {
     expect(formatActivity("Rear of room turned on", "phone")).toBe("Rear of room turned on · from phone");
+  });
+});
+
+describe("countdown", () => {
+  it.each([
+    [60, "1:00"],
+    [59, "0:59"],
+    [58.2, "0:59"],
+    [9, "0:09"],
+    [0, "0:00"],
+    [-3, "0:00"],
+    [125, "2:05"],
+  ])("%s s → %s", (seconds, expected) => {
+    expect(formatCountdown(seconds)).toBe(expected);
   });
 });

@@ -52,3 +52,9 @@ export function formatAttribution(by: ChangedBy): string {
 export function formatActivity(text: string, by: ChangedBy): string {
   return `${text} · ${formatAttribution(by)}`;
 }
+
+/** H17 countdown `m:ss`, e.g. `0:58`, `1:00`; negative → `0:00`. */
+export function formatCountdown(seconds: number): string {
+  const whole = Math.max(0, Math.ceil(seconds));
+  return `${Math.floor(whole / 60)}:${pad2(whole % 60)}`;
+}

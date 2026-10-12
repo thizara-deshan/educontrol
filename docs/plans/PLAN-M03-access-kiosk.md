@@ -735,7 +735,7 @@ export function createMockApiClient(room: FakeRoom = fakeRoom): ApiClient {
 **Commit:** `git commit -m "feat(kiosk): login and lock in the api client"`
 
 ### T4 — `formatCountdown` (H17 `0:58`)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/format.ts`, `apps/kiosk/src/lib/format.test.ts`
 
