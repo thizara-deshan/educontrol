@@ -10,14 +10,14 @@ import { Skeleton } from "@/ui/skeleton";
 import { StatusIndicator } from "./StatusIndicator";
 
 const HEADER_BUTTON_CLASS =
-  "flex h-12 min-w-12 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 sm:px-4";
+  "flex h-12 min-w-12 shrink-0 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 lg:px-4";
 
 function HeaderLink({ to, icon: Icon, label }: { to: string; icon: LucideIcon; label: string }) {
   const pressed = usePressed();
   return (
     <Link to={to} aria-label={label} {...pressed} className={HEADER_BUTTON_CLASS}>
-      <Icon aria-hidden="true" className="size-5" />
-      <span className="hidden sm:inline">{label}</span>
+      <Icon aria-hidden="true" className="size-5 shrink-0" />
+      <span className="hidden whitespace-nowrap lg:inline">{label}</span>
     </Link>
   );
 }
@@ -39,8 +39,8 @@ function SettingsButton() {
       }}
       className={HEADER_BUTTON_CLASS}
     >
-      <Settings aria-hidden="true" className="size-5" />
-      <span className="hidden sm:inline">Settings</span>
+      <Settings aria-hidden="true" className="size-5 shrink-0" />
+      <span className="hidden whitespace-nowrap lg:inline">Settings</span>
     </button>
   );
 }
@@ -70,7 +70,7 @@ export function Header() {
 
       <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3 lg:flex-1">
         <StatusIndicator />
-        <span className="flex h-10 items-center rounded-chip border border-border-strong bg-control px-2 font-mono text-card-title font-semibold text-text-1 sm:h-12 sm:px-3">
+        <span className="flex h-10 shrink-0 items-center whitespace-nowrap rounded-chip border border-border-strong bg-control px-2 font-mono text-card-title font-semibold text-text-1 sm:h-12 sm:px-3">
           {roomId}
         </span>
         <HeaderLink to="/devices" icon={Wifi} label="Devices" />

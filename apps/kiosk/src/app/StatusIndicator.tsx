@@ -14,7 +14,7 @@ export function StatusIndicator() {
 
   return (
     <>
-      <p className="hidden items-center gap-2 text-caption text-text-2 sm:flex">
+      <p className="hidden shrink-0 items-center gap-2 whitespace-nowrap text-caption text-text-2 sm:flex">
         {dot}
         {text}
       </p>

@@ -3257,7 +3257,7 @@ pass/fail + a note for each step in the commit message body.
 From `docs/reviews/REVIEW-M03.md`. Same executor notes as above.
 
 ### FX1 — Header fits with the Lock button at every width (F1)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/Header.tsx`, `apps/kiosk/src/components/LockButton.tsx`,
 `apps/kiosk/src/app/StatusIndicator.tsx`
