@@ -1,9 +1,10 @@
 import type {
-  ApiErrorCode, ClientLabel, ClientSession, Command, CommandRequest, RoomState, ServerEvent,
+  ApiErrorCode, ClientLabel, ClientSession, Command, CommandRequest, LoginRequest, LoginResult, RoomState,
+  ServerEvent,
 } from "@eduscope/contracts";
 
-// ARCHITECTURE §4.4. M02 subset: later milestones add login/lock (M03), ir/schedule/devices/
-// settings/system (M06). Components never see which adapter is active.
+// ARCHITECTURE §4.4. M03 subset: M06 adds ir/schedule/devices/settings/system. Components never
+// see which adapter is active.
 
 export interface RealtimeHandlers {
   /** The transport is open (the snapshot follows as the first event). */
@@ -20,6 +21,10 @@ export interface RealtimeConnection {
 
 export interface ApiClient {
   getSession(): Promise<ClientSession>;
+  /** A wrong or locked PIN resolves to a PinError (H17); only transport/contract failures throw. */
+  login(request: LoginRequest): Promise<LoginResult>;
+  /** Ends this client's session → the downgraded ClientSession (remote `view`, kiosk `control`). */
+  lock(): Promise<ClientSession>;
   /** Exists for M08 and tests; the UI takes `["state"]` from the WS snapshot only. */
   getState(): Promise<RoomState>;
   /** 202 → the accepted Command (status `pending`). Throws ApiRequestError. */

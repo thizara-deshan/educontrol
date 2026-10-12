@@ -83,6 +83,58 @@ describe("http adapter: REST", () => {
   });
 });
 
+describe("http adapter: session", () => {
+  const session = {
+    public_id: "p1", client_type: "remote", label: "phone", access: "control",
+    unlocked_at: "2026-10-05T10:42:00Z", last_activity: "2026-10-05T10:42:00Z", expires_at: null,
+  };
+
+  it("login POSTs the request and returns the new session", async () => {
+    const fetchMock = vi.fn(async () => json(200, session));
+    const result = await client(fetchMock).login({ level: "control", pin: "1234", label: "phone" });
+    expect(result).toEqual(session);
+    expect(fetchMock).toHaveBeenCalledWith("/api/session/login", {
+      credentials: "same-origin",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ level: "control", pin: "1234", label: "phone" }),
+    });
+  });
+
+  it.each([200, 401, 429])("login returns a PinError body sent with status %i", async (status) => {
+    const pinError = { reason: "locked", retry_after_s: 60, attempts_left: 0 };
+    const fetchMock = vi.fn(async () => json(status, pinError));
+    await expect(client(fetchMock).login({ level: "control", pin: "0000", label: "phone" })).resolves.toEqual(pinError);
+  });
+
+  it("login maps other errors to ApiRequestError", async () => {
+    const fetchMock = vi.fn(async () => json(403, { code: "forbidden", message: "Origin mismatch" }));
+    await expect(client(fetchMock).login({ level: "technician", pin: "123456", label: "phone" })).rejects.toMatchObject({
+      code: "forbidden",
+      status: 403,
+    });
+  });
+
+  it("login refuses a PIN of the wrong length before fetching", async () => {
+    const fetchMock = vi.fn(async () => json(200, session));
+    await expect(client(fetchMock).login({ level: "control", pin: "123456", label: "phone" })).rejects.toMatchObject({
+      code: "validation",
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("lock POSTs and parses the downgraded session", async () => {
+    const fetchMock = vi.fn(async () => json(200, { ...session, access: "view" }));
+    await expect(client(fetchMock).lock()).resolves.toMatchObject({ access: "view" });
+    expect(fetchMock).toHaveBeenCalledWith("/api/session/lock", {
+      credentials: "same-origin",
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+  });
+});
+
 describe("http adapter: WebSocket", () => {
   function connect() {
     const socket = new FakeSocket();

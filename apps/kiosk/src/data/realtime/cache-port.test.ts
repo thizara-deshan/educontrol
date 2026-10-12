@@ -8,6 +8,8 @@ import { createCachePort } from "./cache-port";
 
 const api: ApiClient = {
   getSession: vi.fn(),
+  login: vi.fn(),
+  lock: vi.fn(),
   getState: vi.fn(),
   sendCommand: vi.fn(),
   connect: vi.fn(),

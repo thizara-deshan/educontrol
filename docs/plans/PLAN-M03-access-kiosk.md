@@ -439,7 +439,7 @@ describe("FakeRoom mock panel: session and occupancy", () => {
 **Commit:** `git commit -m "feat(kiosk): mock session expiry, client type and occupancy"`
 
 ### T3 — `ApiClient.login` / `lock` in both adapters
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/api-client.ts`, `apps/kiosk/src/data/adapters/http/http-client.ts`, `apps/kiosk/src/data/adapters/http/http-client.test.ts`, `apps/kiosk/src/data/adapters/mock/mock-client.ts`, `apps/kiosk/src/data/realtime/cache-port.test.ts`
 

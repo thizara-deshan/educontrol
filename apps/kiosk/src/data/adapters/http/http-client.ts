@@ -1,6 +1,6 @@
 import {
-  ApiError, ClientMessage, CommandRequest, GetSessionResponse, GetStateResponse,
-  PostCommandResponse, ServerEvent,
+  ApiError, ClientMessage, CommandRequest, GetSessionResponse, GetStateResponse, LockResponse,
+  LoginRequest, PinError, PostCommandResponse, ServerEvent,
 } from "@eduscope/contracts";
 import type { z } from "zod";
 import { ApiRequestError, type ApiClient, type RealtimeConnection } from "@/data/api-client";
@@ -37,7 +37,7 @@ export function createHttpApiClient(options: HttpClientOptions): ApiClient {
   const baseUrl = options.baseUrl ?? "";
   const createSocket = options.createSocket ?? ((url: string): SocketLike => new WebSocket(url));
 
-  async function request<S extends z.ZodType>(schema: S, path: string, init?: RequestInit): Promise<z.infer<S>> {
+  async function fetchJson(path: string, init?: RequestInit): Promise<{ response: Response; body: unknown }> {
     let response: Response;
     try {
       response = await doFetch(`${baseUrl}${path}`, { credentials: "same-origin", ...init });
@@ -45,18 +45,47 @@ export function createHttpApiClient(options: HttpClientOptions): ApiClient {
       throw new ApiRequestError("network", "Can't reach the controller", null);
     }
     const body: unknown = await response.json().catch(() => null);
-    if (!response.ok) {
-      const error = ApiError.safeParse(body);
-      if (error.success) throw new ApiRequestError(error.data.code, error.data.message, response.status);
-      throw new ApiRequestError("bad_response", `HTTP ${response.status}`, response.status);
-    }
+    return { response, body };
+  }
+
+  function fail(response: Response, body: unknown): never {
+    const error = ApiError.safeParse(body);
+    if (error.success) throw new ApiRequestError(error.data.code, error.data.message, response.status);
+    throw new ApiRequestError("bad_response", `HTTP ${response.status}`, response.status);
+  }
+
+  function parse<S extends z.ZodType>(schema: S, path: string, response: Response, body: unknown): z.infer<S> {
     const parsed = schema.safeParse(body);
     if (!parsed.success) throw new ApiRequestError("bad_response", `Unexpected response from ${path}`, response.status);
     return parsed.data;
   }
 
+  async function request<S extends z.ZodType>(schema: S, path: string, init?: RequestInit): Promise<z.infer<S>> {
+    const { response, body } = await fetchJson(path, init);
+    if (!response.ok) fail(response, body);
+    return parse(schema, path, response, body);
+  }
+
+  const postJson = (body: unknown): RequestInit => ({
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
   return {
     getSession: () => request(GetSessionResponse, "/api/session"),
+    async login(loginRequest) {
+      const checked = LoginRequest.safeParse(loginRequest);
+      if (!checked.success) throw new ApiRequestError("validation", "The PIN has the wrong number of digits", null);
+      const path = "/api/session/login";
+      const { response, body } = await fetchJson(path, postJson(checked.data));
+      // A wrong or locked PIN is an answer, not a failure: a PinError body counts with any status.
+      const pinError = PinError.safeParse(body);
+      if (pinError.success) return pinError.data;
+      if (!response.ok) fail(response, body);
+      return parse(GetSessionResponse, path, response, body);
+    },
+    lock: () => request(LockResponse, "/api/session/lock", postJson({})),
     getState: () => request(GetStateResponse, "/api/state"),
     sendCommand: async (commandRequest) =>
       request(PostCommandResponse, "/api/commands", {
