@@ -2389,7 +2389,7 @@ export function LevelSlider({
 **Commit:** `git commit -m "feat(kiosk): locked press on the level slider"`
 
 ### T23 — Live demo: padlocks, locked taps open S4
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/LiveDemo.tsx`
 
