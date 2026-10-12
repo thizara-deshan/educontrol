@@ -2188,7 +2188,7 @@ export const router = createBrowserRouter(routes);
 **Commit:** `git commit -m "feat(kiosk): technician guard on settings routes"`
 
 ### T21 — S3.E3 "Technician access" + Lock on the Settings placeholder
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/TechnicianAccess.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 

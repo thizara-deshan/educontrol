@@ -1,6 +1,7 @@
 import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { TechnicianAccess } from "./TechnicianAccess";
 
-// S3.E5 tab names. The technician guard arrives in M03.
+// S3.E5 tab names. SettingsGuard (router) keeps this page technician-only.
 const TABS = {
   remote: { title: "Remote configuration", spec: "S3" },
   network: { title: "Network", spec: "S3b" },
@@ -13,5 +14,10 @@ export type SettingsTab = keyof typeof TABS;
 /** `/settings/*` — placeholder until M06. */
 export function SettingsPage({ tab }: { tab: SettingsTab }) {
   const { title, spec } = TABS[tab];
-  return <PlaceholderPage title={`Settings › ${title}`} spec={spec} milestone="M06" />;
+  return (
+    <div className="flex flex-col gap-4">
+      <TechnicianAccess />
+      <PlaceholderPage title={`Settings › ${title}`} spec={spec} milestone="M06" />
+    </div>
+  );
 }
