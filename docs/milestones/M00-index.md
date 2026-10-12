@@ -172,3 +172,8 @@ LATER items from reviews. Not scheduled; a milestone plan picks one up only by l
 | M02-L4 | REVIEW-M02 | Floating mock panel covers gallery content at 1280 and 390; start collapsed or dock to the bottom | `apps/kiosk/src/app/dev/MockPanel.tsx` |
 | M02-L5 | REVIEW-M02 | Sheet close button keeps shadcn `hover:` styling and a 16px target (unused today) | `apps/kiosk/src/ui/sheet.tsx` |
 | M02-L6 | REVIEW-M02 | `sendCommand` throws a `ZodError` on an invalid request instead of `ApiRequestError("bad_response")` | `apps/kiosk/src/data/adapters/http/http-client.ts` |
+| M03-L1 | REVIEW-M03 | Mock panel is open by default and sits above the PIN overlay, so at 390 it covers the lower-right keypad keys; start collapsed or collapse while S4 is open (extends M02-L4) | `apps/kiosk/src/app/dev/MockPanel.tsx` |
+| M03-L2 | REVIEW-M03 | Mock PINs `1234` / `123456` ship in the production bundle with the mock adapter; keep them out of the Pi build with the M02-L1 code-split | `apps/kiosk/src/data/adapters/mock/fake-room.ts` |
+| M03-L3 | REVIEW-M03 | `/favicon.ico` 404 (console error) on every load | `apps/kiosk/index.html` |
+| M03-L4 | REVIEW-M03 | `LockButton` duplicates the `HEADER_BUTTON_CLASS` string from `Header.tsx`; share one class from `components/` | `components/LockButton.tsx`, `app/Header.tsx` |
+| M03-L5 | REVIEW-M03 | (Not reproduced, from code reading) `computeControlGate` returns `locked` while the session is still loading, so a padlock badge may flash before `/api/session` answers | `apps/kiosk/src/data/gate.ts` |

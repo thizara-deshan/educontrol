@@ -3251,3 +3251,105 @@ pass/fail + a note for each step in the commit message body.
 - Header at 600–1023px (pre-existing since M02): the 24px wordmark truncates ("eduscope C…") next to the
   status text and labelled buttons, and Lock makes it shorter. Give that range the phone treatment or hide
   the status text below `lg`.
+
+## Fix tasks (review 1)
+
+From `docs/reviews/REVIEW-M03.md`. Same executor notes as above.
+
+### FX1 — Header fits with the Lock button at every width (F1)
+- [ ] done
+
+**Files:** `apps/kiosk/src/app/Header.tsx`, `apps/kiosk/src/components/LockButton.tsx`,
+`apps/kiosk/src/app/StatusIndicator.tsx`
+
+**Context:** REVIEW-M03 F1. The header row has no `shrink-0` / `whitespace-nowrap` on its fixed items and shows the
+button labels from `sm` (≥600). With the Lock button (S1.E8) added, at 1280×800 the `R-101` chip wraps and the
+Devices / Settings / Lock icons shrink to ~6px; at 600 the Lock button ends 10px past the viewport; at 1024–1100 the
+icons shrink to 0–9px even without Lock. This task supersedes the "Header at 600–1023px" nice-to-have below.
+Styling only: CLAUDE.md says no tests of pure markup, so there is no new test. **Decision this task makes (SPEC §2.2
+is silent for 600–1023):** the header buttons show their text label only from `lg` (≥1024); between 390 and 1023 they
+are the same 48×48 icon buttons as on the phone. The labels at 1280×800 are unchanged (they match
+`reference/screens/01-control-page.png`).
+
+**Do:**
+1. In `apps/kiosk/src/app/Header.tsx` replace:
+```ts
+  "flex h-12 min-w-12 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 sm:px-4";
+```
+   with:
+```ts
+  "flex h-12 min-w-12 shrink-0 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 lg:px-4";
+```
+2. In `apps/kiosk/src/app/Header.tsx` replace:
+```tsx
+      <Icon aria-hidden="true" className="size-5" />
+      <span className="hidden sm:inline">{label}</span>
+```
+   with:
+```tsx
+      <Icon aria-hidden="true" className="size-5 shrink-0" />
+      <span className="hidden whitespace-nowrap lg:inline">{label}</span>
+```
+3. In `apps/kiosk/src/app/Header.tsx` replace:
+```tsx
+      <Settings aria-hidden="true" className="size-5" />
+      <span className="hidden sm:inline">Settings</span>
+```
+   with:
+```tsx
+      <Settings aria-hidden="true" className="size-5 shrink-0" />
+      <span className="hidden whitespace-nowrap lg:inline">Settings</span>
+```
+4. In `apps/kiosk/src/app/Header.tsx` replace:
+```tsx
+        <span className="flex h-10 items-center rounded-chip border border-border-strong bg-control px-2 font-mono text-card-title font-semibold text-text-1 sm:h-12 sm:px-3">
+```
+   with:
+```tsx
+        <span className="flex h-10 shrink-0 items-center whitespace-nowrap rounded-chip border border-border-strong bg-control px-2 font-mono text-card-title font-semibold text-text-1 sm:h-12 sm:px-3">
+```
+5. In `apps/kiosk/src/components/LockButton.tsx` replace:
+```tsx
+ * S1.E8 / S3.E3 "Lock": padlock + label; icon-only (48×48) below `sm` (SPEC §2.2). Looks like
+```
+   with:
+```tsx
+ * S1.E8 / S3.E3 "Lock": padlock + label; icon-only (48×48) below `lg` (SPEC §2.2). Looks like
+```
+6. In `apps/kiosk/src/components/LockButton.tsx` replace:
+```tsx
+        "flex h-12 min-w-12 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 sm:px-4",
+```
+   with:
+```tsx
+        "flex h-12 min-w-12 shrink-0 items-center justify-center gap-2 rounded-btn border border-border-strong bg-control text-button font-semibold text-text-1 active:brightness-125 data-[pressed=true]:brightness-125 lg:px-4",
+```
+7. In `apps/kiosk/src/components/LockButton.tsx` replace:
+```tsx
+      <Lock aria-hidden="true" className="size-5" />
+      <span className="hidden sm:inline">Lock</span>
+```
+   with:
+```tsx
+      <Lock aria-hidden="true" className="size-5 shrink-0" />
+      <span className="hidden lg:inline">Lock</span>
+```
+8. In `apps/kiosk/src/app/StatusIndicator.tsx` replace:
+```tsx
+      <p className="hidden items-center gap-2 text-caption text-text-2 sm:flex">
+```
+   with:
+```tsx
+      <p className="hidden shrink-0 items-center gap-2 whitespace-nowrap text-caption text-text-2 sm:flex">
+```
+
+**Verify:** `pnpm --filter @eduscope/kiosk dev`, open `http://localhost:5173/?mock-panel`, collapse the mock panel
+("Mock panel −"), tap Settings, enter `123456` (technician, so the header shows Lock). At each width 390, 600, 800,
+1023, 1024, 1280 (Chrome devtools responsive mode, reload not needed) paste in the console:
+`const h=document.querySelector("header"); [[...h.querySelectorAll("svg")].map(s=>Math.round(s.getBoundingClientRect().width)), h.scrollWidth<=h.clientWidth, [...h.querySelectorAll("button,a")].filter(e=>e.getBoundingClientRect().right>innerWidth).length]`
+→ every icon width is `20`, then `true`, then `0`. At 1280×800 the `R-101` chip is on one line, "All systems normal" is on
+one line, and the buttons read "Devices", "Settings", "Lock" with their icons. At 600–1023 the three buttons are
+icon-only 48×48 and the wordmark "eduscope CENTRAL" is not cut off. Repeat once in the `view` state (before the
+PIN) at 1024: icons are `20`. `pnpm verify` → exit 0.
+
+**Commit:** `git commit -m "fix(kiosk): header fits with the Lock button at every width"`
