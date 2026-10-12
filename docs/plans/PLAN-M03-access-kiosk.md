@@ -784,7 +784,7 @@ describe("countdown", () => {
 **Commit:** `git commit -m "feat(kiosk): lockout countdown formatter"`
 
 ### T5 — `decideAccess`: the `useRequireAccess` decision table
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/access/decide-access.ts`, `apps/kiosk/src/data/access/decide-access.test.ts`
 
