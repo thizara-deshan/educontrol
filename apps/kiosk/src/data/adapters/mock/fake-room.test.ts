@@ -1,6 +1,8 @@
 import type { ServerEvent } from "@eduscope/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { FakeRoom, MOCK_COMMAND_TIMEOUT_MS, MOCK_LATENCY_MAX_MS, MOCK_PING_MS } from "./fake-room";
+import {
+  FakeRoom, MOCK_COMMAND_TIMEOUT_MS, MOCK_LATENCY_MAX_MS, MOCK_OCCUPANCY_REDETECT_MS, MOCK_PING_MS,
+} from "./fake-room";
 
 const CMD_ID = "00000000-0000-4000-8000-000000000001";
 
@@ -176,5 +178,40 @@ describe("FakeRoom sessions", () => {
     await vi.advanceTimersByTimeAsync(MOCK_LATENCY_MAX_MS);
     expect(await locked).toMatchObject({ access: "view", unlocked_at: null });
     expect(sessionEvents(events).at(-1)).toMatchObject({ access: "view" });
+  });
+});
+
+describe("FakeRoom mock panel: session and occupancy", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("expire session pushes the downgraded session (H24)", async () => {
+    const { room, events } = connected();
+    await login(room, "technician", "123456");
+    room.expireSession();
+    expect(sessionEvents(events).at(-1)).toMatchObject({ client_type: "remote", access: "view" });
+  });
+
+  it("be kiosk: room screen at control; expire drops technician back to control; be remote: view", async () => {
+    const { room, events } = connected();
+    room.setClientType("kiosk");
+    expect(sessionEvents(events).at(-1)).toMatchObject({ client_type: "kiosk", label: "room screen", access: "control" });
+    await login(room, "technician", "123456");
+    room.expireSession();
+    expect(sessionEvents(events).at(-1)).toMatchObject({ client_type: "kiosk", access: "control" });
+    room.setClientType("remote");
+    expect(sessionEvents(events).at(-1)).toMatchObject({ client_type: "remote", label: "phone", access: "view" });
+  });
+
+  it("occupancy detected reports clear, then detected a second later (H23)", () => {
+    const { room } = connected();
+    room.occupancyDetected();
+    expect(room.peek().environment.sensors.occupancy.value).toBe("clear");
+    vi.advanceTimersByTime(MOCK_OCCUPANCY_REDETECT_MS);
+    expect(room.peek().environment.sensors.occupancy.value).toBe("detected");
   });
 });

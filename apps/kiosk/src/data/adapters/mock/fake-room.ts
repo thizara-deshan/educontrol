@@ -1,5 +1,5 @@
 import {
-  ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ClientLabel,
+  ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ClientLabel, type ClientType,
   type LoginResult,
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
@@ -22,6 +22,8 @@ export const MOCK_TECHNICIAN_PIN = "123456";
 /** H17 / ARCHITECTURE §5: 5 wrong → locked for 60 s (per level, like core-api's per (ip, level)). */
 export const MOCK_MAX_PIN_ATTEMPTS = 5;
 export const MOCK_PIN_LOCKOUT_S = 60;
+/** "Occupancy detected" first reports clear, then detected this much later (a real transition). */
+export const MOCK_OCCUPANCY_REDETECT_MS = 1000;
 /** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
 const CONTROL_SESSION_MS = 2 * 60 * 60_000;
 const TECHNICIAN_SESSION_MS = 15 * 60_000;
@@ -218,6 +220,30 @@ export class FakeRoom {
     this.commit({ ...this.state, devices, room: { ...this.state.room, status } });
   }
 
+  /** H24: the session times out on the server → remote `view`, kiosk `control`. */
+  expireSession(): void {
+    this.setSession(this.downgraded());
+  }
+
+  /** "Be kiosk" / "be remote": the server decides client_type (never the user agent). */
+  setClientType(clientType: ClientType): void {
+    this.setSession({
+      ...this.session,
+      client_type: clientType,
+      label: clientType === "kiosk" ? "room screen" : this.helloLabel,
+      access: clientType === "kiosk" ? "control" : "view",
+      unlocked_at: null,
+      last_activity: null,
+      expires_at: null,
+    });
+  }
+
+  /** H23: occupancy goes clear, then detected a second later (the kiosk wakes on the transition). */
+  occupancyDetected(): void {
+    this.setOccupancy("clear");
+    setTimeout(() => this.setOccupancy("detected"), MOCK_OCCUPANCY_REDETECT_MS);
+  }
+
   failNextCommand(): void {
     this.failNext = true;
   }
@@ -241,6 +267,12 @@ export class FakeRoom {
   private setSession(next: ClientSession): void {
     this.session = next;
     this.emitAll({ type: "session", session: next });
+  }
+
+  private setOccupancy(value: "detected" | "clear"): void {
+    const { environment } = this.state;
+    const occupancy = { ...environment.sensors.occupancy, kind: "occupancy" as const, value, at: this.iso(), stale: false };
+    this.commit({ ...this.state, environment: { ...environment, sensors: { ...environment.sensors, occupancy } } });
   }
 
   private process(command: Command): void {

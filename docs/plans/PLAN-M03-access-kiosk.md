@@ -306,7 +306,7 @@ describe("FakeRoom sessions", () => {
 **Commit:** `git commit -m "feat(kiosk): mock PIN login, lockout and lock"`
 
 ### T2 — Mock: expire session, be kiosk / be remote, occupancy detected
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room.test.ts`
 
