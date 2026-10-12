@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeControlGate, type GateInput } from "./gate";
+import { computeControlGate, gateDisablesControl, type ControlGate, type GateInput } from "./gate";
 
 describe("computeControlGate", () => {
   it.each<[GateInput, ReturnType<typeof computeControlGate>]>([
@@ -17,5 +17,16 @@ describe("computeControlGate", () => {
     [{ connection: "live", access: undefined }, { enabled: false, reason: "locked" }],
   ])("%o → %o", (input, expected) => {
     expect(computeControlGate(input)).toEqual(expected);
+  });
+});
+
+describe("gateDisablesControl", () => {
+  it.each<[ControlGate, boolean]>([
+    [{ enabled: true, reason: null }, false],
+    [{ enabled: false, reason: "locked" }, false],
+    [{ enabled: false, reason: "disconnected" }, true],
+    [{ enabled: false, reason: "offline" }, true],
+  ])("%o → %s", (gate, expected) => {
+    expect(gateDisablesControl(gate)).toBe(expected);
   });
 });

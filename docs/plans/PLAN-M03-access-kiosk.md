@@ -1110,7 +1110,7 @@ describe("lock", () => {
 **Commit:** `git commit -m "feat(kiosk): login and lock session actions"`
 
 ### T8 — `gateDisablesControl`: locked controls stay tappable
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/gate.ts`, `apps/kiosk/src/data/gate.test.ts`
 

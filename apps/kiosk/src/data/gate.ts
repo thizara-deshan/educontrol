@@ -27,3 +27,11 @@ export function computeControlGate(input: GateInput): ControlGate {
   if (input.access === undefined || input.access === "view") return { enabled: false, reason: "locked" };
   return { enabled: true, reason: null };
 }
+
+/**
+ * `disabled` for a control: only while disconnected or offline. A `locked` (H12) control stays
+ * tappable at full colour so the tap can open S4.
+ */
+export function gateDisablesControl(gate: ControlGate): boolean {
+  return gate.reason === "disconnected" || gate.reason === "offline";
+}
