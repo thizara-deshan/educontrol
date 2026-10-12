@@ -1529,7 +1529,7 @@ describe("PIN input reducer", () => {
 **Commit:** `git commit -m "feat(kiosk): sleep colour and shake animation tokens"`
 
 ### T12 — `PinDots` (S4.E3)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/PinDots.tsx`
 
