@@ -1711,7 +1711,7 @@ export function LockButton({ onPress, pending = false }: { onPress: () => void; 
 **Commit:** `git commit -m "feat(kiosk): lock button"`
 
 ### T15 — `PinOverlay` (S4): centred card ≥600px, keypad in the lower half on phones
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/pin/PinOverlay.tsx`
 
