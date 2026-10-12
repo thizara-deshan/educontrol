@@ -1665,7 +1665,7 @@ export function PinPad({ onDigit, onBackspace, onCancel, disabled = false }: Pin
 **Commit:** `git commit -m "feat(kiosk): pin keypad"`
 
 ### T14 — `LockButton` (S1.E8 / S3.E3)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/LockButton.tsx`
 
