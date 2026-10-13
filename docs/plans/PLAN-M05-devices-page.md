@@ -1972,7 +1972,7 @@ export function Header() {
 **Commit:** `git commit -m "feat(kiosk): devices header variant"`
 
 ### T22 — `DevicesPage` grid: main ~75% + side ~25%
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
