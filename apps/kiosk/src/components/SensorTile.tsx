@@ -10,13 +10,17 @@ export interface SensorTileProps {
   /** Model caption, e.g. "SNZB-02P". */
   caption: string;
   tone?: ValueTone;
-  /** H10: e.g. "14 min ago". */
+  /** H10: e.g. "14 min ago" (or "offline", H8). */
   staleAgo?: string | null;
   loading?: boolean;
+  /** `false` for word values ("Detected", "Closed"): sans 18px so four tiles fit at 1280. */
+  numeric?: boolean;
 }
 
 /** S1.E42–E45. */
-export function SensorTile({ label, value, caption, tone = "default", staleAgo = null, loading = false }: SensorTileProps) {
+export function SensorTile({
+  label, value, caption, tone = "default", staleAgo = null, loading = false, numeric = true,
+}: SensorTileProps) {
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <p className="text-sensor-label font-bold uppercase text-text-2">{label}</p>
@@ -28,7 +32,13 @@ export function SensorTile({ label, value, caption, tone = "default", staleAgo =
           <span className="text-caption text-text-3">No reading yet</span>
         </p>
       ) : (
-        <p className={cn("font-mono text-value font-semibold", staleAgo !== null ? STALE_TEXT_CLASS : VALUE_TONE_CLASS[tone])}>
+        <p
+          className={cn(
+            "font-semibold",
+            numeric ? "font-mono text-value" : "font-sans text-value-word",
+            staleAgo !== null ? STALE_TEXT_CLASS : VALUE_TONE_CLASS[tone],
+          )}
+        >
           {value}
         </p>
       )}

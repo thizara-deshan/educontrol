@@ -315,7 +315,7 @@ values" case covers the new classes.
 **Commit:** `git commit -m "feat(kiosk): header line colours and muted/faint value tones"`
 
 ### T3 — `text-value-word` token and `SensorTile` word values
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/styles/tokens.css`, `apps/kiosk/src/styles/token-names.ts`,
 `apps/kiosk/src/components/SensorTile.tsx`

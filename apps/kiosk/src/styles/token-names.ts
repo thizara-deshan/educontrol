@@ -9,7 +9,7 @@ export type ColorToken = (typeof COLOR_TOKENS)[number];
 
 export const TYPE_TOKENS = [
   "wordmark", "clock", "date", "title", "section", "card-title", "caption", "button", "value",
-  "sensor-label",
+  "value-word", "sensor-label",
 ] as const;
 export type TypeToken = (typeof TYPE_TOKENS)[number];
 

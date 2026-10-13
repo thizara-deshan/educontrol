@@ -66,6 +66,9 @@
   --text-button--line-height: 20px;
   --text-value: 24px;
   --text-value--line-height: 28px;
+  /* Word values in a sensor tile ("Detected", "Closed"): 4 tiles must fit a 400px column at 1280. */
+  --text-value-word: 18px;
+  --text-value-word--line-height: 28px;
   --text-sensor-label: 10px;
   --text-sensor-label--line-height: 14px;
   --text-sensor-label--letter-spacing: 0.1em;
