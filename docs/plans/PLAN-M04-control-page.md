@@ -3075,7 +3075,7 @@ dimmed) → ~1 s later "Raised" (grey dot) + "Lower". Panel "Screen position unk
 **Commit:** `git commit -m "feat(kiosk): projection screen card on S1"`
 
 ### T28 — `LevelCard` ×2 (S1.E21/E22)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/audio/LevelCard.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
