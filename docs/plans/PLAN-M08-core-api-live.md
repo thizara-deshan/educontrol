@@ -1059,7 +1059,7 @@ describe("kWh today", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): domain model, Observed helpers, kWh today"` (includes this plan file with the box ticked)
 
 ### T8 — Projector rules: R1 state from draw, R2, H7b feedback
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/projector.ts`, `apps/core-api/test/domain/projector.test.ts`
 
