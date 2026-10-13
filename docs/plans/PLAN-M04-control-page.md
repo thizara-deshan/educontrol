@@ -496,7 +496,7 @@ tap while the key is pending" still passes: taps don't supersede).
 **Commit:** `git commit -m "feat(kiosk): slider levels supersede the pending command"`
 
 ### T5 — `useViewOnly()` for padlocks
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/hooks.ts`
 

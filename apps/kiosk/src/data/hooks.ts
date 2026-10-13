@@ -23,6 +23,11 @@ export function useSession() {
   return useQuery(sessionQuery(useApiClient())).data;
 }
 
+/** H12 padlocks: `true` only for a loaded `view` session (never while the session loads, M03-L5). */
+export function useViewOnly(): boolean {
+  return useSession()?.access === "view";
+}
+
 /**
  * `ensure()` (ARCHITECTURE §4.7): `true` when the session already has `level`; otherwise opens
  * S4 and resolves after the PIN (`true`) or Cancel (`false`). Callers never replay the tap.
