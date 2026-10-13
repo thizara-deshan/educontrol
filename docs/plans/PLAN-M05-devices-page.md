@@ -1234,7 +1234,7 @@ describe("socketMetricsView (S2.E12)", () => {
 **Commit:** `git commit -m "feat(kiosk): socket metrics selector"`
 
 ### T14 — Selector: battery severity and last-seen text (H16, S2.E16)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/battery/battery.view.ts`, `apps/kiosk/src/features/devices/battery/battery.view.test.ts`
 
