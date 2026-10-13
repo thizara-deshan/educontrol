@@ -3643,7 +3643,7 @@ export function CommandRow({ command, device }: { command: IrCommand; device: Ir
 ---
 
 ### T21 — `DeviceList` (S3.E6–E8)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/DeviceList.tsx`
 
