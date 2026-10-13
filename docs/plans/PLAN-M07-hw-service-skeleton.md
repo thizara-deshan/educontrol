@@ -3735,7 +3735,7 @@ async def test_routes() -> None:
 ---
 
 ### T14 — `HwSnapshot` / `HwEvent` and the contract-fixture round trip
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/snapshot.py`, `services/hw/tests/test_contract_fixtures.py`
 
