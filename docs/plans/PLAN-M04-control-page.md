@@ -2713,7 +2713,7 @@ export function ControlPage() {
 **Commit:** `git commit -m "feat(kiosk): S1 grid with three sections"`
 
 ### T24 — `SourceTile` (one input tile)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/SourceTile.tsx`
 
