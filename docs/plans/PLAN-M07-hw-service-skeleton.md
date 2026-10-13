@@ -3270,7 +3270,7 @@ async def test_fake_value_route() -> None:
 ---
 
 ### T13 — `zigbee_status` module (permit join, nodes, coordinator, offline routes)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/zigbee_status/{__init__,schemas,service,driver_real,driver_fake,router}.py`,
 `services/hw/tests/test_zigbee_status.py`
