@@ -4,7 +4,7 @@ import {
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
-import { applyCommandToState, describeCommand, observe, statusFor } from "./mock-rules";
+import { applyCommandToState, describeCommand, observe, statusFor, withDerived } from "./mock-rules";
 
 // In-memory room (ARCHITECTURE §4.4). Emits the SAME ServerEvents the real server will, through
 // the same handlers the http adapter calls, so apply-event is the only writer of the cache.
@@ -56,6 +56,8 @@ export class FakeRoom {
   private timeoutNext = false;
   private commandSeq = 0;
   private pingTimer: ReturnType<typeof setInterval> | null = null;
+  /** Epoch ms at which the last accepted command lands: commands land in arrival order. */
+  private lastDueAt = 0;
   private readonly random: () => number;
   private readonly now: () => number;
 
@@ -122,7 +124,7 @@ export class FakeRoom {
 
   async sendCommand(request: CommandRequest): Promise<Command> {
     const parsed = CommandRequest.parse(request);
-    await this.delay();
+    const ackMs = this.latency();
     const command: Command = {
       id: `mock-cmd-${++this.commandSeq}`,
       client_cmd_id: parsed.client_cmd_id,
@@ -132,7 +134,8 @@ export class FakeRoom {
       error: null,
       at: this.iso(),
     };
-    this.process(command);
+    this.process(command, ackMs); // queued now, so commands keep their arrival order (unmute → level)
+    await this.wait(ackMs);
     return command;
   }
 
@@ -275,21 +278,21 @@ export class FakeRoom {
     this.commit({ ...this.state, environment: { ...environment, sensors: { ...environment.sensors, occupancy } } });
   }
 
-  private process(command: Command): void {
+  private process(command: Command, ackMs: number): void {
     if (this.timeoutNext) {
       this.timeoutNext = false;
-      setTimeout(() => this.emitAll({ type: "command", command: { ...command, status: "timed_out" } }), MOCK_COMMAND_TIMEOUT_MS);
+      setTimeout(() => this.emitAll({ type: "command", command: { ...command, status: "timed_out" } }), ackMs + MOCK_COMMAND_TIMEOUT_MS);
       return;
     }
     if (this.failNext) {
       this.failNext = false;
       setTimeout(
         () => this.emitAll({ type: "command", command: { ...command, status: "failed", error: "Command failed" } }),
-        this.latency(),
+        ackMs + this.latency(),
       );
       return;
     }
-    setTimeout(() => {
+    this.inOrder(() => {
       this.emitAll({ type: "command", command: { ...command, status: "sent" } });
       const by = command.issued_by?.label ?? "schedule";
       this.commit(applyCommandToState(this.state, command.body, { at: this.iso(), by }));
@@ -297,7 +300,14 @@ export class FakeRoom {
       if (command.body.kind !== "audio.level" || command.body.final) {
         this.emitAll({ type: "activity", text: describeCommand(command.body), by, public_id: command.issued_by?.public_id ?? null });
       }
-    }, this.latency());
+    }, ackMs + this.latency());
+  }
+
+  /** Runs `fn` after `delayMs`, but never before an earlier command (core-api dispatches in arrival order). */
+  private inOrder(fn: () => void, delayMs: number): void {
+    const due = Math.max(this.now() + delayMs, this.lastDueAt + 1);
+    this.lastDueAt = due;
+    setTimeout(fn, due - this.now());
   }
 
   private applyExternal(body: Parameters<typeof applyCommandToState>[1], by: "phone" | "by hand", publicId: string | null): void {
@@ -305,9 +315,9 @@ export class FakeRoom {
     this.emitAll({ type: "activity", text: describeCommand(body), by, public_id: publicId });
   }
 
-  /** Bump rev and push `state`. Works while dropped: the next snapshot carries the change. */
+  /** Derive, bump rev and push `state`. Works while dropped: the next snapshot carries the change. */
   private commit(next: RoomState): void {
-    this.state = { ...next, rev: this.state.rev + 1 };
+    this.state = { ...withDerived(next), rev: this.state.rev + 1 };
     this.emitAll({ type: "state", state: this.stamped() });
   }
 
@@ -334,7 +344,11 @@ export class FakeRoom {
   }
 
   private delay(): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, this.latency()));
+    return this.wait(this.latency());
+  }
+
+  private wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private iso(): string {

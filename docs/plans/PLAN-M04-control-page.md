@@ -1032,7 +1032,7 @@ describe("readTimeScale", () => {
 **Commit:** `git commit -m "feat(kiosk): time-scale reader for the mock"`
 
 ### T10 — FakeRoom: commands land in arrival order; every change re-derives status
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room-order.test.ts`
 
