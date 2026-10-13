@@ -5033,7 +5033,7 @@ describe("static SPA (§6.1)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): buildApp with state, health and the SPA"` (includes this plan file with the box ticked)
 
 ### T25 — Access guard + session routes (GET/login/lock)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/plugins/auth.ts`, `apps/core-api/src/routes/session.ts`, `apps/core-api/src/app.ts`, `apps/core-api/test/routes/session.test.ts`
 

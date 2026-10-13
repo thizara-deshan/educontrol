@@ -1,7 +1,10 @@
 import { DeviceKind, Transport } from "@eduscope/contracts";
+import cookie from "@fastify/cookie";
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { z } from "zod";
+import { createPinThrottle } from "./auth/pin-throttle.ts";
+import { createSessionService, type SessionService } from "./auth/sessions.ts";
 import type { Clock } from "./clock.ts";
 import { createDispatcher, type Dispatcher } from "./commands/dispatcher.ts";
 import { capturedSetpoints, createIrCodeLookup } from "./commands/ir-codes.ts";
@@ -16,9 +19,11 @@ import type { DeviceInfo, KwhBaseline } from "./domain/model.ts";
 import { createStateStore, type StateStore } from "./domain/state-store.ts";
 import type { HwClient, HwTimeouts } from "./hw/client.ts";
 import { createIngest, type Ingest } from "./hw/ingest.ts";
+import { authPlugin } from "./plugins/auth.ts";
 import { errorsPlugin } from "./plugins/errors.ts";
 import { staticPlugin } from "./plugins/static.ts";
 import { healthRoutes } from "./routes/health.ts";
+import { sessionRoutes } from "./routes/session.ts";
 import { stateRoutes } from "./routes/state.ts";
 
 // ARCHITECTURE §6.1: buildApp(deps) is used by main.ts and by tests (fastify.inject / injectWS).
@@ -40,6 +45,7 @@ export interface Room {
   store: StateStore;
   dispatcher: Dispatcher;
   ingest: Ingest;
+  sessions: SessionService;
 }
 
 declare module "fastify" {
@@ -50,6 +56,8 @@ declare module "fastify" {
 
 /** §6.4 "a 10 s timer re-evaluates staleness" (also H7b and the hw grace). */
 export const TICK_MS = 10_000;
+/** §5 "a 15 s sweep" of expired sessions. */
+export const SESSION_SWEEP_MS = 15_000;
 
 export function hwTimeouts(config: Config): HwTimeouts {
   return {
@@ -114,15 +122,22 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     },
     hwDownGraceMs: config.HW_DOWN_GRACE_MS,
   });
+  const sessions = createSessionService({
+    db, clock, log,
+    onChange: () => undefined,
+  });
 
   const app = Fastify({ logger: deps.logger ?? false, trustProxy: false });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
-  app.decorate("room", { db, store, dispatcher, ingest });
+  app.decorate("room", { db, store, dispatcher, ingest, sessions });
 
   await app.register(errorsPlugin);
+  await app.register(cookie, { secret: config.COOKIE_SECRET });
+  await app.register(authPlugin, { sessions, localhostIsKiosk: config.LOCALHOST_IS_KIOSK });
   await app.register(
     async (api) => {
+      await api.register(sessionRoutes, { db, sessions, throttle: createPinThrottle(clock), log });
       await api.register(stateRoutes, { store });
       await api.register(healthRoutes, { store });
     },
@@ -132,6 +147,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
 
   app.addHook("onReady", async () => {
     timers.add(setInterval(() => store.tick(), TICK_MS));
+    timers.add(setInterval(() => sessions.sweep(), SESSION_SWEEP_MS));
   });
   app.addHook("onClose", async () => {
     for (const timer of timers) clearTimeout(timer);
