@@ -930,7 +930,7 @@ describe("FakeRoom registry (S3d)", () => {
 ---
 
 ### T4 — Mock PIN change, network, about and restart
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room-settings.test.ts`
 

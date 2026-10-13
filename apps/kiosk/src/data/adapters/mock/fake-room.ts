@@ -1,6 +1,7 @@
 import {
-  ClientSession, Command, CommandRequest, DevicePatch, LoginRequest, RoomState, ServerEvent, type ChangedBy,
-  type ClientLabel, type ClientType, type CommandBody, type Device, type LoginResult,
+  ClientSession, Command, CommandRequest, DevicePatch, LoginRequest, RoomPinRequest, RoomState, ServerEvent,
+  TechnicianPinRequest, type AboutInfo, type ChangedBy, type ClientLabel, type ClientType, type CommandBody,
+  type Device, type LoginResult, type NetworkInfo,
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import { ApiRequestError, type RealtimeConnection, type RealtimeHandlers } from "@/data/api-client";
@@ -47,6 +48,13 @@ export const MOCK_JOIN_WINDOW_MS = (4 * 60 + 12) * 1000;
 export const MOCK_HOLDING_WATTS = 112;
 /** S3d "Permit joining": the mesh opens for 4 min (PermitJoinRequest). Not time-scaled. */
 export const MOCK_PERMIT_JOIN_MS = 240_000;
+/** S3e "Restart controller": sockets drop, then the controller accepts connections again. */
+export const MOCK_RESTART_MS = 5_000;
+/** S3e About: the mock controller has been up 3 d 4 h when the page loads. */
+export const MOCK_UPTIME_AT_START_S = (3 * 24 + 4) * 3600;
+export const MOCK_VERSION = "0.6.0";
+export const MOCK_PI_MODEL = "Raspberry Pi 5 Model B Rev 1.0";
+export const MOCK_ADDRESS = "192.168.10.41";
 /** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
 const CONTROL_SESSION_MS = 2 * 60 * 60_000;
 const TECHNICIAN_SESSION_MS = 15 * 60_000;
@@ -87,6 +95,11 @@ export class FakeRoom {
   private screenTimer: ReturnType<typeof setTimeout> | null = null;
   private noDrawChangeNext = false;
   private joinTimer: ReturnType<typeof setTimeout> | null = null;
+  private roomPin = MOCK_ROOM_PIN;
+  private technicianPin = MOCK_TECHNICIAN_PIN;
+  /** Epoch ms of the (mock) controller start; uptime counts from here. */
+  private bootedAt: number;
+  private uptimeAtBootS = MOCK_UPTIME_AT_START_S;
   /** S3 Remote configuration and S3c Schedule stores (they share this room's state and events). */
   readonly ir: FakeIr;
   readonly schedule: FakeSchedule;
@@ -104,6 +117,7 @@ export class FakeRoom {
       public_id: OWN_PUBLIC_ID, client_type: "remote", label: this.helloLabel, access: "view",
       unlocked_at: null, last_activity: null, expires_at: null,
     });
+    this.bootedAt = this.now();
     const host: MockHost = {
       state: () => this.state,
       commit: (next) => this.commit(next),
@@ -130,7 +144,7 @@ export class FakeRoom {
     if (now < this.lockedUntil[level]) {
       return { reason: "locked", retry_after_s: Math.ceil((this.lockedUntil[level] - now) / 1000), attempts_left: 0 };
     }
-    const expected = level === "control" ? MOCK_ROOM_PIN : MOCK_TECHNICIAN_PIN;
+    const expected = level === "control" ? this.roomPin : this.technicianPin;
     if (pin !== expected) {
       this.pinFailures[level] += 1;
       if (this.pinFailures[level] >= MOCK_MAX_PIN_ATTEMPTS) {
@@ -244,6 +258,67 @@ export class FakeRoom {
   async permitJoin(): Promise<void> {
     await this.delay();
     this.openJoiningFor(MOCK_PERMIT_JOIN_MS);
+  }
+
+  async setRoomPin(pin: string): Promise<void> {
+    const parsed = RoomPinRequest.parse({ pin });
+    await this.delay();
+    this.roomPin = parsed.pin;
+  }
+
+  async setTechnicianPin(pin: string): Promise<void> {
+    const parsed = TechnicianPinRequest.parse({ pin });
+    await this.delay();
+    this.technicianPin = parsed.pin;
+  }
+
+  /** S3b: this client plus a room screen and two phones. */
+  async network(): Promise<NetworkInfo> {
+    await this.delay();
+    return {
+      hostname: this.state.room.hostname,
+      address: MOCK_ADDRESS,
+      connection: { kind: "ethernet" },
+      controller: { hw: this.state.connection.hw },
+      clients: [
+        { public_id: null, label: "room screen", client_type: "kiosk", access: "control" },
+        { public_id: PHONE_PUBLIC_ID, label: "phone", client_type: "remote", access: "control" },
+        { public_id: null, label: "phone", client_type: "remote", access: "view" },
+        {
+          public_id: this.session.public_id, label: this.session.label, client_type: this.session.client_type,
+          access: this.session.access,
+        },
+      ],
+    };
+  }
+
+  /** S3e. The URL comes from the room's hostname, never from the page's own address. */
+  async about(): Promise<AboutInfo> {
+    await this.delay();
+    return {
+      room: this.state.room.id,
+      version: MOCK_VERSION,
+      uptime_s: this.uptimeAtBootS + Math.floor((this.now() - this.bootedAt) / 1000),
+      pi_model: MOCK_PI_MODEL,
+      url: `http://${this.state.room.hostname}`,
+    };
+  }
+
+  /**
+   * S3e "Restart controller": answers first, then drops every socket (H3), forgets the AC state
+   * (R3) and accepts connections again after MOCK_RESTART_MS; the client resyncs (H4).
+   */
+  async restart(): Promise<void> {
+    await this.delay();
+    setTimeout(() => {
+      this.dropConnection();
+      this.restartController();
+      setTimeout(() => {
+        this.bootedAt = this.now();
+        this.uptimeAtBootS = 0;
+        this.restore();
+      }, MOCK_RESTART_MS);
+    }, 0);
   }
 
   // ── Mock panel (`?mock-panel`) ───────────────────────────────────────────────────────
