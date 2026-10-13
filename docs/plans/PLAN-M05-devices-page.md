@@ -1451,7 +1451,7 @@ describe("batteryRows (S2.E16–E19)", () => {
 **Commit:** `git commit -m "feat(kiosk): battery rows selector"`
 
 ### T16 — Selector: coordinator card (S2.E20)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/side.view.ts`, `apps/kiosk/src/features/devices/side/side.view.test.ts`
 
