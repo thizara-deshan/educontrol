@@ -21,6 +21,7 @@ import type { HwClient, HwTimeouts } from "./hw/client.ts";
 import { createIngest, type Ingest } from "./hw/ingest.ts";
 import { authPlugin } from "./plugins/auth.ts";
 import { errorsPlugin } from "./plugins/errors.ts";
+import { originCheckPlugin } from "./plugins/origin-check.ts";
 import { staticPlugin } from "./plugins/static.ts";
 import { healthRoutes } from "./routes/health.ts";
 import { sessionRoutes } from "./routes/session.ts";
@@ -135,6 +136,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   await app.register(errorsPlugin);
   await app.register(cookie, { secret: config.COOKIE_SECRET });
   await app.register(authPlugin, { sessions, localhostIsKiosk: config.LOCALHOST_IS_KIOSK });
+  await app.register(originCheckPlugin);
   await app.register(
     async (api) => {
       await api.register(sessionRoutes, { db, sessions, throttle: createPinThrottle(clock), log });

@@ -5443,7 +5443,7 @@ describe("kiosk exemption (D-09)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): PIN sessions and the access guard"` (includes this plan file with the box ticked)
 
 ### T26 — Origin check (CSRF)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/plugins/origin-check.ts`, `apps/core-api/src/app.ts`, `apps/core-api/test/routes/origin.test.ts`
 
