@@ -1,6 +1,7 @@
-import type { Device, RoomState, SensorKind, SensorReading } from "@eduscope/contracts";
+import type { Device, RoomState, SensorKind } from "@eduscope/contracts";
+import { sensorReadingDisplay } from "@/components/sensor-reading";
 import type { StateTone, ValueTone } from "@/components/state-styles";
-import { formatAgo, formatCelsius, formatPercent } from "@/lib/format";
+import { formatAgo } from "@/lib/format";
 
 // S1.E41–E45 (R13, H8/H9, H10, H11). Counts devices, not tiles: climate = 1 device, 2 tiles.
 
@@ -33,21 +34,6 @@ const LABELS: Record<SensorKind, string> = {
   contact: "Door",
 };
 
-function formatReading(reading: SensorReading): { value: string | null; tone: ValueTone } {
-  switch (reading.kind) {
-    case "temperature":
-      return { value: reading.value === null ? null : formatCelsius(reading.value, 1), tone: "default" };
-    case "humidity":
-      return { value: reading.value === null ? null : formatPercent(reading.value), tone: "default" };
-    case "occupancy":
-      if (reading.value === null) return { value: null, tone: "default" };
-      return reading.value === "detected" ? { value: "Detected", tone: "accent" } : { value: "Clear", tone: "default" };
-    case "contact":
-      if (reading.value === null) return { value: null, tone: "default" };
-      return reading.value === "open" ? { value: "Open", tone: "warn" } : { value: "Closed", tone: "default" };
-  }
-}
-
 export function reportingLine({ count, of }: Sensors["reporting"]): { tone: StateTone; text: string } {
   if (of > 0 && count >= of) return { tone: "confirmed", text: `${count} reporting` };
   if (count === 0) return { tone: "offline", text: "No sensors reporting" };
@@ -58,7 +44,7 @@ export function sensorsView(sensors: Sensors, devices: readonly Device[], now: D
   const reporting = reportingLine(sensors.reporting);
   const tiles = [sensors.temperature, sensors.humidity, sensors.occupancy, sensors.contact].map((reading): SensorTileView => {
     const device = devices.find((d) => d.hw_ref === reading.node);
-    const { value, tone } = formatReading(reading);
+    const { value, tone } = sensorReadingDisplay(reading);
     const suffix =
       device?.online.value === false ? "offline" : reading.stale && reading.at !== null ? formatAgo(reading.at, now) : null;
     const numeric = reading.kind === "temperature" || reading.kind === "humidity";

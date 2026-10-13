@@ -245,7 +245,7 @@ describe("createTicker (one shared 1 s interval)", () => {
 **Commit:** `git commit -m "feat(kiosk): shared one-second ticker for server time"`
 
 ### T2 — Sensor reading formatter moves to `components/`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/sensor-reading.ts`, `apps/kiosk/src/features/control/environment/sensors.view.ts`
 
