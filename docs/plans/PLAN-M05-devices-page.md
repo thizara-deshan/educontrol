@@ -2502,7 +2502,7 @@ import { CoordinatorCard } from "./side/CoordinatorCard";
 **Commit:** `git commit -m "feat(kiosk): coordinator card"`
 
 ### T30 — `MeshCard` (S2.E21)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/MeshCard.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
