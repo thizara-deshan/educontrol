@@ -1728,7 +1728,7 @@ describe("boot model (D-15: nothing live is persisted)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): boot model, mesh counts, R11 interlock"` (includes this plan file with the box ticked)
 
 ### T12 — hw events → model (lights R6, audio R9, sensors, snapshot)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/lights.ts`, `apps/core-api/src/domain/audio.ts`, `apps/core-api/src/domain/sensors.ts`, `apps/core-api/src/domain/hw-events.ts`, `apps/core-api/test/domain/hw-events.test.ts`, `apps/core-api/test/domain/audio.test.ts`, `apps/core-api/test/domain/sensors.test.ts`
 
