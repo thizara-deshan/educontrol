@@ -3760,7 +3760,7 @@ back. Scrolled to the end, the Room sensors card is fully above the bar. At 600 
 **Commit:** `git commit -m "feat(kiosk): phone bottom bar for S1 sections"`
 
 ### T36 — Decision record D-20 (height budget, no viewport lock, sensor container query)
-- [ ] done
+- [x] done
 
 **Files:** `docs/decisions/D-20-s1-height-budget.md`
 
