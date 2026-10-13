@@ -1089,7 +1089,7 @@ describe("routerHeaderView (S2.E6/E10)", () => {
 **Commit:** `git commit -m "feat(kiosk): router card header selector"`
 
 ### T12 — Selector: read-only gang tile (S2.E7/E8/E11)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/routers.view.ts`, `apps/kiosk/src/features/devices/routers/routers.view.test.ts`
 

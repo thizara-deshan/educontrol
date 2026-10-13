@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { roomState } from "@/data/test/room-state";
-import { routerHeaderView } from "./routers.view";
+import { gangTileView, routerHeaderView } from "./routers.view";
 
 const NOW = new Date("2026-10-05T10:42:00Z");
 
@@ -27,5 +27,16 @@ describe("routerHeaderView (S2.E6/E10)", () => {
   it("no node paired: offline, ids from the registry", () => {
     const { device } = lights();
     expect(routerHeaderView(device, undefined, NOW)).toMatchObject({ ids: "ZBM5-2C-86W · r101_lights", link: "Offline", online: false });
+  });
+});
+
+describe("gangTileView (S2.E7/E8/E11)", () => {
+  it("front On (green fill), rear Off (neutral), unknown", () => {
+    const { state } = lights();
+    expect(gangTileView(state.environment.lights.front)).toEqual({ tone: "confirmed", text: "On", fill: "confirmed" });
+    expect(gangTileView(state.environment.lights.rear)).toEqual({ tone: "off", text: "Off", fill: null });
+    expect(gangTileView({ ...state.environment.lights.rear, value: null, confidence: "unknown" })).toEqual({
+      tone: "unknown", text: "Unknown", fill: null,
+    });
   });
 });
