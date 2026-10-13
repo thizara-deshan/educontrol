@@ -3,6 +3,7 @@ import { SourceTiles } from "./display/SourceTiles";
 import { ProjectorCard } from "./display/ProjectorCard";
 import { ScreenCard } from "./display/ScreenCard";
 import { LevelCard } from "./audio/LevelCard";
+import { MuteAllBar } from "./audio/MuteAllBar";
 
 // SPEC §2.2 / ARCHITECTURE §4.1: one grid. Phone: Display → Audio → Environment. 600–1023:
 // Display + Audio stacked left, Environment right. ≥1024: three columns, no scroll at 1280×800.
@@ -22,6 +23,7 @@ export function ControlPage() {
         <SectionLabel>Audio</SectionLabel>
         <LevelCard channel="mic" />
         <LevelCard channel="pc" />
+        <MuteAllBar />
       </section>
       <section
         id="environment"

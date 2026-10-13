@@ -3187,7 +3187,7 @@ thumb stays under the pointer; on release the thumb settles to the released leve
 **Commit:** `git commit -m "feat(kiosk): level cards on S1"`
 
 ### T29 — `MuteAllBar` (S1.E23)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/audio/MuteAllBar.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
