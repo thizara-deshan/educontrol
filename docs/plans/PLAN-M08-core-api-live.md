@@ -3465,7 +3465,7 @@ describe("command policies (§6.5)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): command policies and preconditions"` (includes this plan file with the box ticked)
 
 ### T19 — Command dispatcher: pending → sent → assumed / failed / timed_out, last write wins
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/errors.ts`, `apps/core-api/src/commands/dispatcher.ts`, `apps/core-api/test/commands/setup.ts`, `apps/core-api/test/commands/dispatcher.test.ts`
 
