@@ -2202,7 +2202,7 @@ describe("R13 staleness", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): apply hw events to the model"` (includes this plan file with the box ticked)
 
 ### T13 — Derived fields: device online (H8/H9), staleness, mesh, status (S1.E4)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/devices.ts`, `apps/core-api/src/domain/status.ts`, `apps/core-api/src/domain/derive.ts`, `apps/core-api/test/domain/devices.test.ts`, `apps/core-api/test/domain/status.test.ts`
 
