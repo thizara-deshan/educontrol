@@ -1737,7 +1737,7 @@ async def test_route() -> None:
 ---
 
 ### T9 — `audio` module (level and mute per channel, `audio.state`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/audio/{__init__,schemas,service,driver_real,driver_fake,router}.py`, `services/hw/tests/test_audio.py`
 
