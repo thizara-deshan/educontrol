@@ -4268,7 +4268,7 @@ with:
 ---
 
 ### T29 — Mock panel: "Next capture: nothing received"
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/MockPanel.tsx`
 

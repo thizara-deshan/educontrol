@@ -40,6 +40,8 @@ const ACTIONS: { label: string; run: () => void }[] = [
   { label: "Open joining (4:12)", run: () => fakeRoom.openJoining() },
   { label: "Toggle interlock holding", run: () => fakeRoom.toggleInterlockHolding() },
   { label: "Toggle interlock bypassed", run: () => fakeRoom.toggleInterlockBypassed() },
+  // M06: S3 capture outcome (H21). Blaster offline (H25) = "Toggle blaster offline"; losing technician = "Expire session".
+  { label: "Next capture: nothing received", run: () => fakeRoom.ir.captureNothingNext() },
 ];
 
 /**
