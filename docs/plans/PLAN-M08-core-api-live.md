@@ -604,7 +604,7 @@ describe("PIN hash (D-08)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): scrypt PIN hashing"` (includes this plan file with the box ticked)
 
 ### T5 — Settings table access and the idempotent R-101 seed
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/settings.ts`, `apps/core-api/src/db/seed.ts`, `apps/core-api/test/db/seed.test.ts`
 
