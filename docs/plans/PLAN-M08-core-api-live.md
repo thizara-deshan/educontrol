@@ -536,7 +536,7 @@ describe("openDb", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): drizzle schema, first migration, openDb"` (includes this plan file with the box ticked)
 
 ### T4 — PIN hashing (scrypt)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/auth/pin-hash.ts`, `apps/core-api/test/auth/pin-hash.test.ts`
 
