@@ -3917,7 +3917,7 @@ rule tests). `pnpm verify` green.
 ---
 
 ### T15 — Registry: `HW_MODE`, `HW_DRIVERS`, fake routes, IR → projector wiring
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/registry.py`, `services/hw/tests/test_registry.py`
 
