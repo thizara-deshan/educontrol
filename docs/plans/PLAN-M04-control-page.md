@@ -3687,7 +3687,7 @@ widths `20`, `true`, `0`. `pnpm verify` → exit 0.
 **Commit:** `git commit -m "feat(kiosk): header status opens the devices page"`
 
 ### T35 — `BottomNav` (phone)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/BottomNav.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
