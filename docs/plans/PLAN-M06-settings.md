@@ -4846,7 +4846,7 @@ export function AddBlockSheet({ open, onOpenChange }: { open: boolean; onOpenCha
 ---
 
 ### T36 — `AddActionSheet` (S3c)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/schedule/AddActionSheet.tsx`
 
