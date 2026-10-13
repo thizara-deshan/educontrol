@@ -3877,7 +3877,7 @@ export function HowCaptureWorks() {
 ---
 
 ### T25 — `AddDeviceSheet` (S3.E9)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/AddDeviceSheet.tsx`
 
