@@ -3594,7 +3594,7 @@ header row → `/devices`. In DevTools at 1024 wide the tiles are 2×2 and nothi
 **Commit:** `git commit -m "feat(kiosk): room sensors card on S1"`
 
 ### T33 — Sticky header
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/Header.tsx`
 
