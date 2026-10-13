@@ -1850,7 +1850,7 @@ with:
 ---
 
 ### T7 — Settings queries and the `useServerMutation` hook
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/settings/queries.ts`, `apps/kiosk/src/data/settings/queries.test.ts`, `apps/kiosk/src/data/settings/hooks.ts`
 
