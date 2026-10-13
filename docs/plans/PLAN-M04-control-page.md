@@ -3495,7 +3495,7 @@ dashed border. Power on → "On · assumed", amber ring, Power on amber, `24°`.
 **Commit:** `git commit -m "feat(kiosk): air conditioning card on S1"`
 
 ### T32 — `SensorsCard` (S1.E41–E45)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/environment/SensorsCard.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 

@@ -6,6 +6,7 @@ import { LevelCard } from "./audio/LevelCard";
 import { MuteAllBar } from "./audio/MuteAllBar";
 import { LightsCard } from "./environment/LightsCard";
 import { AcCard } from "./environment/AcCard";
+import { SensorsCard } from "./environment/SensorsCard";
 
 // SPEC §2.2 / ARCHITECTURE §4.1: one grid. Phone: Display → Audio → Environment. 600–1023:
 // Display + Audio stacked left, Environment right. ≥1024: three columns, no scroll at 1280×800.
@@ -35,6 +36,7 @@ export function ControlPage() {
         <SectionLabel>Environment</SectionLabel>
         <LightsCard />
         <AcCard />
+        <SensorsCard />
       </section>
     </div>
   );
