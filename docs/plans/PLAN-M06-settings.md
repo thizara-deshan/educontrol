@@ -4779,7 +4779,7 @@ export function DayPicker({ value, onChange, error }: { value: readonly Weekday[
 ---
 
 ### T35 — `AddBlockSheet` (S3c)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/schedule/AddBlockSheet.tsx`
 
