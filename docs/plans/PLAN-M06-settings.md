@@ -3441,7 +3441,7 @@ describe("commandInput (S3.E16)", () => {
 ---
 
 ### T19 — `useCommandRow` hook
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/use-command-row.ts`
 
