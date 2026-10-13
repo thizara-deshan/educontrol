@@ -2063,7 +2063,7 @@ export function RouterCardHeader({ view }: { view: RouterHeaderView | null }) {
 **Commit:** `git commit -m "feat(kiosk): router card header"`
 
 ### T24 — `GangTile` (read-only On/Off tile)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/GangTile.tsx`
 
