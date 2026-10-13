@@ -6175,3 +6175,7 @@ below were measured on the plan's reference run.
 - Show the joining countdown on the S2 header while joining is open (M05 nice-to-have, still open).
 - Keep the 1 s countdown in the listening row in sync with a 20 s ring/progress bar for glanceability.
 - Code-split `features/settings/` and the mock adapter (M02-L1; the chunk grows by `qrcode`).
+
+## Fix tasks (review 1)
+
+None. `docs/reviews/REVIEW-M06.md` found 0 MUST-FIX; its 6 LATER items are in `docs/milestones/M00-index.md` → Backlog (M06-L1 … M06-L6).
