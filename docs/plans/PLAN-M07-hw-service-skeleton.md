@@ -4248,7 +4248,7 @@ async def test_real_projector_ignores_fake_ir() -> None:
 ---
 
 ### T16 — `app/main.py`: `create_app`, lifespan, health, snapshot, events, loopback guard
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/main.py`, `services/hw/tests/test_main.py`
 
