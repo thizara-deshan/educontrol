@@ -1,6 +1,6 @@
-import type { Coordinator, Device, Mesh, ZigbeeNode } from "@eduscope/contracts";
-import type { CalloutVariant, ValueTone } from "@/components/state-styles";
-import { formatCountdown } from "@/lib/format";
+import type { Coordinator, Device, Interlock, Mesh, ZigbeeNode } from "@eduscope/contracts";
+import type { CalloutVariant, StateTone, ValueTone } from "@/components/state-styles";
+import { formatCountdown, formatWatts } from "@/lib/format";
 
 // S2.E20–E23: the side column (H9, H15, R7, R11).
 
@@ -92,4 +92,23 @@ export function calloutView(nodes: readonly ZigbeeNode[], devices: readonly Devi
   // [INFERRED] SPEC defines only the two variants above; this covers both routers (or the coordinator) down.
   const restore = offline.length === 0 ? "" : ` Restore the ${offline.join(" or the ")}.`;
   return { variant: "none", title: "NO ROUTERS ONLINE", body: `Battery sensors can't reach the coordinator.${restore}` };
+}
+
+export interface InterlockView {
+  tone: StateTone;
+  status: "Armed" | "Holding" | "Bypassed";
+  body: string;
+}
+
+/** S2.E23 (R11, H15, Q7). `watts` = live projector draw (null = no reading). */
+export function interlockView(interlock: Interlock, watts: number | null): InterlockView {
+  switch (interlock.status) {
+    case "armed":
+      return { tone: "confirmed", status: "Armed", body: interlock.rule_text };
+    case "holding":
+      return { tone: "warning", status: "Holding", body: `Waiting for projector to cool · ${formatWatts(watts)}` };
+    case "bypassed":
+      // [INFERRED] SPEC names the state only (Q7).
+      return { tone: "warning", status: "Bypassed", body: "Projector mains can be switched off at any draw." };
+  }
 }

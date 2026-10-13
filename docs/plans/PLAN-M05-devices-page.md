@@ -1729,7 +1729,7 @@ describe("calloutView (S2.E22, R7)", () => {
 **Commit:** `git commit -m "feat(kiosk): redundancy callout selector"`
 
 ### T19 — Selector: shutdown interlock (S2.E23, H15)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/side.view.ts`, `apps/kiosk/src/features/devices/side/side.view.test.ts`
 

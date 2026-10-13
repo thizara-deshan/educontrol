@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { roomState } from "@/data/test/room-state";
-import { calloutView, coordinatorView, joiningText, meshView } from "./side.view";
+import { calloutView, coordinatorView, interlockView, joiningText, meshView } from "./side.view";
 
 describe("coordinatorView (S2.E20)", () => {
   it("screenshot 02 values", () => {
@@ -82,5 +82,22 @@ describe("calloutView (S2.E22, R7)", () => {
       title: "NO ROUTERS ONLINE",
       body: "Battery sensors can't reach the coordinator. Restore the lighting switch or the projector socket.",
     });
+  });
+});
+
+describe("interlockView (S2.E23, H15)", () => {
+  it("armed shows the rule", () => {
+    expect(interlockView(roomState().interlock, 287)).toEqual({
+      tone: "confirmed", status: "Armed", body: "Projector mains stays on until draw is below 5 W.",
+    });
+  });
+  it("holding: `Waiting for projector to cool · 112 W`", () => {
+    expect(interlockView({ ...roomState().interlock, status: "holding" }, 112)).toEqual({
+      tone: "warning", status: "Holding", body: "Waiting for projector to cool · 112 W",
+    });
+    expect(interlockView({ ...roomState().interlock, status: "holding" }, null).body).toBe("Waiting for projector to cool · — W");
+  });
+  it("bypassed is amber", () => {
+    expect(interlockView({ ...roomState().interlock, status: "bypassed" }, 3)).toMatchObject({ tone: "warning", status: "Bypassed" });
   });
 });
