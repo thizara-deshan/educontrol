@@ -2965,7 +2965,7 @@ the 3 real seconds); `pnpm verify` green.
 ---
 
 ### T12 — `sensors` module (periodic climate, event sensors, sensor-value route)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/sensors/{__init__,schemas,service,driver_real,driver_fake,router}.py`, `services/hw/tests/test_sensors.py`
 
