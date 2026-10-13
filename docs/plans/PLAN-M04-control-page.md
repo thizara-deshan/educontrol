@@ -232,7 +232,7 @@ const TONES: StateTone[] = ["confirmed", "selected", "assumed", "warning", "off"
 **Commit:** `git commit -m "feat(kiosk): warning state tone for solid amber dots"`
 
 ### T2 — Card header line colours and the `muted` / `faint` value tones
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/state-styles.ts`, `apps/kiosk/src/components/state-styles.test.ts`
 

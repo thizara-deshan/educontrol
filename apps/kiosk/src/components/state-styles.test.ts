@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  ACTIVE_CONTROL_CLASS, CARD_VARIANT_CLASS, CARD_VARIANT_FOR_TONE, DOT_CLASS, stateTone, STATUS_DOT_CLASS, TEXT_CLASS,
+  ACTIVE_CONTROL_CLASS, CARD_VARIANT_CLASS, CARD_VARIANT_FOR_TONE, DOT_CLASS, HEADER_LINE_CLASS, stateTone, STATUS_DOT_CLASS, TEXT_CLASS,
   VALUE_TONE_CLASS, type StateInput, type StateTone,
 } from "./state-styles";
 
@@ -41,6 +41,11 @@ describe("SPEC §3.4 class maps", () => {
     expect(DOT_CLASS.warning).toBe("bg-warn");
     expect(TEXT_CLASS.warning).toBe("text-warn");
     expect(CARD_VARIANT_FOR_TONE.warning).toBe("solid");
+  });
+  it("card header lines: confirmed in text-2, the rest as the state text", () => {
+    expect(HEADER_LINE_CLASS.confirmed).toBe("text-text-2");
+    expect(HEADER_LINE_CLASS.assumed).toBe("text-warn");
+    expect(HEADER_LINE_CLASS.offline).toBe("text-danger");
   });
   it("offline is danger with a 40% danger border", () => {
     expect(DOT_CLASS.offline).toBe("bg-danger");

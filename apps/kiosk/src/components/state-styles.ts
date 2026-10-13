@@ -54,6 +54,16 @@ export const TEXT_CLASS: Record<StateTone, string> = {
   offline: "text-danger",
 };
 
+/**
+ * Card header state line (screenshot 01: "On · confirmed by draw", "Confirmed by the switch",
+ * "Lowered" are text-2; SPEC §3.4 allows `accent` or `text-2` for confirmed). Others as TEXT_CLASS.
+ */
+export const HEADER_LINE_CLASS: Record<StateTone, string> = {
+  ...TEXT_CLASS,
+  confirmed: "text-text-2",
+  selected: "text-text-2",
+};
+
 /** Card border variants (SPEC §3.4 "Card border" column) and which tone uses which. */
 export type CardVariant = "solid" | "dashed" | "danger";
 export const CARD_VARIANT_CLASS: Record<CardVariant, string> = {
@@ -101,11 +111,16 @@ export const STATUS_DOT_CLASS: Record<StatusLevel, string> = {
   connecting: "border-2 border-text-3 bg-transparent",
 };
 
-/** Sensor/metric value accents (S1.E44 "Detected", S1.E45 "Open", S2 power). */
-export type ValueTone = "default" | "accent" | "warn" | "danger";
+/**
+ * Value accents (S1.E44 "Detected", S1.E45 "Open", S2 power, S1.E13 wattage). `muted` = the
+ * standby `3 W` in text-2; `faint` = an unknown `— W` in text-3.
+ */
+export type ValueTone = "default" | "accent" | "warn" | "danger" | "muted" | "faint";
 export const VALUE_TONE_CLASS: Record<ValueTone, string> = {
   default: "text-text-1",
   accent: "text-accent",
   warn: "text-warn",
   danger: "text-danger",
+  muted: "text-text-2",
+  faint: "text-text-3",
 };
