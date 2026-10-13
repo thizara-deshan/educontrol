@@ -1630,7 +1630,7 @@ describe("meshView (S2.E21)", () => {
 **Commit:** `git commit -m "feat(kiosk): mesh card selector"`
 
 ### T18 — Selector: redundancy callout (S2.E22, R7)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/side.view.ts`, `apps/kiosk/src/features/devices/side/side.view.test.ts`
 

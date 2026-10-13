@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { roomState } from "@/data/test/room-state";
-import { coordinatorView, joiningText, meshView } from "./side.view";
+import { calloutView, coordinatorView, joiningText, meshView } from "./side.view";
 
 describe("coordinatorView (S2.E20)", () => {
   it("screenshot 02 values", () => {
@@ -51,5 +51,36 @@ describe("meshView (S2.E21)", () => {
       ],
     });
     expect(meshView(mesh, "offline", NOW).rows.map((r) => r.tone)).toEqual(["faint", "faint", "faint"]);
+  });
+});
+
+describe("calloutView (S2.E22, R7)", () => {
+  const offline = (names: string[]) => {
+    const { zigbee, devices } = roomState();
+    return calloutView(zigbee.nodes.map((n) => (names.includes(n.friendly_name) ? { ...n, online: false } : n)), devices);
+  };
+  it("both routers online: green TWO ROUTERS", () => {
+    expect(offline([])).toEqual({
+      variant: "redundant",
+      title: "TWO ROUTERS, NO SINGLE PATH",
+      body: "Battery sensors can reach the coordinator through either the lighting switch or the projector socket. Losing one still leaves the room reporting.",
+    });
+  });
+  it("lighting switch offline: amber ONE ROUTER LEFT naming it", () => {
+    expect(offline(["r101_lights"])).toEqual({
+      variant: "one_left",
+      title: "ONE ROUTER LEFT",
+      body: "Battery sensors are relying on a single path. Restore the lighting switch soon.",
+    });
+  });
+  it("projector socket offline names the socket", () => {
+    expect(offline(["r101_proj_plug"]).body).toBe("Battery sensors are relying on a single path. Restore the projector socket soon.");
+  });
+  it("both offline: red NO ROUTERS ONLINE [INFERRED]", () => {
+    expect(offline(["r101_lights", "r101_proj_plug"])).toEqual({
+      variant: "none",
+      title: "NO ROUTERS ONLINE",
+      body: "Battery sensors can't reach the coordinator. Restore the lighting switch or the projector socket.",
+    });
   });
 });

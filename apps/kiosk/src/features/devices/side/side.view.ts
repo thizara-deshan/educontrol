@@ -1,5 +1,5 @@
-import type { Coordinator, Mesh } from "@eduscope/contracts";
-import type { ValueTone } from "@/components/state-styles";
+import type { Coordinator, Device, Mesh, ZigbeeNode } from "@eduscope/contracts";
+import type { CalloutVariant, ValueTone } from "@/components/state-styles";
 import { formatCountdown } from "@/lib/format";
 
 // S2.E20–E23: the side column (H9, H15, R7, R11).
@@ -63,4 +63,33 @@ export function meshView(mesh: Mesh, coordinatorStatus: Coordinator["status"], n
       { label: "Joining", value: joining.text, tone: tone(joining.tone) },
     ],
   };
+}
+
+export interface CalloutView {
+  variant: CalloutVariant;
+  title: string;
+  body: string;
+}
+
+const REDUNDANT_BODY =
+  "Battery sensors can reach the coordinator through either the lighting switch or the projector socket. Losing one still leaves the room reporting.";
+
+/** S2.E22 (R7): routers = mains nodes with role `router`; names from the device registry, lower-cased in the copy. */
+export function calloutView(nodes: readonly ZigbeeNode[], devices: readonly Device[]): CalloutView {
+  const routers = nodes
+    .filter((node) => node.role === "router")
+    .map((node) => ({
+      name: (devices.find((device) => device.hw_ref === node.friendly_name)?.name ?? node.friendly_name).toLowerCase(),
+      online: node.online,
+    }));
+  const online = routers.filter((router) => router.online).length;
+  const offline = routers.filter((router) => !router.online).map((router) => router.name);
+  if (online >= 2) return { variant: "redundant", title: "TWO ROUTERS, NO SINGLE PATH", body: REDUNDANT_BODY };
+  if (online === 1) {
+    const restore = offline.length === 0 ? "" : ` Restore the ${offline.join(" and the ")} soon.`;
+    return { variant: "one_left", title: "ONE ROUTER LEFT", body: `Battery sensors are relying on a single path.${restore}` };
+  }
+  // [INFERRED] SPEC defines only the two variants above; this covers both routers (or the coordinator) down.
+  const restore = offline.length === 0 ? "" : ` Restore the ${offline.join(" or the ")}.`;
+  return { variant: "none", title: "NO ROUTERS ONLINE", body: `Battery sensors can't reach the coordinator.${restore}` };
 }
