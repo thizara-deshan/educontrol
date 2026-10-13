@@ -1232,7 +1232,7 @@ async def test_routes() -> None:
 ---
 
 ### T7 — `hdmi` module (select input, `hdmi.state`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/hdmi/{__init__,schemas,service,driver_real,driver_fake,router}.py`, `services/hw/tests/test_hdmi.py`
 
