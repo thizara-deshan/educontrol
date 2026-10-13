@@ -4541,7 +4541,7 @@ Pi (localhost only). Until then nothing imports this module and no MQTT library 
 ---
 
 ### T19 — `pnpm dev` also starts hw-service (fake)
-- [ ] done
+- [x] done
 
 **Files:** `package.json`
 
