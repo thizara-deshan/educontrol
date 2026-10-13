@@ -31,6 +31,15 @@ const ACTIONS: { label: string; run: () => void }[] = [
   { label: "Toggle climate stale", run: () => fakeRoom.toggleClimateStale() },
   { label: "Toggle door open", run: () => fakeRoom.toggleDoor() },
   { label: "Door: no reading", run: () => fakeRoom.doorNoReading() },
+  // M05: S2 hidden states. Router offline = "Toggle lights offline" / "Toggle power meter offline".
+  { label: "Climate battery 18%", run: () => fakeRoom.setBattery("r101_temp", 18) },
+  { label: "Climate battery 8%", run: () => fakeRoom.setBattery("r101_temp", 8) },
+  { label: "Climate battery 98%", run: () => fakeRoom.setBattery("r101_temp", 98) },
+  { label: "No battery devices (reload to undo)", run: () => fakeRoom.noBatteryDevices() },
+  { label: "Toggle coordinator starting", run: () => fakeRoom.toggleCoordinatorStarting() },
+  { label: "Open joining (4:12)", run: () => fakeRoom.openJoining() },
+  { label: "Toggle interlock holding", run: () => fakeRoom.toggleInterlockHolding() },
+  { label: "Toggle interlock bypassed", run: () => fakeRoom.toggleInterlockBypassed() },
 ];
 
 /**

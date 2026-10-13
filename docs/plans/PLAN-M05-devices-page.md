@@ -915,7 +915,7 @@ describe("FakeRoom panel actions (S2 hidden states)", () => {
 **Commit:** `git commit -m "feat(kiosk): mock panel methods for S2 states"`
 
 ### T9 — Mock panel buttons for S2
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/MockPanel.tsx`
 
