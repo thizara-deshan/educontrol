@@ -1756,7 +1756,7 @@ degrades the room status (H8)" case still passes).
 **Commit:** `git commit -m "feat(kiosk): mock panel actions for every S1 hidden state"`
 
 ### T13 — Mock panel buttons
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/dev/MockPanel.tsx`
 

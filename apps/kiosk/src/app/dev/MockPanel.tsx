@@ -16,6 +16,21 @@ const ACTIONS: { label: string; run: () => void }[] = [
   { label: "Be kiosk", run: () => fakeRoom.setClientType("kiosk") },
   { label: "Be remote", run: () => fakeRoom.setClientType("remote") },
   { label: "Occupancy detected", run: () => fakeRoom.occupancyDetected() },
+  // M04: every S1 hidden state (start with `?time-scale=0.1` for a fast projector ramp).
+  { label: "Source assumed", run: () => fakeRoom.sourceAssumed() },
+  { label: "No draw change (next IR)", run: () => fakeRoom.noDrawChangeNextCommand() },
+  { label: "Toggle power meter offline", run: () => fakeRoom.toggleDeviceOffline("projector_socket") },
+  { label: "Screen position unknown", run: () => fakeRoom.screenPositionUnknown() },
+  { label: "Toggle screen offline", run: () => fakeRoom.toggleDeviceOffline("projection_screen") },
+  { label: "Toggle HDMI switch offline", run: () => fakeRoom.toggleDeviceOffline("hdmi_switch") },
+  // Delayed so it can land while you drag the PC slider (M04 AC6).
+  { label: "Phone changes PC audio (in 3 s)", run: () => window.setTimeout(() => fakeRoom.changePcAudioFromPhone(), 3000) },
+  { label: "Toggle blaster offline", run: () => fakeRoom.toggleDeviceOffline("ir_blaster") },
+  { label: "Toggle coordinator offline", run: () => fakeRoom.toggleCoordinatorOffline() },
+  { label: "Restart controller (AC unknown)", run: () => fakeRoom.restartController() },
+  { label: "Toggle climate stale", run: () => fakeRoom.toggleClimateStale() },
+  { label: "Toggle door open", run: () => fakeRoom.toggleDoor() },
+  { label: "Door: no reading", run: () => fakeRoom.doorNoReading() },
 ];
 
 /**
