@@ -2755,3 +2755,9 @@ toggles unless their label says otherwise; reload the page to get back to screen
 - Highlight a stale or low-battery row with a small icon, not only colour (colour-blind users).
 - Show the joining countdown in the S2 header too while joining is open.
 - Dock the mock panel above the content at 1280 (it covers the interlock card; M02-L4 / M04-L1).
+
+## Fix tasks (review 1)
+
+Review: `docs/reviews/REVIEW-M05.md` (2026-10-13). **No MUST-FIX findings, so there are no fix tasks.** All 9
+acceptance criteria pass (the two-browser check is CAN'T VERIFY until M08, M02-L3). The 2 LATER items are in
+`docs/milestones/M00-index.md` → Backlog (M05-L1, M05-L2).
