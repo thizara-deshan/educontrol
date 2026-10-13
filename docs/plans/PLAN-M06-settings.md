@@ -3776,7 +3776,7 @@ export function BlasterCard() {
 ---
 
 ### T23 — `FallbackCard` (S3.E11)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/FallbackCard.tsx`
 
