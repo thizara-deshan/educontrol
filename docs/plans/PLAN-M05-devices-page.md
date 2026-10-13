@@ -1804,7 +1804,7 @@ describe("interlockView (S2.E23, H15)", () => {
 **Commit:** `git commit -m "feat(kiosk): shutdown interlock selector"`
 
 ### T20 — `CoordinatorStatus` header item (S2.E3)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/header/CoordinatorStatus.tsx`
 
