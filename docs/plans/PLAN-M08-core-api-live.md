@@ -6934,7 +6934,7 @@ export default defineConfig({
 **Commit:** `git add -A && git commit -m "feat(kiosk): http mode with the Vite proxy"` (includes this plan file with the box ticked)
 
 ### T32 — Acceptance walk-through (M08 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan file only (tick the boxes; write any failure under `## Blockers` and stop).
 
