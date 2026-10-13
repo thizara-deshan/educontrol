@@ -2289,7 +2289,7 @@ describe("muteBarView (S1.E23)", () => {
 **Commit:** `git commit -m "feat(kiosk): mute-all bar selector"`
 
 ### T19 — Selector: lights (S1.E31–E33)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/environment/lights.view.ts`,
 `apps/kiosk/src/features/control/environment/lights.view.test.ts`
