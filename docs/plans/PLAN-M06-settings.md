@@ -4593,7 +4593,7 @@ describe("rows", () => {
 ---
 
 ### T33 — Schedule sheet validation and timed-action presets
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/schedule/schedule-form.ts`, `apps/kiosk/src/features/settings/schedule/schedule-form.test.ts`
 
