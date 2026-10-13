@@ -2,6 +2,7 @@ import type { ClientSession, Command, RoomState, ServerEvent } from "@eduscope/c
 import { formatActivity } from "@/lib/format";
 import { MESSAGE_FAILED, MESSAGE_TIMED_OUT, type InlineErrorStore } from "@/data/commands/inline-errors";
 import type { PendingStore } from "@/data/commands/pending-store";
+import type { IrCaptureStore } from "@/data/ir/capture-store";
 
 // ServerEvent → client state (ARCHITECTURE §4.5). Pure apart from the injected ports, so the
 // mock and the http adapter share this one path. Never writes values optimistically.
@@ -20,6 +21,8 @@ export interface ApplyEventDeps {
   cache: CachePort;
   pending: PendingStore;
   inlineErrors: InlineErrorStore;
+  /** H21 capture rows (S3). */
+  irCapture: Pick<IrCaptureStore, "apply" | "clear">;
   /** H13 toast (bottom, 4 s). */
   toast(text: string): void;
   /** S1.E2 server clock offset. */
@@ -55,6 +58,7 @@ export function applyEvent(event: ServerEvent, deps: ApplyEventDeps): void {
       deps.cache.setState(event.state);
       deps.syncServerTime(event.state.server_time);
       deps.pending.clear();
+      deps.irCapture.clear();
       deps.cache.invalidateAllExceptState();
       return;
     case "state": {
@@ -74,7 +78,8 @@ export function applyEvent(event: ServerEvent, deps: ApplyEventDeps): void {
       return;
     }
     case "ir_capture":
-      return; // M06 adds the capture store (H21)
+      deps.irCapture.apply(event);
+      return;
     case "invalidate":
       deps.cache.invalidate(event.keys);
       return;

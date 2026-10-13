@@ -3,6 +3,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import type { ApiClient } from "@/data/api-client";
 import { inlineErrorStore, MESSAGE_TIMED_OUT } from "@/data/commands/inline-errors";
 import { pendingStore } from "@/data/commands/pending-store";
+import { irCaptureStore } from "@/data/ir/capture-store";
 import { serverClock } from "@/lib/server-time";
 import { applyEvent } from "./apply-event";
 import { createCachePort } from "./cache-port";
@@ -32,6 +33,7 @@ export function createRealtimeRuntime(options: {
         cache,
         pending: pendingStore,
         inlineErrors: inlineErrorStore,
+        irCapture: irCaptureStore,
         toast: options.toast,
         syncServerTime: (iso) => serverClock.sync(iso),
       }),

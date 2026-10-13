@@ -1615,7 +1615,7 @@ an ApiError on learn (H25); an invalid create refused before fetch; schedule PUT
 ---
 
 ### T6 — IR capture store fed by `ir_capture` pushes (H21)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/ir/capture-store.ts`, `apps/kiosk/src/data/ir/capture-store.test.ts`, `apps/kiosk/src/data/realtime/apply-event.ts`, `apps/kiosk/src/data/realtime/apply-event.test.ts`, `apps/kiosk/src/data/realtime/runtime.ts`
 

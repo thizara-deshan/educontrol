@@ -2,6 +2,7 @@ import type { ClientSession, Command, RoomState, ServerEvent } from "@eduscope/c
 import { describe, expect, it, vi } from "vitest";
 import { createInlineErrorStore, MESSAGE_FAILED, MESSAGE_TIMED_OUT } from "@/data/commands/inline-errors";
 import { createPendingStore } from "@/data/commands/pending-store";
+import { createIrCaptureStore } from "@/data/ir/capture-store";
 import { roomState } from "@/data/test/room-state";
 import { applyEvent, type CachePort } from "./apply-event";
 
@@ -33,7 +34,8 @@ function setup(initial?: RoomState) {
   const inlineErrors = createInlineErrorStore();
   const toast = vi.fn();
   const syncServerTime = vi.fn();
-  const deps = { cache, pending, inlineErrors, toast, syncServerTime };
+  const irCapture = createIrCaptureStore();
+  const deps = { cache, pending, inlineErrors, irCapture, toast, syncServerTime };
   return { ...deps, apply: (event: ServerEvent) => applyEvent(event, deps) };
 }
 
@@ -151,13 +153,22 @@ describe("applyEvent", () => {
     expect(t.cache.getSession()).toBe(next);
   });
 
-  it("ping and ir_capture change nothing", () => {
+  it("ping changes nothing", () => {
     const state = roomState();
     const t = setup(state);
     t.apply({ type: "ping" });
-    t.apply({ type: "ir_capture", command_id: "c", status: "listening", deadline: null });
     expect(t.cache.getState()).toBe(state);
     expect(t.toast).not.toHaveBeenCalled();
     expect(t.cache.invalidated).toEqual([]);
+  });
+
+  it("ir_capture goes to the capture store only; a snapshot clears it (H21, H4)", () => {
+    const state = roomState();
+    const t = setup(state);
+    t.apply({ type: "ir_capture", command_id: "c", status: "listening", deadline: "2026-10-05T10:42:20Z" });
+    expect(t.irCapture.entries.get().get("c")).toEqual({ status: "listening", deadline: "2026-10-05T10:42:20Z" });
+    expect(t.cache.getState()).toBe(state);
+    t.apply({ type: "snapshot", state: roomState({ rev: 9 }) });
+    expect(t.irCapture.entries.get().size).toBe(0);
   });
 });
