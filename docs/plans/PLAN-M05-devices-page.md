@@ -1838,7 +1838,7 @@ export function CoordinatorStatus() {
 **Commit:** `git commit -m "feat(kiosk): coordinator status header item"`
 
 ### T21 — Header variant for `/devices` (S2.E1–E4)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/Header.tsx`
 
