@@ -5344,7 +5344,7 @@ describe("PIN change confirm logic (S3d)", () => {
 ---
 
 ### T40 — `DeviceEditSheet` (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/DeviceEditSheet.tsx`
 
