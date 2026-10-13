@@ -3371,7 +3371,7 @@ dimmed and not tappable, red-tinted border. `pnpm verify` → exit 0.
 **Commit:** `git commit -m "feat(kiosk): lights card on S1"`
 
 ### T31 — `AcCard` (S1.E34–E40)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/environment/AcCard.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
