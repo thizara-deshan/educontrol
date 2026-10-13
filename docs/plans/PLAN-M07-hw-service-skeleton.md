@@ -413,7 +413,7 @@ with:
 ---
 
 ### T3 — Shared contract models (`app/contracts.py`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/contracts.py`, `services/hw/tests/test_contracts.py`
 
