@@ -2492,7 +2492,7 @@ async def test_routes() -> None:
 ---
 
 ### T11 — `ir` module (send, learn, cancel, `ir.blaster`, `ir.learn`, blaster-offline route)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/ir/{__init__,schemas,service,driver_real,driver_fake,router}.py`, `services/hw/tests/test_ir.py`
 
