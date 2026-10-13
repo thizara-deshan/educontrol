@@ -506,7 +506,7 @@ describe("mock room status: low battery (H16)", () => {
 **Commit:** `git commit -m "feat(kiosk): mock low-battery room status"`
 
 ### T6 — Mock node helpers: rebased `last_seen`, nodes online/offline
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-rules.ts`, `apps/kiosk/src/data/adapters/mock/mock-nodes.test.ts`
 

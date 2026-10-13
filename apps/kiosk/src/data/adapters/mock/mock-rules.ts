@@ -269,3 +269,29 @@ export function withDerived(state: RoomState): RoomState {
   };
   return { ...withReporting, room: { ...withReporting.room, status: deriveRoomStatus(withReporting) } };
 }
+
+// ── Zigbee nodes (S2) ────────────────────────────────────────────────────────────────
+
+/** "… offline" in the panel backdates the node's last_seen this much (S2.E6 "last seen 5 min ago"). */
+export const NODE_OFFLINE_AGE_MS = 5 * 60_000;
+
+/**
+ * The fixture's node `last_seen` times are relative to its own `server_time`; shift them so they
+ * are the same age relative to `nowMs` (S2.E16 "12s ago" when the page opens).
+ */
+export function rebaseNodeTimes(state: RoomState, nowMs: number): RoomState {
+  const shift = nowMs - Date.parse(state.server_time);
+  const nodes = state.zigbee.nodes.map((node) =>
+    node.last_seen === null ? node : { ...node, last_seen: new Date(Date.parse(node.last_seen) + shift).toISOString() },
+  );
+  return { ...state, zigbee: { ...state.zigbee, nodes } };
+}
+
+/** H8/H9 on S2: matching nodes go offline (last seen 5 min ago) or come back (last seen now). */
+export function withNodesOnline(state: RoomState, friendlyNames: ReadonlySet<string>, online: boolean, nowMs: number): RoomState {
+  const lastSeen = new Date(online ? nowMs : nowMs - NODE_OFFLINE_AGE_MS).toISOString();
+  const nodes = state.zigbee.nodes.map((node) =>
+    friendlyNames.has(node.friendly_name) ? { ...node, online, last_seen: lastSeen } : node,
+  );
+  return { ...state, zigbee: { ...state.zigbee, nodes } };
+}
