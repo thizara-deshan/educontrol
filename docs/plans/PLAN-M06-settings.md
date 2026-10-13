@@ -2105,7 +2105,7 @@ export {
 ---
 
 ### T9 — `SettingsSheet`: bottom sheet on phone, side sheet at lg
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/use-media-query.ts`, `apps/kiosk/src/features/settings/shared/SettingsSheet.tsx`
 
