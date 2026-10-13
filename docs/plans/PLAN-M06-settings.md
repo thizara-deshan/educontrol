@@ -2344,7 +2344,7 @@ export function SheetActions({ saveLabel = "Save", onCancel, onSave, pending, di
 ---
 
 ### T11 — `ConfirmDialog` for Restart and Remove
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/shared/ConfirmDialog.tsx`
 
