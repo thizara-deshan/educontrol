@@ -5892,7 +5892,7 @@ export function QrCode({ url }: { url: string }) {
 ---
 
 ### T48 — `RestartButton` with confirm (S3e)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/about/RestartButton.tsx`
 
