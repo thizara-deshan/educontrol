@@ -3307,7 +3307,7 @@ describe("commandRowView", () => {
 ---
 
 ### T18 — Remote sheet validation: add device, add command
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/forms.ts`, `apps/kiosk/src/features/settings/remote/forms.test.ts`
 
