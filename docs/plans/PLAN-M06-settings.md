@@ -5071,7 +5071,7 @@ with:
 ---
 
 ### T38 — Device registry selectors and permit-join label (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/devices.view.ts`, `apps/kiosk/src/features/settings/devices/devices.view.test.ts`
 
