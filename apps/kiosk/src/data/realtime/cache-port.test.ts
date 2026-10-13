@@ -1,19 +1,12 @@
 import type { ClientSession } from "@eduscope/contracts";
 import { QueryClient } from "@tanstack/react-query";
-import { describe, expect, it, vi } from "vitest";
-import type { ApiClient } from "@/data/api-client";
+import { describe, expect, it } from "vitest";
 import { queryKeys } from "@/data/query-keys";
+import { stubApi } from "@/data/test/api-stub";
 import { roomState } from "@/data/test/room-state";
 import { createCachePort } from "./cache-port";
 
-const api: ApiClient = {
-  getSession: vi.fn(),
-  login: vi.fn(),
-  lock: vi.fn(),
-  getState: vi.fn(),
-  sendCommand: vi.fn(),
-  connect: vi.fn(),
-};
+const api = stubApi();
 const session: ClientSession = {
   public_id: "me", client_type: "remote", label: "laptop", access: "control",
   unlocked_at: null, last_activity: null, expires_at: null,

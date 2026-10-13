@@ -1155,7 +1155,7 @@ describe("FakeRoom PINs and system (S3d, S3b, S3e)", () => {
 ---
 
 ### T5 — ApiClient settings surface (ir, schedule, devices, settings, system) in both adapters
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/api-client.ts`, `apps/kiosk/src/data/adapters/mock/mock-client.ts`, `apps/kiosk/src/data/adapters/http/http-client.ts`, `apps/kiosk/src/data/adapters/http/http-client.test.ts`, `apps/kiosk/src/data/test/api-stub.ts`, `apps/kiosk/src/data/realtime/cache-port.test.ts`
 

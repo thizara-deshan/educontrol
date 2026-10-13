@@ -1,4 +1,4 @@
-import type { Command, ServerEvent } from "@eduscope/contracts";
+import { TimedActionInput, type Command, type ServerEvent } from "@eduscope/contracts";
 import { describe, expect, it, vi } from "vitest";
 import { ApiRequestError } from "@/data/api-client";
 import { roomState } from "@/data/test/room-state";
@@ -193,5 +193,94 @@ describe("sameOriginWsUrl", () => {
   it("uses ws for http and wss for https", () => {
     expect(sameOriginWsUrl({ protocol: "http:", host: "r-101.local" })).toBe("ws://r-101.local/ws");
     expect(sameOriginWsUrl({ protocol: "https:", host: "x:8443" })).toBe("wss://x:8443/ws");
+  });
+});
+
+describe("http adapter: settings routes (S3–S3e)", () => {
+  /** A fetch that answers by path and method. */
+  const fetchBy = (route: (path: string, init: RequestInit | undefined) => Response) =>
+    vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => route(String(input), init));
+  const empty = (status: number): Response => new Response(null, { status });
+  const irCommand = {
+    id: "c1", device_id: "projector", name: "Power on", role: "power_on", setpoint: null, code_format: "tuya",
+    captured: true, captured_at: "2026-10-05T10:42:00Z", test: "reacted", tested_at: "2026-10-05T10:43:00Z",
+  };
+  const irDevice = { device_id: "projector", name: "Projector", brand: "Epson", kind: "projector", transport: "ir_zs06", commands: [irCommand] };
+
+  it("ir: lists devices and posts the test result", async () => {
+    const fetchMock = fetchBy((path) => json(200, path === "/api/ir/devices" ? [irDevice] : irCommand));
+    const api = client(fetchMock);
+    expect(await api.ir.listDevices()).toEqual([irDevice]);
+    expect(await api.ir.recordTest("c1", true)).toEqual(irCommand);
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/ir/commands/c1/test-result", {
+      credentials: "same-origin", method: "POST", headers: { "Content-Type": "application/json" }, body: '{"reacted":true}',
+    });
+  });
+
+  it("ir: learn, cancel and test are 202s without a body", async () => {
+    const fetchMock = fetchBy(() => empty(202));
+    const api = client(fetchMock);
+    await api.ir.learn("c 1");
+    await api.ir.cancelLearn("c1");
+    await api.ir.test("c1");
+    expect(fetchMock.mock.calls.map((call) => call[0])).toEqual([
+      "/api/ir/commands/c%201/learn", "/api/ir/commands/c1/learn/cancel", "/api/ir/commands/c1/test",
+    ]);
+  });
+
+  it("ir: a failed learn maps the ApiError (H25)", async () => {
+    const fetchMock = fetchBy(() => json(503, { code: "hw_unavailable", message: "IR blaster offline" }));
+    await expect(client(fetchMock).ir.learn("c1")).rejects.toMatchObject({ code: "hw_unavailable", status: 503 });
+  });
+
+  it("ir: an invalid create is refused before fetching", async () => {
+    const fetchMock = fetchBy(() => json(200, irDevice));
+    await expect(
+      client(fetchMock).ir.createDevice({ name: " ", brand: "Epson", kind: "projector", transport: "ir_zs06" }),
+    ).rejects.toMatchObject({ code: "validation" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("schedule: PUT an action, DELETE a block", async () => {
+    const action = { id: "a1", name: "All off", time: "18:00", days: ["mon"], enabled: false, steps: [{ kind: "ac.power", on: false }] };
+    const fetchMock = fetchBy((_path, init) => (init?.method === "DELETE" ? empty(204) : json(200, action)));
+    const api = client(fetchMock);
+    const { id, ...input } = action;
+    expect(await api.schedule.updateAction(id, TimedActionInput.parse(input))).toEqual(action);
+    await api.schedule.deleteBlock("b1");
+    expect(fetchMock.mock.calls.map((call) => [call[0], call[1]?.method])).toEqual([
+      ["/api/schedule/actions/a1", "PUT"], ["/api/schedule/blocks/b1", "DELETE"],
+    ]);
+  });
+
+  it("devices: PATCH a rename; permit join posts 240 s", async () => {
+    const device = roomState().devices[0];
+    const fetchMock = fetchBy((path) => (path.startsWith("/api/zigbee") ? empty(202) : json(200, device)));
+    const api = client(fetchMock);
+    expect(await api.devices.update("projector", { name: "Projector" })).toEqual(device);
+    await api.devices.permitJoin();
+    expect(fetchMock.mock.calls.map((call) => [call[0], call[1]?.method, call[1]?.body])).toEqual([
+      ["/api/devices/projector", "PATCH", '{"name":"Projector"}'], ["/api/zigbee/permit-join", "POST", '{"seconds":240}'],
+    ]);
+  });
+
+  it("settings: PUT the room PIN; a 5-digit room PIN never leaves the client", async () => {
+    const fetchMock = fetchBy(() => empty(204));
+    const api = client(fetchMock);
+    await api.settings.setRoomPin("4321");
+    await expect(api.settings.setRoomPin("12345")).rejects.toMatchObject({ code: "validation" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith("/api/settings/pins/room", {
+      credentials: "same-origin", method: "PUT", headers: { "Content-Type": "application/json" }, body: '{"pin":"4321"}',
+    });
+  });
+
+  it("system: about is parsed; a restart is a POST", async () => {
+    const about = { room: "R-101", version: "0.6.0", uptime_s: 12, pi_model: null, url: "http://r-101.local" };
+    const fetchMock = fetchBy((path) => (path === "/api/system/about" ? json(200, about) : empty(202)));
+    const api = client(fetchMock);
+    expect(await api.system.about()).toEqual(about);
+    await api.system.restart();
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/system/restart", expect.objectContaining({ method: "POST" }));
   });
 });

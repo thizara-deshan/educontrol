@@ -1,6 +1,9 @@
 import {
-  ApiError, ClientMessage, CommandRequest, GetSessionResponse, GetStateResponse, LockResponse,
-  LoginRequest, PinError, PostCommandResponse, ServerEvent,
+  ApiError, ClassBlock, ClassBlockInput, ClientMessage, CommandRequest, Device, DeviceList, DevicePatch,
+  GetAboutResponse, GetNetworkResponse, GetScheduleResponse, GetSessionResponse, GetStateResponse, IrCommand,
+  IrCommandCreate, IrDevice, IrDeviceCreate, IrDeviceList, IrTestResultRequest, LockResponse, LoginRequest,
+  PermitJoinRequest, PinError, PostCommandResponse, RoomPinRequest, ServerEvent, TechnicianPinRequest, TimedAction,
+  TimedActionInput,
 } from "@eduscope/contracts";
 import type { z } from "zod";
 import { ApiRequestError, type ApiClient, type RealtimeConnection } from "@/data/api-client";
@@ -30,6 +33,19 @@ export interface HttpClientOptions {
 /** `ws(s)://<host>/ws` for the page's own origin. */
 export function sameOriginWsUrl(location: Pick<Location, "protocol" | "host">): string {
   return `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`;
+}
+
+const sendJson = (method: "POST" | "PUT" | "PATCH", body: unknown): RequestInit => ({
+  method,
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+});
+
+/** Request bodies are checked against the contract before anything is sent (CLAUDE.md: zod at every boundary). */
+function checked<S extends z.ZodType>(schema: S, value: unknown): z.infer<S> {
+  const parsed = schema.safeParse(value);
+  if (!parsed.success) throw new ApiRequestError("validation", parsed.error.issues[0]?.message ?? "Invalid request", null);
+  return parsed.data;
 }
 
 export function createHttpApiClient(options: HttpClientOptions): ApiClient {
@@ -66,11 +82,15 @@ export function createHttpApiClient(options: HttpClientOptions): ApiClient {
     return parse(schema, path, response, body);
   }
 
-  const postJson = (body: unknown): RequestInit => ({
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  const postJson = (body: unknown): RequestInit => sendJson("POST", body);
+
+  /** A 2xx with no body we need (202 / 204). */
+  async function requestVoid(path: string, init: RequestInit): Promise<void> {
+    const { response, body } = await fetchJson(path, init);
+    if (!response.ok) fail(response, body);
+  }
+
+  const id = (value: string): string => encodeURIComponent(value);
 
   return {
     getSession: () => request(GetSessionResponse, "/api/session"),
@@ -93,6 +113,42 @@ export function createHttpApiClient(options: HttpClientOptions): ApiClient {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(CommandRequest.parse(commandRequest)),
       }),
+    ir: {
+      listDevices: () => request(IrDeviceList, "/api/ir/devices"),
+      createDevice: async (input) => request(IrDevice, "/api/ir/devices", postJson(checked(IrDeviceCreate, input))),
+      createCommand: async (deviceId, input) =>
+        request(IrCommand, `/api/ir/devices/${id(deviceId)}/commands`, postJson(checked(IrCommandCreate, input))),
+      learn: (commandId) => requestVoid(`/api/ir/commands/${id(commandId)}/learn`, postJson({})),
+      cancelLearn: (commandId) => requestVoid(`/api/ir/commands/${id(commandId)}/learn/cancel`, postJson({})),
+      test: (commandId) => requestVoid(`/api/ir/commands/${id(commandId)}/test`, postJson({})),
+      recordTest: async (commandId, reacted) =>
+        request(IrCommand, `/api/ir/commands/${id(commandId)}/test-result`, postJson(checked(IrTestResultRequest, { reacted }))),
+    },
+    schedule: {
+      get: () => request(GetScheduleResponse, "/api/schedule"),
+      createBlock: async (input) => request(ClassBlock, "/api/schedule/blocks", postJson(checked(ClassBlockInput, input))),
+      deleteBlock: (blockId) => requestVoid(`/api/schedule/blocks/${id(blockId)}`, { method: "DELETE" }),
+      createAction: async (input) => request(TimedAction, "/api/schedule/actions", postJson(checked(TimedActionInput, input))),
+      updateAction: async (actionId, input) =>
+        request(TimedAction, `/api/schedule/actions/${id(actionId)}`, sendJson("PUT", checked(TimedActionInput, input))),
+      deleteAction: (actionId) => requestVoid(`/api/schedule/actions/${id(actionId)}`, { method: "DELETE" }),
+    },
+    devices: {
+      list: () => request(DeviceList, "/api/devices"),
+      update: async (deviceId, patch) => request(Device, `/api/devices/${id(deviceId)}`, sendJson("PATCH", checked(DevicePatch, patch))),
+      remove: (deviceId) => requestVoid(`/api/devices/${id(deviceId)}`, { method: "DELETE" }),
+      permitJoin: async () => requestVoid("/api/zigbee/permit-join", postJson(checked(PermitJoinRequest, { seconds: 240 }))),
+    },
+    settings: {
+      setRoomPin: async (pin) => requestVoid("/api/settings/pins/room", sendJson("PUT", checked(RoomPinRequest, { pin }))),
+      setTechnicianPin: async (pin) =>
+        requestVoid("/api/settings/pins/technician", sendJson("PUT", checked(TechnicianPinRequest, { pin }))),
+    },
+    system: {
+      network: () => request(GetNetworkResponse, "/api/system/network"),
+      about: () => request(GetAboutResponse, "/api/system/about"),
+      restart: () => requestVoid("/api/system/restart", postJson({})),
+    },
     connect(label, handlers): RealtimeConnection {
       const socket = createSocket(options.wsUrl);
       let closed = false;
