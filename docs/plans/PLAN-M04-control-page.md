@@ -2791,7 +2791,7 @@ export function SourceTile({ label, view, pending, disabled, locked, onPress }: 
 **Commit:** `git commit -m "feat(kiosk): source tile"`
 
 ### T25 — `SourceTiles` on the page (S1.E11/E12)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/SourceTiles.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 

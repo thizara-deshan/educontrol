@@ -1,4 +1,5 @@
 import { SectionLabel } from "@/components/SectionLabel";
+import { SourceTiles } from "./display/SourceTiles";
 
 // SPEC §2.2 / ARCHITECTURE §4.1: one grid. Phone: Display → Audio → Environment. 600–1023:
 // Display + Audio stacked left, Environment right. ≥1024: three columns, no scroll at 1280×800.
@@ -10,6 +11,7 @@ export function ControlPage() {
     <div className="grid grid-cols-1 gap-4 pb-14 sm:grid-cols-2 sm:grid-rows-[auto_1fr] sm:pb-0 lg:grid-cols-3 lg:grid-rows-1">
       <section id="display" aria-label="Display" className={SECTION}>
         <SectionLabel>Display</SectionLabel>
+        <SourceTiles />
       </section>
       <section id="audio" aria-label="Audio" className={`${SECTION} sm:col-start-1 lg:col-start-2 lg:row-start-1`}>
         <SectionLabel>Audio</SectionLabel>
