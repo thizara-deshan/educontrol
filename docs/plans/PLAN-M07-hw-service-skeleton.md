@@ -4571,7 +4571,7 @@ Ctrl+C stops both. `pnpm verify` green.
 ---
 
 ### T20 — Acceptance walk-through (M07 criteria)
-- [ ] done
+- [x] done
 
 **Files:** `docs/plans/PLAN-M07-hw-service-skeleton.md` (tick boxes only)
 
