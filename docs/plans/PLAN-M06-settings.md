@@ -4912,7 +4912,7 @@ export function AddActionSheet({ open, onOpenChange }: { open: boolean; onOpenCh
 ---
 
 ### T37 — `ScheduleTab` (S3c), wired into Settings
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/schedule/ScheduleTab.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 

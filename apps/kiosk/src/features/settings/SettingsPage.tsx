@@ -1,6 +1,7 @@
 import { PlaceholderPage } from "@/components/PlaceholderPage";
 import { NetworkTab } from "./network/NetworkTab";
 import { RemoteTab } from "./remote/RemoteTab";
+import { ScheduleTab } from "./schedule/ScheduleTab";
 import { SettingsTabs } from "./SettingsTabs";
 import type { SettingsTab } from "./tabs";
 
@@ -13,7 +14,7 @@ function TabContent({ tab }: { tab: SettingsTab }) {
     case "network":
       return <NetworkTab />;
     case "schedule":
-      return <PlaceholderPage title="Schedule" spec="S3c" milestone="M06" />;
+      return <ScheduleTab />;
     case "devices":
       return <PlaceholderPage title="Devices" spec="S3d" milestone="M06" />;
     case "about":
