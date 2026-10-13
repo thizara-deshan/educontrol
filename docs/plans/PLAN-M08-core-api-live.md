@@ -4651,7 +4651,7 @@ that locks must keep the same one, or it would toast its own commands after re-u
 **Commit:** `git add -A && git commit -m "feat(core-api): session service"` (includes this plan file with the box ticked)
 
 ### T24 — `buildApp()` with errors, `GET /api/state`, `GET /api/health` and the SPA
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/plugins/errors.ts`, `apps/core-api/src/plugins/static.ts`, `apps/core-api/src/routes/state.ts`, `apps/core-api/src/routes/health.ts`, `apps/core-api/src/app.ts`, `apps/core-api/test/routes/app-helpers.ts`, `apps/core-api/test/routes/read.test.ts`, `apps/core-api/test/routes/static.test.ts`
 
