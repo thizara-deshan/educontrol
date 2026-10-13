@@ -4470,7 +4470,7 @@ with:
 ---
 
 ### T32 — Schedule selectors: days, block and action rows
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/schedule/schedule.view.ts`, `apps/kiosk/src/features/settings/schedule/schedule.view.test.ts`
 
