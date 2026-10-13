@@ -6034,7 +6034,7 @@ with:
 ---
 
 ### T50 — No `/favicon.ico` 404 (console error)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/index.html`
 
