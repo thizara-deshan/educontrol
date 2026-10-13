@@ -5517,7 +5517,7 @@ export function RegistryCard() {
 ---
 
 ### T42 — `PermitJoinCard` (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/PermitJoinCard.tsx`
 
