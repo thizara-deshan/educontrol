@@ -2,4 +2,6 @@ packages:
   - apps/*
   - packages/*
 allowBuilds:
+  # prebuilt N-API binaries ship in the package (prebuilds/); no compile on install
+  better-sqlite3: false
   esbuild: true

@@ -4,8 +4,33 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node -e \"console.log('@eduscope/core-api: placeholder until M08')\"",
-    "build": "node -e \"console.log('@eduscope/core-api: placeholder until M08')\"",
-    "db:generate": "node -e \"console.log('@eduscope/core-api: db:generate arrives in M08')\""
+    "dev": "node -e \"console.log('@eduscope/core-api: dev arrives in M08 T29')\"",
+    "build": "node -e \"console.log('@eduscope/core-api: build arrives in M08 T29')\"",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@eduscope/contracts": "workspace:*",
+    "@fastify/cookie": "^11.1.3",
+    "@fastify/static": "^10.1.6",
+    "@fastify/websocket": "^11.3.4",
+    "better-sqlite3": "^13.0.3",
+    "drizzle-orm": "^0.45.4",
+    "eventsource-parser": "^4.1.2",
+    "fastify": "^5.12.5",
+    "fastify-plugin": "^6.0.1",
+    "fastify-type-provider-zod": "^7.0.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.5",
+    "@types/ws": "^8.18.2",
+    "drizzle-kit": "^0.31.11",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3"
   }
 }

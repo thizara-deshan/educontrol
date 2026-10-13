@@ -158,7 +158,7 @@ describe("HealthResponse", () => {
 **Commit:** `git add -A && git commit -m "feat(contracts): GET /api/health response"` (includes this plan file with the box ticked)
 
 ### T2 — core-api scaffold: dependencies, tsconfig, Vitest, zod-parsed config
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/package.json`, `pnpm-workspace.yaml`, `apps/core-api/tsconfig.json`, `apps/core-api/vitest.config.ts`, `apps/core-api/src/config.ts`, `apps/core-api/test/helpers.ts`, `apps/core-api/test/config.test.ts`, `apps/core-api/src/.gitkeep` (delete), `apps/core-api/drizzle/.gitkeep` (delete)
 
