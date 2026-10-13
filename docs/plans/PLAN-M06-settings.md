@@ -3813,7 +3813,7 @@ export function FallbackCard() {
 ---
 
 ### T24 — `HowCaptureWorks` (S3.E17)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/HowCaptureWorks.tsx`
 
