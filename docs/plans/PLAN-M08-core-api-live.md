@@ -4238,7 +4238,7 @@ describe("§2.3 session ends", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): session expiry and kiosk rules"` (includes this plan file with the box ticked)
 
 ### T22 — PIN throttle (H17)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/auth/pin-throttle.ts`, `apps/core-api/test/auth/pin-throttle.test.ts`
 
