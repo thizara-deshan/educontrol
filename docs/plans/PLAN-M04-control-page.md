@@ -980,7 +980,7 @@ describe("mock derived fields", () => {
 **Commit:** `git commit -m "feat(kiosk): mock derives room status and sensors reporting"`
 
 ### T9 — `?time-scale=` for the mock
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/time-scale.ts`, `apps/kiosk/src/data/adapters/mock/time-scale.test.ts`
 
