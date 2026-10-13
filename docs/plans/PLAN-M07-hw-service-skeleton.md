@@ -626,7 +626,7 @@ async def test_guard_turns_driver_crash_into_transport_error() -> None:
 ---
 
 ### T4 — Event bus, heartbeat and the SSE generator (`app/events.py`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/events.py`, `services/hw/tests/helpers.py`, `services/hw/tests/test_events.py`
 
