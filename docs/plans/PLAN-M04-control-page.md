@@ -886,7 +886,7 @@ describe("R1 projector ramp (mock)", () => {
 **Commit:** `git commit -m "feat(kiosk): mock R1 projector draw ramp"`
 
 ### T8 — Mock rules: derived room status and reporting count
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-rules.ts`, `apps/kiosk/src/data/adapters/mock/mock-derived.test.ts`
 

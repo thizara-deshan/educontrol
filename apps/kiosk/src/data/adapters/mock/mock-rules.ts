@@ -1,5 +1,5 @@
 import type {
-  ChangedBy, CommandBody, Confidence, Observed, ProjectorFeedback, ProjectorState, RoomState, Source,
+  ChangedBy, CommandBody, Confidence, Observed, ProjectorFeedback, ProjectorState, RoomState, RoomStatus, Source,
 } from "@eduscope/contracts";
 
 // The mock's own rough approximation of core-api's domain rules (never imported from
@@ -225,4 +225,42 @@ export function applyProjectorStep(state: RoomState, step: ProjectorStep, at: st
 export function setProjectorPhase(state: RoomState, phase: ProjectorFeedback["phase"]): RoomState {
   const { projector } = state.display;
   return { ...state, display: { ...state.display, projector: { ...projector, feedback: { ...projector.feedback, phase } } } };
+}
+
+// ── Derived fields (core-api recomputes these on every change, ARCHITECTURE §6.4) ──────
+
+/** S1.E41: sensor devices that are online with a fresh, non-null reading on every tile. */
+export function deriveReporting(state: RoomState): { count: number; of: number } {
+  const { temperature, humidity, occupancy, contact } = state.environment.sensors;
+  const readings = [temperature, humidity, occupancy, contact];
+  const sensors = state.devices.filter((device) => device.kind === "sensor");
+  const count = sensors.filter((device) => {
+    if (device.online.value === false) return false;
+    const own = readings.filter((reading) => reading.node === device.hw_ref);
+    return own.length > 0 && own.every((reading) => !reading.stale && reading.value !== null);
+  }).length;
+  return { count, of: sensors.length };
+}
+
+/** S1.E4 (approximation of core-api `status.ts`): fault > degraded > normal. */
+export function deriveRoomStatus(state: RoomState): RoomStatus {
+  if (state.zigbee.coordinator.status === "offline") return { level: "fault", text: "Coordinator offline" };
+  const offline = state.devices.filter((device) => device.online.value === false);
+  const first = offline[0];
+  if (first !== undefined) {
+    return { level: "degraded", text: offline.length === 1 ? `${first.name} offline` : `${offline.length} devices offline` };
+  }
+  const { count, of } = state.environment.sensors.reporting;
+  if (count < of) return { level: "degraded", text: "Sensor not reporting" };
+  return { level: "normal", text: "All systems normal" };
+}
+
+/** Recomputes `sensors.reporting` then `room.status`. */
+export function withDerived(state: RoomState): RoomState {
+  const reporting = deriveReporting(state);
+  const withReporting: RoomState = {
+    ...state,
+    environment: { ...state.environment, sensors: { ...state.environment.sensors, reporting } },
+  };
+  return { ...withReporting, room: { ...withReporting.room, status: deriveRoomStatus(withReporting) } };
 }
