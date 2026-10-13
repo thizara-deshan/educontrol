@@ -2110,7 +2110,7 @@ export function GangTile({ label, state, greyed }: { label: string; state: Obser
 **Commit:** `git commit -m "feat(kiosk): read-only gang tile"`
 
 ### T25 — `LightingSwitchCard` (S2.E6–E9)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/LightingSwitchCard.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
