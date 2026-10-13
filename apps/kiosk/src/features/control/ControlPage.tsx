@@ -4,6 +4,7 @@ import { ProjectorCard } from "./display/ProjectorCard";
 import { ScreenCard } from "./display/ScreenCard";
 import { LevelCard } from "./audio/LevelCard";
 import { MuteAllBar } from "./audio/MuteAllBar";
+import { LightsCard } from "./environment/LightsCard";
 
 // SPEC §2.2 / ARCHITECTURE §4.1: one grid. Phone: Display → Audio → Environment. 600–1023:
 // Display + Audio stacked left, Environment right. ≥1024: three columns, no scroll at 1280×800.
@@ -31,6 +32,7 @@ export function ControlPage() {
         className={`${SECTION} sm:col-start-2 sm:row-span-2 sm:row-start-1 lg:col-start-3 lg:row-span-1`}
       >
         <SectionLabel>Environment</SectionLabel>
+        <LightsCard />
       </section>
     </div>
   );

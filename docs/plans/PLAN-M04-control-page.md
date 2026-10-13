@@ -3279,7 +3279,7 @@ the dragged level (H18). `pnpm verify` → exit 0.
 **Commit:** `git commit -m "feat(kiosk): mute-all bar on S1"`
 
 ### T30 — `LightsCard` (S1.E31–E33)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/environment/LightsCard.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
