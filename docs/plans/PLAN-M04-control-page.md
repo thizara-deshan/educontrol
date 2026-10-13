@@ -3617,7 +3617,7 @@ nothing changes (no scroll). `pnpm verify` → exit 0.
 **Commit:** `git commit -m "feat(kiosk): sticky header"`
 
 ### T34 — S1.E4 status opens `/devices` (≥600)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/StatusIndicator.tsx`
 
