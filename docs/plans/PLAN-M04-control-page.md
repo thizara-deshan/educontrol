@@ -2995,7 +2995,7 @@ offline". `pnpm verify` → exit 0.
 **Commit:** `git commit -m "feat(kiosk): projector card on S1"`
 
 ### T27 — `ScreenCard` (S1.E17/E18)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/ScreenCard.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
