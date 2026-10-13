@@ -6888,7 +6888,7 @@ describe("http adapter: WebSocket", () => {
 **Commit:** `git add -A && git commit -m "feat(kiosk): bind the WebSocket to the session cookie"` (includes this plan file with the box ticked)
 
 ### T31 — Kiosk talks to core-api in dev: `VITE_API_MODE=http` + Vite proxy
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/.env.development`, `apps/kiosk/vite.config.ts`
 
