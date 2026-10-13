@@ -947,7 +947,7 @@ async def test_finished_tasks_are_forgotten() -> None:
 ---
 
 ### T6 — `lights` module (set gang, `lights.state`, by-hand route)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/__init__.py` (empty), `services/hw/app/modules/lights/{__init__,schemas,service,driver_real,driver_fake,router}.py`,
 `services/hw/tests/test_lights.py`
