@@ -949,7 +949,7 @@ describe("FakeRoom panel actions (S2 hidden states)", () => {
 **Commit:** `git commit -m "feat(kiosk): mock panel buttons for S2"`
 
 ### T10 — Selector: coordinator status (S2.E3)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/header/coordinator-status.view.ts`, `apps/kiosk/src/features/devices/header/coordinator-status.view.test.ts`
 
