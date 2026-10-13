@@ -3811,7 +3811,7 @@ describe("dispatcher outcomes", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): command dispatcher"` (includes this plan file with the box ticked)
 
 ### T20 — hw ingest: correlation (confirmed) and "by hand" attribution
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/hw/ingest.ts`, `apps/core-api/test/commands/setup.ts`, `apps/core-api/test/commands/correlation.test.ts`, `apps/core-api/test/hw/ingest.test.ts`
 
