@@ -891,7 +891,7 @@ describe("event log", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): event_log writer"` (includes this plan file with the box ticked)
 
 ### T7 — Domain base: Observed helpers, model types, kWh today
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/observed.ts`, `apps/core-api/src/domain/model.ts`, `apps/core-api/src/domain/energy.ts`, `apps/core-api/test/domain/energy.test.ts`
 
