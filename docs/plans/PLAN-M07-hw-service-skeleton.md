@@ -4646,3 +4646,8 @@ Start fresh each time with Ctrl+C on the server. Write the observed result next 
   independent today).
 - Random-walk the fake climate values instead of independent jitter around the base value.
 - `.env.example` for `services/hw` (M10 adds `deploy/pi/env/hw.env.example`).
+
+## Fix tasks (review 1)
+
+Review: `docs/reviews/REVIEW-M07.md` — verdict PASS, **no MUST-FIX findings, so no fix tasks.** The one LATER item
+(M07-L1, loopback guard vs. the real uvicorn bind) is in `docs/milestones/M00-index.md` under "Backlog".
