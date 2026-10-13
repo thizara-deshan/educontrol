@@ -120,7 +120,7 @@ M01 left them; pydantic is written to match them.
 ## Tasks
 
 ### T1 — hw project scaffold and settings
-- [ ] done
+- [x] done
 
 **Files:** delete `services/hw/.gitkeep`; create `services/hw/pyproject.toml`, `services/hw/.python-version`,
 `services/hw/uv.lock` (generated), `services/hw/app/__init__.py`, `services/hw/app/config.py`,
