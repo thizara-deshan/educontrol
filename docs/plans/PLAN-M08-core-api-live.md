@@ -1211,7 +1211,7 @@ describe("H7b feedback", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): R1/R2/H7b projector rules"` (includes this plan file with the box ticked)
 
 ### T9 — AC rules: R3 assumed, R4 captured setpoints, Q5, H19
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/ac.ts`, `apps/core-api/test/domain/ac.test.ts`
 
