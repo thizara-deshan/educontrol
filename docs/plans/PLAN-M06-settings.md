@@ -2186,7 +2186,7 @@ export function SettingsSheet({ open, onOpenChange, title, description, children
 ---
 
 ### T10 — Sheet form controls: `TextField`, `ChoiceGroup`, `SheetActions`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/shared/TextField.tsx`, `apps/kiosk/src/features/settings/shared/ChoiceGroup.tsx`, `apps/kiosk/src/features/settings/shared/SheetActions.tsx`, `apps/kiosk/src/features/settings/shared/form-result.ts`
 
