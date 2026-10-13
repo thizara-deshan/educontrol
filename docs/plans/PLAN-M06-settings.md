@@ -543,7 +543,7 @@ uncaptured command.
 ---
 
 ### T2 — Mock schedule store (FakeSchedule)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-schedule.ts`, `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-schedule.test.ts`
 

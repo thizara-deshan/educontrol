@@ -5,6 +5,7 @@ import {
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
 import { FakeIr } from "./fake-ir";
+import { FakeSchedule } from "./fake-schedule";
 import type { MockHost } from "./mock-host";
 import {
   applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, rebaseNodeTimes, RUNNING_WATTS,
@@ -84,8 +85,9 @@ export class FakeRoom {
   private screenTimer: ReturnType<typeof setTimeout> | null = null;
   private noDrawChangeNext = false;
   private joinTimer: ReturnType<typeof setTimeout> | null = null;
-  /** S3 Remote configuration store (it shares this room's state and events). */
+  /** S3 Remote configuration and S3c Schedule stores (they share this room's state and events). */
   readonly ir: FakeIr;
+  readonly schedule: FakeSchedule;
   private readonly random: () => number;
   private readonly now: () => number;
   private readonly timeScale: number;
@@ -108,6 +110,7 @@ export class FakeRoom {
       now: () => this.now(),
     };
     this.ir = new FakeIr(host);
+    this.schedule = new FakeSchedule(host);
   }
 
   // ── ApiClient surface ────────────────────────────────────────────────────────────────
