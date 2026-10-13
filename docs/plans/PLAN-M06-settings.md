@@ -5949,7 +5949,7 @@ export function RestartButton() {
 ---
 
 ### T49 — `AboutTab` (S3e), wired into Settings
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/about/AboutTab.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 
