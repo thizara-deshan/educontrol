@@ -94,7 +94,7 @@ All paths under `apps/kiosk/src/`.
 ## Tasks
 
 ### T1 — One shared 1 s ticker for server time
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/lib/server-time.ts`, `apps/kiosk/src/lib/server-time.test.ts`
 
