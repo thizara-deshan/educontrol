@@ -398,7 +398,7 @@ import {
 **Commit:** `git commit -m "feat(kiosk): callout state styles"`
 
 ### T4 — `MetricTile` shows a stale age (H10)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/MetricTile.tsx`
 
