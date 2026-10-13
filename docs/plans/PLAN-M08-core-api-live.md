@@ -3078,7 +3078,7 @@ describe("startHwStream", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): hw SSE stream with backoff and dead detection"` (includes this plan file with the box ticked)
 
 ### T17 — IR code lookup
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/commands/ir-codes.ts`, `apps/core-api/test/commands/ir-codes.test.ts`
 
