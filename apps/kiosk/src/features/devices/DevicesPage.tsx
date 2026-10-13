@@ -1,4 +1,5 @@
 import { SectionLabel } from "@/components/SectionLabel";
+import { BatteryList } from "./battery/BatteryList";
 import { LightingSwitchCard } from "./routers/LightingSwitchCard";
 import { ProjectorSocketCard } from "./routers/ProjectorSocketCard";
 
@@ -12,6 +13,7 @@ export function DevicesPage() {
         <LightingSwitchCard />
         <ProjectorSocketCard />
         <SectionLabel className="mt-3">Battery — end devices</SectionLabel>
+        <BatteryList />
       </div>
       <div className="flex min-w-0 flex-col gap-3">
       </div>

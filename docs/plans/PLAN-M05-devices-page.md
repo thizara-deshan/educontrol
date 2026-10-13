@@ -2269,7 +2269,7 @@ import { ProjectorSocketCard } from "./routers/ProjectorSocketCard";
 **Commit:** `git commit -m "feat(kiosk): projector socket card"`
 
 ### T27 — `BatteryList` table (≥600px) with loading and empty states
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/battery/BatteryList.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
