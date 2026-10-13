@@ -1533,7 +1533,7 @@ describe("coordinatorView (S2.E20)", () => {
 **Commit:** `git commit -m "feat(kiosk): coordinator card selector"`
 
 ### T17 — Selector: mesh card and joining countdown (S2.E21)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/side.view.ts`, `apps/kiosk/src/features/devices/side/side.view.test.ts`
 
