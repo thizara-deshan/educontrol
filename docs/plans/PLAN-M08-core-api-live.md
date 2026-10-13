@@ -344,7 +344,7 @@ describe("config", () => {
 **Commit:** `git add -A && git commit -m "chore(core-api): scaffold, dependencies and zod-parsed config"` (includes this plan file with the box ticked)
 
 ### T3 — Drizzle schema, first generated migration, `openDb()`
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/schema.ts`, `apps/core-api/drizzle.config.ts`, `apps/core-api/drizzle/0000_init.sql` + drizzle/meta/* (generated), `apps/core-api/src/paths.ts`, `apps/core-api/src/db/client.ts`, `apps/core-api/test/db/client.test.ts`
 
