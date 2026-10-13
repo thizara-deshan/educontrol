@@ -4403,7 +4403,7 @@ describe("network view (S3b)", () => {
 ---
 
 ### T31 — `NetworkTab` (S3b), wired into Settings
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/network/NetworkTab.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 
