@@ -242,6 +242,9 @@ export function deriveReporting(state: RoomState): { count: number; of: number }
   return { count, of: sensors.length };
 }
 
+/** H16: a battery at or below this is low (amber on S2, S1.E4 degraded). */
+export const LOW_BATTERY_PCT = 20;
+
 /** S1.E4 (approximation of core-api `status.ts`): fault > degraded > normal. */
 export function deriveRoomStatus(state: RoomState): RoomStatus {
   if (state.zigbee.coordinator.status === "offline") return { level: "fault", text: "Coordinator offline" };
@@ -252,6 +255,8 @@ export function deriveRoomStatus(state: RoomState): RoomStatus {
   }
   const { count, of } = state.environment.sensors.reporting;
   if (count < of) return { level: "degraded", text: "Sensor not reporting" };
+  const lowBattery = state.zigbee.nodes.some((node) => node.battery_pct !== null && node.battery_pct <= LOW_BATTERY_PCT);
+  if (lowBattery) return { level: "degraded", text: "Sensor battery low" }; // H16
   return { level: "normal", text: "All systems normal" };
 }
 

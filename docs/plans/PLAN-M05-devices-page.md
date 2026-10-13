@@ -449,7 +449,7 @@ export function MetricTile({ label, value, tone = "default", staleAgo = null, lo
 **Commit:** `git commit -m "feat(kiosk): stale age on metric tiles"`
 
 ### T5 — Mock room status: "Sensor battery low" (H16)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-rules.ts`, `apps/kiosk/src/data/adapters/mock/mock-nodes.test.ts`
 
