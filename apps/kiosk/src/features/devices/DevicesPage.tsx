@@ -4,6 +4,7 @@ import { LightingSwitchCard } from "./routers/LightingSwitchCard";
 import { ProjectorSocketCard } from "./routers/ProjectorSocketCard";
 import { CoordinatorCard } from "./side/CoordinatorCard";
 import { MeshCard } from "./side/MeshCard";
+import { RedundancyCallout } from "./side/RedundancyCallout";
 
 // SPEC S2 / §2.2 / ARCHITECTURE §4.1: ≥1024 main ~75% + side ~25%; below, the side column drops under
 // the main one. DOM order = phone order: routers → battery → coordinator → mesh → callout → interlock.
@@ -20,6 +21,7 @@ export function DevicesPage() {
       <div className="flex min-w-0 flex-col gap-3">
         <CoordinatorCard />
         <MeshCard />
+        <RedundancyCallout />
       </div>
     </div>
   );

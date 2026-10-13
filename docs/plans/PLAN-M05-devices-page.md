@@ -2573,7 +2573,7 @@ import { MeshCard } from "./side/MeshCard";
 **Commit:** `git commit -m "feat(kiosk): mesh card"`
 
 ### T31 — `RedundancyCallout` (S2.E22)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/RedundancyCallout.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
