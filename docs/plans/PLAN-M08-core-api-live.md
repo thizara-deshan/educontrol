@@ -2650,7 +2650,7 @@ describe("state store", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): state store with rev and 50 ms coalescing"` (includes this plan file with the box ticked)
 
 ### T15 — hw-service HTTP client (timeouts per transport)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/hw/client.ts`, `apps/core-api/test/hw/client.test.ts`, `apps/core-api/test/helpers.ts`
 

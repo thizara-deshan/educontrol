@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync } from "node:fs";
-import { DeviceKind, HwEvent, Transport } from "@eduscope/contracts";
+import { DeviceKind, HwEvent, Transport, type HwAck } from "@eduscope/contracts";
+import { vi } from "vitest";
 import { Config } from "../src/config.ts";
+import type { HwClient } from "../src/hw/client.ts";
 import { initialModel } from "../src/domain/initial.ts";
 import type { DeviceInfo, RoomModel, RuleConfig } from "../src/domain/model.ts";
 import { SEED_DEVICES } from "../src/db/seed.ts";
@@ -62,6 +64,34 @@ export function snapshotEvent(at: string = T0): HwEvent {
 
 export function hwEvent<T extends HwEvent["type"]>(type: T, data: Extract<HwEvent, { type: T }>["data"], at: string = T0): HwEvent {
   return HwEvent.parse({ type, at, data });
+}
+
+export interface FakeHw extends HwClient {
+  calls: { method: keyof HwClient; body: unknown }[];
+  /** Answer of the next calls (default `{ok:true}`). */
+  nextAcks: HwAck[];
+  /** Runs after each call is recorded (e.g. to feed the echo event into ingest). */
+  onCall?: (method: keyof HwClient, body: unknown) => void;
+}
+
+export function fakeHw(): FakeHw {
+  const hw: FakeHw = {
+    calls: [],
+    nextAcks: [],
+    lightsSet: vi.fn(async (body) => record("lightsSet", body)),
+    projectorRelay: vi.fn(async (body) => record("projectorRelay", body)),
+    irSend: vi.fn(async (body) => record("irSend", body)),
+    hdmiSelect: vi.fn(async (body) => record("hdmiSelect", body)),
+    screenMove: vi.fn(async (body) => record("screenMove", body)),
+    audioLevel: vi.fn(async (body) => record("audioLevel", body)),
+    audioMute: vi.fn(async (body) => record("audioMute", body)),
+  };
+  function record(method: keyof HwClient, body: unknown): HwAck {
+    hw.calls.push({ method, body });
+    hw.onCall?.(method, body);
+    return hw.nextAcks.shift() ?? { ok: true };
+  }
+  return hw;
 }
 
 /** Unwraps a value a test knows is there (no `!` allowed by lint). */
