@@ -1311,7 +1311,7 @@ describe("R4 AC setpoints", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): R3/R4 AC rules"` (includes this plan file with the box ticked)
 
 ### T10 — Attribution texts (H13)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/attribution.ts`, `apps/core-api/test/domain/attribution.test.ts`
 
