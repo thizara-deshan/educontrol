@@ -4133,7 +4133,7 @@ describe("ingest", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): hw ingest with correlation and by-hand attribution"` (includes this plan file with the box ticked)
 
 ### T21 — Session rules: idle expiry and the kiosk exemption
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/session-rules.ts`, `apps/core-api/test/auth/session-rules.test.ts`
 
