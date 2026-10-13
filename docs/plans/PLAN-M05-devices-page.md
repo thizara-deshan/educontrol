@@ -2680,7 +2680,7 @@ import { InterlockCard } from "./side/InterlockCard";
 **Commit:** `git commit -m "feat(kiosk): shutdown interlock card"`
 
 ### T33 — Acceptance walk-through (M05 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan file only (tick the boxes below; write any failure under `## Blockers` and stop).
 
@@ -2691,43 +2691,43 @@ toggles unless their label says otherwise; reload the page to get back to screen
 
 **Do:** check each item; tick it when it holds.
 
-- [ ] **AC1 — 1280×800 matches screenshot 02.** Open `/devices?mock-panel`, collapse the panel. Compare with
+- [x] **AC1 — 1280×800 matches screenshot 02.** Open `/devices?mock-panel`, collapse the panel. Compare with
   `reference/screens/02-devices-zigbee.png.png`: main column ≈75% with "MAINS POWERED — ROUTERS", Lighting switch and
   Projector socket cards, "BATTERY — END DEVICES" table; side column with COORDINATOR, MESH, "TWO ROUTERS, NO SINGLE
   PATH", SHUTDOWN INTERLOCK. Console:
   `[...document.querySelectorAll("main > div > div")].map(e=>Math.round(e.getBoundingClientRect().width))` →
   `[901, 300]` (±2). Expected differences: the page scrolls ~50px at 800 tall (decision D15; screenshot 02 is cropped
   too); gang tiles are 48px tall.
-- [ ] **AC2 — navigation.** "← Controls" → `/` (S1). Back on `/devices`, "Settings" as `view`: the "Technician PIN"
+- [x] **AC2 — navigation.** "← Controls" → `/` (S1). Back on `/devices`, "Settings" as `view`: the "Technician PIN"
   overlay opens; Cancel stays on `/devices`; `123456` → `/settings/remote` (M03 gate).
-- [ ] **AC3 — router cards.** Mono ids `ZBM5-2C-86W · r101_lights` and `S60ZBTPG · r101_proj_plug`, "Router" badges,
+- [x] **AC3 — router cards.** Mono ids `ZBM5-2C-86W · r101_lights` and `S60ZBTPG · r101_proj_plug`, "Router" badges,
   `LQI 214` / `LQI 231`; tiles Front of room On (green), Rear of room Off (neutral), Mains to projector On; metrics
   `287 W` (green) · `231 V` · `1.84 kWh` · `13 A`.
-- [ ] **AC4 — battery table.** Rows Room climate (`26.4° · 61%`, `98%`, `168`, `12s ago` counting up), Motion
+- [x] **AC4 — battery table.** Rows Room climate (`26.4° · 61%`, `98%`, `168`, `12s ago` counting up), Motion
   ("Detected" green), Door ("Closed") with reading, battery, link, last seen. Panel "Climate battery 18%" → `18%` amber;
   "Climate battery 8%" → `8%` red; go to `/` → header status amber "Sensor battery low" (H16 is S1.E4; the S2 header
   shows the coordinator instead); back to `/devices`. "Climate battery 98%" → normal. "Toggle climate stale" → Room
   climate last seen `14 min ago` amber, reading grey (H10). Reload; "No battery devices (reload to undo)" → "No battery
   devices paired".
-- [ ] **AC5 — router offline (R7).** Reload; panel "Toggle lights offline": Lighting switch red dot, "Offline · last
+- [x] **AC5 — router offline (R7).** Reload; panel "Toggle lights offline": Lighting switch red dot, "Offline · last
   seen 5 min ago" instead of the LQI, tiles greyed, red border; callout amber "ONE ROUTER LEFT" "… Restore the lighting
   switch soon."
-- [ ] **AC6 — coordinator and joining.** Reload; "Toggle coordinator offline": header "● Coordinator offline" red,
+- [x] **AC6 — coordinator and joining.** Reload; "Toggle coordinator offline": header "● Coordinator offline" red,
   coordinator and mesh values grey (H9), both routers offline, callout red "NO ROUTERS ONLINE". Toggle back;
   "Toggle coordinator starting": header "Coordinator starting…" amber. Reload; "Open joining (4:12)": Joining
   "Open · 4:12 left" in amber, counting down each second.
-- [ ] **AC7 — interlock holding (H15).** Reload; "Toggle interlock holding": "● Holding", "Waiting for projector to cool
+- [x] **AC7 — interlock holding (H15).** Reload; "Toggle interlock holding": "● Holding", "Waiting for projector to cool
   · 112 W"; POWER shows `112 W`. "Toggle interlock bypassed" (after toggling holding off): "● Bypassed".
-- [ ] **AC8 — 390px.** Reload at 390×844 (touch). Header: "← Controls" with label, "Zigbee devices", coordinator dot,
+- [x] **AC8 — 390px.** Reload at 390×844 (touch). Header: "← Controls" with label, "Zigbee devices", coordinator dot,
   gear icon. Order: Lighting switch → Projector socket → three battery cards (3 lines each) → Coordinator → Mesh →
   callout → interlock. Power metrics 2×2. Console: `document.documentElement.scrollWidth === innerWidth` → `true`;
   `[...document.querySelectorAll("header a, header button, main a, main button")].filter(e=>{const r=e.getBoundingClientRect();return r.width<48||r.height<48}).length`
   → `0`.
-- [ ] **AC9 — `pnpm verify` green** with the S2 selector tests: `battery.view.test.ts` (last-seen formatting, battery
+- [x] **AC9 — `pnpm verify` green** with the S2 selector tests: `battery.view.test.ts` (last-seen formatting, battery
   severity, empty state), `side.view.test.ts` (callout variant, joining countdown text), plus
   `routers.view.test.ts`, `coordinator-status.view.test.ts`, `mock-nodes.test.ts`, `fake-room-devices.test.ts`,
   `server-time.test.ts`. `pnpm build` → exit 0 (the >500 kB chunk warning is M02-L1).
-- [ ] **S1 regression.** `/` at 1280×800: `[document.documentElement.scrollHeight, innerHeight]` → `[800, 800]`; header
+- [x] **S1 regression.** `/` at 1280×800: `[document.documentElement.scrollHeight, innerHeight]` → `[800, 800]`; header
   clock ticks; S1 sensors unchanged.
 
 **Verify:** all boxes ticked; `pnpm verify` → exit 0.
