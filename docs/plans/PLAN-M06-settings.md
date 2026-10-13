@@ -5850,7 +5850,7 @@ describe("qrPath", () => {
 ---
 
 ### T47 — `QrCode` (S3e)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/about/QrCode.tsx`
 
