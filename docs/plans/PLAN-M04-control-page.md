@@ -743,7 +743,7 @@ saves and clears the levels (R9)" case still passes).
 **Commit:** `git commit -m "feat(kiosk): mock commands follow R2, R9, R3/R4 and screen travel"`
 
 ### T7 — Mock rules: R1 projector draw ramp
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-rules.ts`, `apps/kiosk/src/data/adapters/mock/mock-ramp.test.ts`
 

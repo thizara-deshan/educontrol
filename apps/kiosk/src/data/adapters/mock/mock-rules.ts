@@ -1,4 +1,6 @@
-import type { ChangedBy, CommandBody, Confidence, Observed, RoomState, Source } from "@eduscope/contracts";
+import type {
+  ChangedBy, CommandBody, Confidence, Observed, ProjectorFeedback, ProjectorState, RoomState, Source,
+} from "@eduscope/contracts";
 
 // The mock's own rough approximation of core-api's domain rules (never imported from
 // apps/core-api). Commands change state here; FakeRoom adds the timed parts (R1 draw ramp,
@@ -148,4 +150,79 @@ export function describeCommand(body: CommandBody): string {
     case "ac.step":
       return body.direction === "up" ? "Air conditioning setpoint raised" : "Air conditioning setpoint lowered";
   }
+}
+
+// ── R1 projector draw ramp ─────────────────────────────────────────────────────────────
+
+export const STANDBY_WATTS = 3;
+export const RUNNING_WATTS = 287;
+const WARM_FROM_W = 6;
+const WARM_TO_W = 49;
+const COOL_FROM_W = 45;
+const COOL_TO_W = 6;
+
+/** Real-time lengths of the ramp; FakeRoom multiplies them by its time scale. */
+export interface RampTimes {
+  /** IR sent → the draw starts to move ("waiting for draw", H7b). */
+  irToDrawMs: number;
+  warmUpMs: number;
+  coolDownMs: number;
+}
+
+export interface ProjectorStep {
+  watts: number;
+  state: ProjectorState;
+  phase: ProjectorFeedback["phase"];
+  /** The ramp has reached running / standby. */
+  done: boolean;
+}
+
+/** Where the R1 ramp is `elapsedMs` after the IR command (>50 W running, <5 W standby). */
+export function projectorRamp(on: boolean, elapsedMs: number, times: RampTimes): ProjectorStep {
+  if (elapsedMs < times.irToDrawMs) {
+    return on
+      ? { watts: STANDBY_WATTS, state: "standby", phase: "waiting_for_draw", done: false }
+      : { watts: RUNNING_WATTS, state: "running", phase: "waiting_for_draw", done: false };
+  }
+  const into = elapsedMs - times.irToDrawMs;
+  if (on) {
+    if (into >= times.warmUpMs) return { watts: RUNNING_WATTS, state: "running", phase: "idle", done: true };
+    const watts = Math.round(WARM_FROM_W + ((WARM_TO_W - WARM_FROM_W) * into) / times.warmUpMs);
+    return { watts, state: "warming_up", phase: "idle", done: false };
+  }
+  if (into >= times.coolDownMs) return { watts: STANDBY_WATTS, state: "standby", phase: "idle", done: true };
+  const watts = Math.round(COOL_FROM_W - ((COOL_FROM_W - COOL_TO_W) * into) / times.coolDownMs);
+  return { watts, state: "cooling_down", phase: "idle", done: false };
+}
+
+/** Writes a ramp step: state + live power confirmed by draw; interlock holds while cooling (R11). */
+export function applyProjectorStep(state: RoomState, step: ProjectorStep, at: string): RoomState {
+  const { projector } = state.display;
+  const reading = projector.power.value ?? { watts: 0, volts: 231, kwh_today: 0, rating_a: 13, at };
+  return {
+    ...state,
+    display: {
+      ...state.display,
+      projector: {
+        ...projector,
+        state: { ...projector.state, value: step.state, confidence: "confirmed", source: "power_meter", updated_at: at, stale: false },
+        power: {
+          ...projector.power,
+          value: { ...reading, watts: step.watts, at },
+          confidence: "confirmed",
+          source: "power_meter",
+          updated_at: at,
+          stale: false,
+        },
+        feedback: { ...projector.feedback, phase: step.phase },
+      },
+    },
+    interlock: { ...state.interlock, status: step.state === "cooling_down" ? "holding" : "armed" },
+  };
+}
+
+/** H7b phase only (no change in draw after 90 s, or IR that the draw already agrees with). */
+export function setProjectorPhase(state: RoomState, phase: ProjectorFeedback["phase"]): RoomState {
+  const { projector } = state.display;
+  return { ...state, display: { ...state.display, projector: { ...projector, feedback: { ...projector.feedback, phase } } } };
 }
