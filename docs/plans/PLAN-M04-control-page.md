@@ -1797,7 +1797,7 @@ panel). "Phone changes PC audio (in 3 s)" fires 3 s after the tap, so it can lan
 **Commit:** `git commit -m "feat(kiosk): mock panel buttons for S1 hidden states"`
 
 ### T14 — Selector: source tiles (S1.E11/E12)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/source-tiles.view.ts`,
 `apps/kiosk/src/features/control/display/source-tiles.view.test.ts`
