@@ -1,6 +1,6 @@
-import type { Device, Observed, ZigbeeNode } from "@eduscope/contracts";
-import { stateTone, type ActiveVariant, type StateTone } from "@/components/state-styles";
-import { formatAgo } from "@/lib/format";
+import type { Device, Observed, PowerReading, ZigbeeNode } from "@eduscope/contracts";
+import { stateTone, type ActiveVariant, type StateTone, type ValueTone } from "@/components/state-styles";
+import { formatAgo, formatWatts } from "@/lib/format";
 
 // S2.E5–E13: the two mains-powered routers (H8, H10, H11).
 
@@ -44,4 +44,23 @@ export function gangTileView(state: Observed<boolean>): GangTileView {
   if (state.value === null) return { tone, text: "Unknown", fill: null };
   if (!state.value) return { tone, text: "Off", fill: null };
   return { tone, text: "On", fill: tone === "assumed" ? "assumed" : "confirmed" };
+}
+
+export interface MetricView {
+  label: "Power" | "Voltage" | "Today" | "Rating";
+  value: string | null;
+  tone: ValueTone;
+  staleAgo: string | null;
+}
+
+/** S2.E12: `287 W` (accent) · `231 V` · `1.84 kWh` · `13 A`. Stale → text-3 + age (H10); null → "—" (H11). */
+export function socketMetricsView(power: Observed<PowerReading>, now: Date): MetricView[] {
+  const reading = power.value;
+  const staleAgo = power.stale && power.updated_at !== null ? formatAgo(power.updated_at, now) : null;
+  return [
+    { label: "Power", value: reading === null ? null : formatWatts(reading.watts), tone: "accent", staleAgo },
+    { label: "Voltage", value: reading === null ? null : `${Math.round(reading.volts)} V`, tone: "default", staleAgo },
+    { label: "Today", value: reading === null ? null : `${reading.kwh_today.toFixed(2)} kWh`, tone: "default", staleAgo },
+    { label: "Rating", value: reading === null ? null : `${reading.rating_a} A`, tone: "default", staleAgo: null },
+  ];
 }

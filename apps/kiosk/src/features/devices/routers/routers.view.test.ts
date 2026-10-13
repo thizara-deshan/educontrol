@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { roomState } from "@/data/test/room-state";
-import { gangTileView, routerHeaderView } from "./routers.view";
+import { gangTileView, routerHeaderView, socketMetricsView } from "./routers.view";
 
 const NOW = new Date("2026-10-05T10:42:00Z");
 
@@ -38,5 +38,27 @@ describe("gangTileView (S2.E7/E8/E11)", () => {
     expect(gangTileView({ ...state.environment.lights.rear, value: null, confidence: "unknown" })).toEqual({
       tone: "unknown", text: "Unknown", fill: null,
     });
+  });
+});
+
+describe("socketMetricsView (S2.E12)", () => {
+  it("screenshot 02: 287 W accent · 231 V · 1.84 kWh · 13 A", () => {
+    const { state } = lights();
+    expect(socketMetricsView(state.display.projector.power, NOW)).toEqual([
+      { label: "Power", value: "287 W", tone: "accent", staleAgo: null },
+      { label: "Voltage", value: "231 V", tone: "default", staleAgo: null },
+      { label: "Today", value: "1.84 kWh", tone: "default", staleAgo: null },
+      { label: "Rating", value: "13 A", tone: "default", staleAgo: null },
+    ]);
+  });
+  it("stale: age on the live metrics, not on the static rating (H10)", () => {
+    const { state } = lights();
+    const power = { ...state.display.projector.power, stale: true, updated_at: "2026-10-05T10:28:00Z" };
+    expect(socketMetricsView(power, NOW).map((m) => m.staleAgo)).toEqual(["14 min ago", "14 min ago", "14 min ago", null]);
+  });
+  it("no reading ever: every value null (H11)", () => {
+    const { state } = lights();
+    const power = { ...state.display.projector.power, value: null, updated_at: null };
+    expect(socketMetricsView(power, NOW).map((m) => m.value)).toEqual([null, null, null, null]);
   });
 });

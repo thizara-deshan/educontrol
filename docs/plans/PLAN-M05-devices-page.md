@@ -1154,7 +1154,7 @@ describe("gangTileView (S2.E7/E8/E11)", () => {
 **Commit:** `git commit -m "feat(kiosk): gang tile selector"`
 
 ### T13 — Selector: projector socket metrics (S2.E12)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/routers.view.ts`, `apps/kiosk/src/features/devices/routers/routers.view.test.ts`
 
