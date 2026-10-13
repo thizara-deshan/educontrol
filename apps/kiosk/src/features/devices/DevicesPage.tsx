@@ -2,6 +2,7 @@ import { SectionLabel } from "@/components/SectionLabel";
 import { BatteryList } from "./battery/BatteryList";
 import { LightingSwitchCard } from "./routers/LightingSwitchCard";
 import { ProjectorSocketCard } from "./routers/ProjectorSocketCard";
+import { CoordinatorCard } from "./side/CoordinatorCard";
 
 // SPEC S2 / §2.2 / ARCHITECTURE §4.1: ≥1024 main ~75% + side ~25%; below, the side column drops under
 // the main one. DOM order = phone order: routers → battery → coordinator → mesh → callout → interlock.
@@ -16,6 +17,7 @@ export function DevicesPage() {
         <BatteryList />
       </div>
       <div className="flex min-w-0 flex-col gap-3">
+        <CoordinatorCard />
       </div>
     </div>
   );

@@ -2434,7 +2434,7 @@ import { BatteryList } from "./battery/BatteryList";
 **Commit:** `git commit -m "feat(kiosk): battery cards on phone"`
 
 ### T29 — `CoordinatorCard` (S2.E20)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/CoordinatorCard.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
