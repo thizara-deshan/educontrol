@@ -3,6 +3,7 @@ import { BatteryList } from "./battery/BatteryList";
 import { LightingSwitchCard } from "./routers/LightingSwitchCard";
 import { ProjectorSocketCard } from "./routers/ProjectorSocketCard";
 import { CoordinatorCard } from "./side/CoordinatorCard";
+import { InterlockCard } from "./side/InterlockCard";
 import { MeshCard } from "./side/MeshCard";
 import { RedundancyCallout } from "./side/RedundancyCallout";
 
@@ -22,6 +23,7 @@ export function DevicesPage() {
         <CoordinatorCard />
         <MeshCard />
         <RedundancyCallout />
+        <InterlockCard />
       </div>
     </div>
   );

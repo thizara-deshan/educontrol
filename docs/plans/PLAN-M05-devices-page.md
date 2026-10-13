@@ -2627,7 +2627,7 @@ import { RedundancyCallout } from "./side/RedundancyCallout";
 **Commit:** `git commit -m "feat(kiosk): redundancy callout"`
 
 ### T32 — `InterlockCard` (S2.E23)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/side/InterlockCard.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
