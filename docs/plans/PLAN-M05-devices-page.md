@@ -2006,7 +2006,7 @@ export function DevicesPage() {
 **Commit:** `git commit -m "feat(kiosk): devices page grid"`
 
 ### T23 — `RouterCardHeader`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/RouterCardHeader.tsx`
 
