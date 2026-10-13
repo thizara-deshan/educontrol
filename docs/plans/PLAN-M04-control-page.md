@@ -528,7 +528,7 @@ export function useViewOnly(): boolean {
 **Commit:** `git commit -m "feat(kiosk): useViewOnly for S1 padlocks"`
 
 ### T6 — Mock rules: what each S1 command changes (R2, R9, R3/R4, screen)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-rules.ts`, `apps/kiosk/src/data/adapters/mock/mock-rules.test.ts`
 

@@ -43,17 +43,45 @@ describe("mock rules", () => {
     expect(next.environment.ac.setpoint_c.value).toBe(25);
   });
 
-  it("projector.power sets the state and the IR feedback", () => {
+  it("projector.power only records the IR and waits for draw (R2)", () => {
     const next = applyCommandToState(roomState(), { kind: "projector.power", on: false }, ctx);
-    expect(next.display.projector.state.value).toBe("standby");
-    expect(next.display.projector.feedback.last_ir).toBe("power_off");
+    expect(next.display.projector.state.value).toBe("running");
+    expect(next.display.projector.feedback).toEqual({ last_ir: "power_off", sent_at: ctx.at, phase: "waiting_for_draw" });
+    expect(statusFor({ kind: "projector.power", on: false })).toBe("assumed");
   });
 
-  it("source.select and screen.move set their values", () => {
-    const a = applyCommandToState(roomState(), { kind: "source.select", input: "smart_board" }, ctx);
-    expect(a.display.source.value).toBe("smart_board");
-    const b = applyCommandToState(roomState(), { kind: "screen.move", to: "raise" }, ctx);
-    expect(b.display.screen.value).toBe("raised");
+  it("source.select is exclusive and confirmed (R10)", () => {
+    const next = applyCommandToState(roomState(), { kind: "source.select", input: "smart_board" }, ctx);
+    expect(next.display.source).toMatchObject({ value: "smart_board", confidence: "confirmed" });
+  });
+
+  it("screen.move starts moving (FakeRoom finishes the travel)", () => {
+    const next = applyCommandToState(roomState(), { kind: "screen.move", to: "raise" }, ctx);
+    expect(next.display.screen.value).toBe("moving");
+  });
+
+  it("mute zeroes and saves the levels; unmute restores them (R9)", () => {
+    const muted = applyCommandToState(roomState(), { kind: "audio.mute_all", muted: true }, ctx);
+    expect(muted.audio.channels.mic.value).toBe(0);
+    expect(muted.audio.channels.pc.value).toBe(0);
+    expect(muted.audio.saved_levels).toEqual({ mic: 62, pc: 38 });
+    const again = applyCommandToState(muted, { kind: "audio.mute_all", muted: true }, ctx);
+    expect(again.audio.saved_levels).toEqual({ mic: 62, pc: 38 }); // a second mute keeps the saved levels
+    const unmuted = applyCommandToState(muted, { kind: "audio.mute_all", muted: false }, ctx);
+    expect(unmuted.audio.channels.mic.value).toBe(62);
+    expect(unmuted.audio.channels.pc.value).toBe(38);
+    expect(unmuted.audio.saved_levels).toEqual({ mic: null, pc: null });
+  });
+
+  it("ac.power on after a restart sends the default setpoint; ac.step is ignored while off (Q5)", () => {
+    const base = roomState();
+    const unknown = { value: null, confidence: "unknown" as const, source: "none" as const, updated_at: null, stale: false, changed_by: null };
+    const restarted = { ...base, environment: { ...base.environment, ac: { ...base.environment.ac, power: unknown, setpoint_c: unknown } } };
+    const on = applyCommandToState(restarted, { kind: "ac.power", on: true }, ctx);
+    expect(on.environment.ac.power).toMatchObject({ value: "on", confidence: "assumed" });
+    expect(on.environment.ac.setpoint_c).toMatchObject({ value: 24, confidence: "assumed" });
+    const off = applyCommandToState(on, { kind: "ac.power", on: false }, ctx);
+    expect(applyCommandToState(off, { kind: "ac.step", direction: "up" }, ctx).environment.ac.setpoint_c.value).toBe(24);
   });
 
   it("describes commands for activity toasts", () => {
