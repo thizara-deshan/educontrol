@@ -15,12 +15,21 @@ export interface CommandSenderDeps {
 
 export type SendOutcome = "sent" | "ignored";
 
+export interface SendOptions {
+  /**
+   * Slider levels (SPEC §2.4): a new value replaces the pending one instead of being ignored, so
+   * the drag updates and the release value are never dropped. The older command's result is then
+   * ignored (its entry is gone). Taps never set this (H5).
+   */
+  supersede?: boolean;
+}
+
 export function createCommandSender(deps: CommandSenderDeps) {
   const newId = deps.newId ?? uuidV4;
   const now = deps.now ?? Date.now;
 
-  return async function send(key: ControlKey, body: CommandBody): Promise<SendOutcome> {
-    if (deps.pending.isPending(key)) return "ignored"; // H5: repeat taps ignored
+  return async function send(key: ControlKey, body: CommandBody, options: SendOptions = {}): Promise<SendOutcome> {
+    if (options.supersede !== true && deps.pending.isPending(key)) return "ignored"; // H5: repeat taps ignored
     const clientCmdId = newId();
     deps.inlineErrors.dismiss(key);
     deps.pending.add({ key, clientCmdId, status: "pending", startedAt: now() });

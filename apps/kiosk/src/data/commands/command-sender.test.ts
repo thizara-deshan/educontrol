@@ -41,6 +41,23 @@ describe("command sender", () => {
     expect(api.sendCommand).toHaveBeenCalledTimes(1);
   });
 
+  it("supersede replaces the pending entry and sends (slider levels)", async () => {
+    let n = 0;
+    const pending = createPendingStore();
+    const api = { sendCommand: vi.fn(async (request: CommandRequest) => accepted(request)) };
+    const send = createCommandSender({
+      api, pending, inlineErrors: createInlineErrorStore(), newId: () => `00000000-0000-4000-8000-00000000000${++n}`, now: () => 5,
+    });
+    await send("audio.mic", { kind: "audio.level", channel: "mic", level: 10, final: false }, { supersede: true });
+    const outcome = await send("audio.mic", { kind: "audio.level", channel: "mic", level: 20, final: true }, { supersede: true });
+    expect(outcome).toBe("sent");
+    expect(api.sendCommand).toHaveBeenCalledTimes(2);
+    expect(pending.entries.get().get("audio.mic")?.clientCmdId).toBe("00000000-0000-4000-8000-000000000002");
+    // the first command's result no longer matches an entry
+    expect(pending.remove("00000000-0000-4000-8000-000000000001")).toBeUndefined();
+    expect(pending.isPending("audio.mic")).toBe(true);
+  });
+
   it("other keys stay usable while one is pending", async () => {
     const { api, send } = setup(async (request) => accepted(request));
     await send("lights.front", { kind: "lights.set", gang: "front", on: false });

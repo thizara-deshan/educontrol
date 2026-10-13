@@ -6,7 +6,7 @@ import { decideAccess, type RequiredAccess } from "./access/decide-access";
 import { pinRequests } from "./access/pin-requests";
 import { localLockStore, lock, login } from "./access/session-actions";
 import { useApiClient } from "./api-context";
-import { createCommandSender } from "./commands/command-sender";
+import { createCommandSender, type SendOptions } from "./commands/command-sender";
 import { inlineErrorStore } from "./commands/inline-errors";
 import { pendingStore, type ControlKey } from "./commands/pending-store";
 import { computeControlGate, type ControlGate } from "./gate";
@@ -106,13 +106,13 @@ export function useCommand(key: ControlKey, deviceId?: string) {
     void ensure();
   }, [ensure]);
   const send = useCallback(
-    (body: CommandBody) => {
+    (body: CommandBody, options?: SendOptions) => {
       if (gate.reason === "locked") {
         unlock();
         return;
       }
       if (!gate.enabled) return;
-      void sender(key, body);
+      void sender(key, body, options);
     },
     [gate.enabled, gate.reason, unlock, sender, key],
   );

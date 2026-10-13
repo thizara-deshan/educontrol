@@ -396,7 +396,7 @@ export function SensorTile({
 **Commit:** `git commit -m "feat(kiosk): value-word token for sensor word values"`
 
 ### T4 — Command sender: `supersede` for slider levels
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/commands/command-sender.ts`, `apps/kiosk/src/data/commands/command-sender.test.ts`,
 `apps/kiosk/src/data/hooks.ts`
