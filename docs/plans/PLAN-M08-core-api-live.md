@@ -791,7 +791,7 @@ describe("seed", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): idempotent R-101 seed"` (includes this plan file with the box ticked)
 
 ### T6 — `event_log` writer
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/clock.ts`, `apps/core-api/src/db/event-log.ts`, `apps/core-api/test/db/event-log.test.ts`
 
