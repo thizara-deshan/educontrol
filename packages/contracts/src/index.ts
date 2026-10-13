@@ -21,5 +21,6 @@ export * from "./api/schedule.ts";
 export * from "./api/devices.ts";
 export * from "./api/settings.ts";
 export * from "./api/system.ts";
+export * from "./api/health.ts";
 export * from "./ws.ts";
 export * from "./hw/index.ts";

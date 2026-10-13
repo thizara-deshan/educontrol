@@ -105,7 +105,7 @@ the data real. `reference/screens/01–02` were used only to check that the live
 ## Tasks
 
 ### T1 — Contract: `GET /api/health` response
-- [ ] done
+- [x] done
 
 **Files:** `packages/contracts/src/api/health.ts`, `packages/contracts/src/index.ts`, `packages/contracts/test/health.test.ts`
 
