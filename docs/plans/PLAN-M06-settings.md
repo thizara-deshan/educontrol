@@ -4719,7 +4719,7 @@ describe("validateAction", () => {
 ---
 
 ### T34 — `DayPicker`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/schedule/DayPicker.tsx`
 
