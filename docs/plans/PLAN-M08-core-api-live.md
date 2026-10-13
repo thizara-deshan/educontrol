@@ -3180,7 +3180,7 @@ describe("IR code lookup", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): IR code lookup"` (includes this plan file with the box ticked)
 
 ### T18 — Command policies: access per kind, preconditions, hw call plans
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/commands/policies.ts`, `apps/core-api/test/commands/policies.test.ts`
 
