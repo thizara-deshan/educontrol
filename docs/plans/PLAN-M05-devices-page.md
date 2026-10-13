@@ -1005,7 +1005,7 @@ describe("coordinatorStatusView (S2.E3)", () => {
 **Commit:** `git commit -m "feat(kiosk): coordinator status selector"`
 
 ### T11 — Selector: router card header (S2.E6/E10)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/routers.view.ts`, `apps/kiosk/src/features/devices/routers/routers.view.test.ts`
 
