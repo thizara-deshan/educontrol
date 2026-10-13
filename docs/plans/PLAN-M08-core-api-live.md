@@ -4350,7 +4350,7 @@ describe("PIN throttle (H17)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): PIN throttle"` (includes this plan file with the box ticked)
 
 ### T23 — Session service (rows, login, lock, expiry, sweep) + decision D-21
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/auth/sessions.ts`, `apps/core-api/test/auth/sessions.test.ts`, `docs/decisions/D-21-session-rows.md`
 
