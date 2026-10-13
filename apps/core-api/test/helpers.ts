@@ -1,4 +1,9 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { DeviceKind, HwEvent, Transport } from "@eduscope/contracts";
 import { Config } from "../src/config.ts";
+import { initialModel } from "../src/domain/initial.ts";
+import type { DeviceInfo, RoomModel, RuleConfig } from "../src/domain/model.ts";
+import { SEED_DEVICES } from "../src/db/seed.ts";
 
 /** Screenshot clock (Mon 5 Oct 10:42 UTC); every test that needs "now" starts here. */
 export const T0 = "2026-10-05T10:42:00.000Z";
@@ -12,6 +17,51 @@ export function testConfig(overrides: Partial<Record<keyof Config, string>> = {}
     INITIAL_TECH_PIN: "123456",
     ...overrides,
   });
+}
+
+export const RULES: RuleConfig = { climateIntervalS: 300, powerIntervalS: 60, hwDownGraceMs: 10_000 };
+
+/** The seeded R-101 registry as domain DeviceInfo. */
+export const REGISTRY: DeviceInfo[] = SEED_DEVICES.map((row) => ({
+  id: row.id, name: row.name, kind: DeviceKind.parse(row.kind), transport: Transport.parse(row.transport),
+  brand: row.brand ?? null, model: row.model ?? null, hw_ref: row.hw_ref ?? null,
+}));
+
+export function bootModel(overrides: Partial<Parameters<typeof initialModel>[0]> = {}): RoomModel {
+  return initialModel({
+    room: { id: "R-101", hostname: "r-101.local" },
+    registry: REGISTRY,
+    acSetpoints: [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    interlockBypassed: false,
+    kwhBaseline: null,
+    now: T0,
+    ...overrides,
+  });
+}
+
+const FIXTURES = new URL("../../../packages/contracts/fixtures/hw/", import.meta.url);
+
+/** A parsed fixtures/hw file. */
+export function hwFixture(name: string): unknown {
+  return JSON.parse(readFileSync(new URL(name, FIXTURES), "utf8"));
+}
+
+/** Every `event.*.json` in fixtures/hw, parsed as HwEvent. */
+export function hwEventFixtures(): { name: string; event: HwEvent }[] {
+  return readdirSync(FIXTURES)
+    .filter((name) => name.startsWith("event.") && name.endsWith(".json"))
+    .sort()
+    .map((name) => ({ name, event: HwEvent.parse(hwFixture(name)) }));
+}
+
+/** The fixture snapshot event (screenshot 01 state), with its time moved to `at`. */
+export function snapshotEvent(at: string = T0): HwEvent {
+  const event = HwEvent.parse(hwFixture("event.snapshot.json"));
+  return { ...event, at };
+}
+
+export function hwEvent<T extends HwEvent["type"]>(type: T, data: Extract<HwEvent, { type: T }>["data"], at: string = T0): HwEvent {
+  return HwEvent.parse({ type, at, data });
 }
 
 /** Unwraps a value a test knows is there (no `!` allowed by lint). */

@@ -1392,7 +1392,7 @@ describe("H13 attribution", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): H13 attribution texts"` (includes this plan file with the box ticked)
 
 ### T11 — Boot model, mesh counts, R11 interlock
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/zigbee.ts`, `apps/core-api/src/domain/interlock.ts`, `apps/core-api/src/domain/initial.ts`, `apps/core-api/test/helpers.ts`, `apps/core-api/test/domain/zigbee.test.ts`, `apps/core-api/test/domain/interlock.test.ts`, `apps/core-api/test/domain/initial.test.ts`
 
