@@ -1,4 +1,4 @@
-import type { IrCommand, IrDevice, IrTransport } from "@eduscope/contracts";
+import type { IrBlaster, IrCommand, IrDevice, IrTransport } from "@eduscope/contracts";
 import type { ValueTone } from "@/components/state-styles";
 import { formatAgo } from "@/lib/format";
 
@@ -76,4 +76,23 @@ export function commandStatus(command: IrCommand, now: Date): ToneText {
 export function selectedDevice(devices: readonly IrDevice[], routeId: string | undefined): IrDevice | undefined {
   if (routeId !== undefined) return devices.find((device) => device.device_id === routeId);
   return devices.find((device) => device.kind === "projector") ?? devices[0];
+}
+
+export interface BlasterView {
+  id: string;
+  online: boolean;
+  /** `LQI 196`, or H25 "Offline · last seen 5 min ago" (red). */
+  link: ToneText;
+  topic: string;
+  coverage: string;
+}
+
+/** S3.E10 BLASTER card. Offline = `ir_blaster.online` false (H25). */
+export function blasterView(blaster: IrBlaster, now: Date): BlasterView {
+  const online = blaster.online.value === true;
+  const since = blaster.online.updated_at;
+  const link: ToneText = online
+    ? { text: blaster.lqi === null ? "LQI —" : `LQI ${blaster.lqi}`, tone: "muted" }
+    : { text: since === null ? "Offline" : `Offline · last seen ${formatAgo(since, now)}`, tone: "danger" };
+  return { id: blaster.id, online, link, topic: blaster.topic, coverage: blaster.coverage };
 }

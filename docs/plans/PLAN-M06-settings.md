@@ -2929,7 +2929,7 @@ describe("selectedDevice", () => {
 ---
 
 ### T16 — Remote selector: BLASTER card (S3.E10, H25)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/remote.view.ts`, `apps/kiosk/src/features/settings/remote/remote.view.test.ts`
 

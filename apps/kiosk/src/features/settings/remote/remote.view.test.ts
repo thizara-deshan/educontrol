@@ -1,6 +1,8 @@
 import type { IrCommand, IrDevice } from "@eduscope/contracts";
 import { describe, expect, it } from "vitest";
-import { commandCountWords, commandStatus, detailSubtitle, deviceCount, deviceSubtitle, selectedDevice, testedAgo } from "./remote.view";
+import {
+  blasterView, commandCountWords, commandStatus, detailSubtitle, deviceCount, deviceSubtitle, selectedDevice, testedAgo,
+} from "./remote.view";
 
 const NOW = new Date("2026-10-13T09:00:00Z");
 const cmd = (patch: Partial<IrCommand> = {}): IrCommand => ({
@@ -68,5 +70,19 @@ describe("selectedDevice", () => {
     expect(selectedDevice([ac, projector], undefined)).toBe(projector);
     expect(selectedDevice([ac], undefined)).toBe(ac);
     expect(selectedDevice([], undefined)).toBeUndefined();
+  });
+});
+
+describe("blasterView (S3.E10, H25)", () => {
+  const blaster = {
+    id: "ZS06", topic: "r101_ir", lqi: 196, coverage: "360°, 12 m", power: "mains" as const,
+    online: { value: true, confidence: "confirmed" as const, source: "ir" as const, updated_at: "2026-10-13T08:55:00Z", stale: false, changed_by: null },
+  };
+  it("online: LQI", () => {
+    expect(blasterView(blaster, NOW)).toEqual({ id: "ZS06", online: true, link: { text: "LQI 196", tone: "muted" }, topic: "r101_ir", coverage: "360°, 12 m" });
+  });
+  it("offline: red, last seen since the flag changed", () => {
+    const offline = { ...blaster, online: { ...blaster.online, value: false } };
+    expect(blasterView(offline, NOW).link).toEqual({ text: "Offline · last seen 5 min ago", tone: "danger" });
   });
 });
