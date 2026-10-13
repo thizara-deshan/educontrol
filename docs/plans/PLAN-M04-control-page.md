@@ -2602,7 +2602,7 @@ describe("sensorsView (S1.E42–E45)", () => {
 **Commit:** `git commit -m "feat(kiosk): room sensors selector"`
 
 ### T22 — `CardHeader` (dot · title / state line · aside · padlock)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/CardHeader.tsx`
 
