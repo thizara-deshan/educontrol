@@ -6469,7 +6469,7 @@ describe("WS hub (§6.6)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): WebSocket hub"` (includes this plan file with the box ticked)
 
 ### T29 — `main.ts`, the build, and `pnpm dev` starting core-api
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/main.ts`, `apps/core-api/scripts/build.ts`, `apps/core-api/package.json`
 

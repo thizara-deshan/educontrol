@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node -e \"console.log('@eduscope/core-api: dev arrives in M08 T29')\"",
-    "build": "node -e \"console.log('@eduscope/core-api: build arrives in M08 T29')\"",
+    "dev": "PORT=3000 HOST=0.0.0.0 DB_PATH=./data/dev.db HW_URL=http://127.0.0.1:8081 COOKIE_SECRET=dev-only-cookie-secret-never-used-on-the-pi LOCALHOST_IS_KIOSK=false INITIAL_ROOM_PIN=1234 INITIAL_TECH_PIN=123456 SEED_FAKE_IR_CODES=true tsx watch src/main.ts",
+    "build": "tsx scripts/build.ts",
+    "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate"
