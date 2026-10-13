@@ -384,7 +384,7 @@ passed!` and `… files already formatted`. `pnpm verify` → green (hw:check is
 ---
 
 ### T2 — Root `hw:*` scripts run ruff and pytest inside `pnpm verify`
-- [ ] done
+- [x] done
 
 **Files:** `package.json`
 

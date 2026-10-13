@@ -13,9 +13,9 @@
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "eslint .",
     "test": "pnpm -r --if-present test",
-    "hw:check": "node -e \"console.log('hw:check: no-op until M07 (ruff + pytest)')\"",
-    "hw:lint": "node -e \"console.log('hw:lint: no-op until M07')\"",
-    "hw:test": "node -e \"console.log('hw:test: no-op until M07')\"",
+    "hw:check": "pnpm hw:lint && pnpm hw:test",
+    "hw:lint": "uv run --directory services/hw ruff check . && uv run --directory services/hw ruff format --check .",
+    "hw:test": "uv run --directory services/hw pytest -m \"not hardware\"",
     "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm hw:check"
   },
   "devDependencies": {
