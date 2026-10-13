@@ -1232,7 +1232,7 @@ order test is real: temporarily change `Math.max(this.now() + delayMs, this.last
 **Commit:** `git commit -m "feat(kiosk): mock lands commands in arrival order and derives status"`
 
 ### T11 — FakeRoom: projector draw ramp, H7b and screen travel (time-scaled)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/mock-client.ts`,
 `apps/kiosk/src/data/adapters/mock/fake-room-timed.test.ts`

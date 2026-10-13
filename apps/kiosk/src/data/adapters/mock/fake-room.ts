@@ -1,10 +1,13 @@
 import {
-  ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ClientLabel, type ClientType,
-  type LoginResult,
+  ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ChangedBy, type ClientLabel,
+  type ClientType, type CommandBody, type LoginResult,
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
-import { applyCommandToState, describeCommand, observe, statusFor, withDerived } from "./mock-rules";
+import {
+  applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, setProjectorPhase, statusFor,
+  withDerived, type RampTimes,
+} from "./mock-rules";
 
 // In-memory room (ARCHITECTURE §4.4). Emits the SAME ServerEvents the real server will, through
 // the same handlers the http adapter calls, so apply-event is the only writer of the cache.
@@ -24,6 +27,15 @@ export const MOCK_MAX_PIN_ATTEMPTS = 5;
 export const MOCK_PIN_LOCKOUT_S = 60;
 /** "Occupancy detected" first reports clear, then detected this much later (a real transition). */
 export const MOCK_OCCUPANCY_REDETECT_MS = 1000;
+/** Timed behaviour at time scale 1 (`?time-scale=` shortens it). R1 ramp, H7b, screen travel. */
+export const MOCK_IR_TO_DRAW_MS = 3_000;
+export const MOCK_WARM_UP_MS = 30_000;
+export const MOCK_COOL_DOWN_MS = 60_000;
+/** H7b: "no change in draw" after 90 s. */
+export const MOCK_NO_DRAW_CHANGE_MS = 90_000;
+/** Live wattage update while the draw moves. */
+export const MOCK_POWER_TICK_MS = 1_000;
+export const MOCK_SCREEN_TRAVEL_MS = 8_000;
 /** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
 const CONTROL_SESSION_MS = 2 * 60 * 60_000;
 const TECHNICIAN_SESSION_MS = 15 * 60_000;
@@ -39,6 +51,8 @@ interface Listener {
 export interface FakeRoomOptions {
   random?: () => number;
   now?: () => number;
+  /** Multiplies every timed behaviour (1 = real time). Latency and timeouts are not scaled. */
+  timeScale?: number;
 }
 
 export class FakeRoom {
@@ -58,12 +72,17 @@ export class FakeRoom {
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   /** Epoch ms at which the last accepted command lands: commands land in arrival order. */
   private lastDueAt = 0;
+  private projectorTimer: ReturnType<typeof setTimeout> | null = null;
+  private screenTimer: ReturnType<typeof setTimeout> | null = null;
+  private noDrawChangeNext = false;
   private readonly random: () => number;
   private readonly now: () => number;
+  private readonly timeScale: number;
 
   constructor(options: FakeRoomOptions = {}) {
     this.random = options.random ?? Math.random;
     this.now = options.now ?? Date.now;
+    this.timeScale = options.timeScale ?? 1;
     this.state = RoomState.parse(roomNormal);
     // SPEC §2.3: a remote browser without a PIN starts at `view`.
     this.session = ClientSession.parse({
@@ -206,6 +225,11 @@ export class FakeRoom {
     this.applyExternal({ kind: "lights.set", gang: "front", on }, "by hand", null);
   }
 
+  /** H7b: the next projector Power on/off leaves the draw unchanged. */
+  noDrawChangeNextCommand(): void {
+    this.noDrawChangeNext = true;
+  }
+
   /** H8: flip one device's online flag; the room status follows. */
   toggleDeviceOffline(deviceId: string): void {
     const at = this.iso();
@@ -296,6 +320,7 @@ export class FakeRoom {
       this.emitAll({ type: "command", command: { ...command, status: "sent" } });
       const by = command.issued_by?.label ?? "schedule";
       this.commit(applyCommandToState(this.state, command.body, { at: this.iso(), by }));
+      this.startTimedEffects(command.body, by);
       this.emitAll({ type: "command", command: { ...command, status: statusFor(command.body) } });
       if (command.body.kind !== "audio.level" || command.body.final) {
         this.emitAll({ type: "activity", text: describeCommand(command.body), by, public_id: command.issued_by?.public_id ?? null });
@@ -308,6 +333,53 @@ export class FakeRoom {
     const due = Math.max(this.now() + delayMs, this.lastDueAt + 1);
     this.lastDueAt = due;
     setTimeout(fn, due - this.now());
+  }
+
+  /** The parts of a command that take time: the R1 draw ramp (+ H7b) and the screen travel. */
+  private startTimedEffects(body: CommandBody, by: ChangedBy): void {
+    if (body.kind === "projector.power") this.startProjectorRamp(body.on);
+    if (body.kind === "screen.move") {
+      if (this.screenTimer !== null) clearTimeout(this.screenTimer);
+      this.screenTimer = setTimeout(() => {
+        this.screenTimer = null;
+        const to = body.to === "raise" ? "raised" : "lowered";
+        this.commit({ ...this.state, display: { ...this.state.display, screen: observe(this.state.display.screen, to, { at: this.iso(), by }) } });
+      }, this.scaled(MOCK_SCREEN_TRAVEL_MS));
+    }
+  }
+
+  private startProjectorRamp(on: boolean): void {
+    if (this.projectorTimer !== null) clearTimeout(this.projectorTimer);
+    this.projectorTimer = null;
+    const current = this.state.display.projector.state.value;
+    if ((on && current === "running") || (!on && current === "standby")) {
+      this.commit(setProjectorPhase(this.state, "idle")); // the draw already agrees
+      return;
+    }
+    if (this.noDrawChangeNext) {
+      this.noDrawChangeNext = false;
+      this.projectorTimer = setTimeout(() => {
+        this.projectorTimer = null;
+        this.commit(setProjectorPhase(this.state, "no_change"));
+      }, this.scaled(MOCK_NO_DRAW_CHANGE_MS));
+      return;
+    }
+    const startedAt = this.now();
+    const times: RampTimes = {
+      irToDrawMs: this.scaled(MOCK_IR_TO_DRAW_MS),
+      warmUpMs: this.scaled(MOCK_WARM_UP_MS),
+      coolDownMs: this.scaled(MOCK_COOL_DOWN_MS),
+    };
+    const tick = (): void => {
+      const step = projectorRamp(on, this.now() - startedAt, times);
+      if (step.phase !== "waiting_for_draw") this.commit(applyProjectorStep(this.state, step, this.iso()));
+      this.projectorTimer = step.done ? null : setTimeout(tick, this.scaled(MOCK_POWER_TICK_MS));
+    };
+    this.projectorTimer = setTimeout(tick, this.scaled(MOCK_POWER_TICK_MS));
+  }
+
+  private scaled(ms: number): number {
+    return Math.max(50, Math.round(ms * this.timeScale));
   }
 
   private applyExternal(body: Parameters<typeof applyCommandToState>[1], by: "phone" | "by hand", publicId: string | null): void {
