@@ -4427,7 +4427,7 @@ def test_real_mode_has_no_fake_routes() -> None:
 ---
 
 ### T17 — `GET /v1/events` end to end over real HTTP
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/tests/test_events_http.py`
 
