@@ -5579,7 +5579,7 @@ export function PermitJoinCard() {
 ---
 
 ### T43 — `PinChangeSheet` (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/PinChangeSheet.tsx`
 
