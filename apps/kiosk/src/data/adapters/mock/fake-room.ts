@@ -4,6 +4,8 @@ import {
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
+import { FakeIr } from "./fake-ir";
+import type { MockHost } from "./mock-host";
 import {
   applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, rebaseNodeTimes, RUNNING_WATTS,
   setProjectorPhase, statusFor, withDerived, withNodesOnline, type ProjectorStep, type RampTimes,
@@ -82,6 +84,8 @@ export class FakeRoom {
   private screenTimer: ReturnType<typeof setTimeout> | null = null;
   private noDrawChangeNext = false;
   private joinTimer: ReturnType<typeof setTimeout> | null = null;
+  /** S3 Remote configuration store (it shares this room's state and events). */
+  readonly ir: FakeIr;
   private readonly random: () => number;
   private readonly now: () => number;
   private readonly timeScale: number;
@@ -96,6 +100,14 @@ export class FakeRoom {
       public_id: OWN_PUBLIC_ID, client_type: "remote", label: this.helloLabel, access: "view",
       unlocked_at: null, last_activity: null, expires_at: null,
     });
+    const host: MockHost = {
+      state: () => this.state,
+      commit: (next) => this.commit(next),
+      emit: (event) => this.emitAll(event),
+      delay: () => this.delay(),
+      now: () => this.now(),
+    };
+    this.ir = new FakeIr(host);
   }
 
   // ── ApiClient surface ────────────────────────────────────────────────────────────────

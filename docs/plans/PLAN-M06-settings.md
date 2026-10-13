@@ -127,7 +127,7 @@ code (`apps/kiosk`, `packages/contracts`). **No contract changes are needed** (d
 
 
 ### T1 — Mock IR store: devices, commands, capture and test (FakeIr)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/mock-host.ts`, `apps/kiosk/src/data/adapters/mock/fake-ir.ts`, `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-ir.test.ts`
 
