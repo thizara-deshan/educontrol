@@ -2486,7 +2486,7 @@ describe("S1.E4 room status", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): derived fields (online, staleness, status)"` (includes this plan file with the box ticked)
 
 ### T14 — State store: rev, re-derive, 50 ms coalesced broadcast
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/state-store.ts`, `apps/core-api/test/domain/state-store.test.ts`
 
