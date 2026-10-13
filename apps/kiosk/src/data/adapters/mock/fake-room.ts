@@ -1,6 +1,6 @@
 import {
   ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ChangedBy, type ClientLabel,
-  type ClientType, type CommandBody, type LoginResult,
+  type ClientType, type CommandBody, type Device, type LoginResult,
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
@@ -36,6 +36,8 @@ export const MOCK_NO_DRAW_CHANGE_MS = 90_000;
 /** Live wattage update while the draw moves. */
 export const MOCK_POWER_TICK_MS = 1_000;
 export const MOCK_SCREEN_TRAVEL_MS = 8_000;
+/** "Toggle climate stale" backdates the reading by this much (H10 "· 14 min ago"). */
+export const MOCK_STALE_AGE_MS = 14 * 60_000;
 /** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
 const CONTROL_SESSION_MS = 2 * 60 * 60_000;
 const TECHNICIAN_SESSION_MS = 15 * 60_000;
@@ -230,21 +232,71 @@ export class FakeRoom {
     this.noDrawChangeNext = true;
   }
 
-  /** H8: flip one device's online flag; the room status follows. */
+  /**
+   * H8: flip one device's online flag; status and sensor count follow. "projector_socket" is the
+   * S1.E13 power meter; "ir_blaster" is H25 (its `ir_blaster.online` follows).
+   */
   toggleDeviceOffline(deviceId: string): void {
-    const at = this.iso();
-    const devices = this.state.devices.map((device) =>
-      device.id === deviceId
-        ? { ...device, online: observe(device.online, device.online.value !== true, { at, by: "by hand" }) }
-        : device,
-    );
-    const offline = devices.filter((device) => device.online.value === false);
-    const first = offline[0];
-    const status =
-      first === undefined
-        ? { level: "normal" as const, text: "All systems normal" }
-        : { level: "degraded" as const, text: offline.length === 1 ? `${first.name} offline` : `${offline.length} devices offline` };
-    this.commit({ ...this.state, devices, room: { ...this.state.room, status } });
+    const online = this.state.devices.find((device) => device.id === deviceId)?.online.value !== true;
+    this.commit(this.withDevicesOnline((device) => device.id === deviceId, online));
+  }
+
+  /** H9: the coordinator and every Zigbee device go offline (or all come back). */
+  toggleCoordinatorOffline(): void {
+    const { coordinator } = this.state.zigbee;
+    const online = coordinator.status === "offline";
+    const next = this.withDevicesOnline((device) => device.kind === "coordinator" || device.transport === "zigbee", online);
+    this.commit({ ...next, zigbee: { ...next.zigbee, coordinator: { ...coordinator, status: online ? "online" : "offline" } } });
+  }
+
+  /** S1.E11 "Selected, assumed": the HDMI switch stops confirming the selected input. */
+  sourceAssumed(): void {
+    const { display } = this.state;
+    this.commit({ ...this.state, display: { ...display, source: { ...display.source, confidence: "assumed" } } });
+  }
+
+  /** Another client moves PC audio (SPEC §2.4: not applied to a slider while it is dragged). */
+  changePcAudioFromPhone(): void {
+    const current = this.state.audio.channels.pc.value ?? 0;
+    const level = current >= 50 ? 20 : 80;
+    this.applyExternal({ kind: "audio.level", channel: "pc", level, final: true }, "phone", PHONE_PUBLIC_ID);
+  }
+
+  /** S1.E17 "Unknown": the screen's position source stops reporting (Q2). */
+  screenPositionUnknown(): void {
+    const { display } = this.state;
+    this.commit({ ...this.state, display: { ...display, screen: { ...display.screen, value: "unknown", confidence: "unknown" } } });
+  }
+
+  /** R3: a controller restart forgets the AC state → "Unknown" until the next command. */
+  restartController(): void {
+    const { environment } = this.state;
+    const unknown = { value: null, confidence: "unknown" as const, source: "none" as const, updated_at: null, stale: false, changed_by: null };
+    this.commit({
+      ...this.state,
+      environment: { ...environment, ac: { ...environment.ac, power: unknown, setpoint_c: unknown } },
+    });
+  }
+
+  /** H10: the climate sensor (temperature + humidity) is 14 min old; again → fresh. */
+  toggleClimateStale(): void {
+    const { sensors } = this.state.environment;
+    const stale = !sensors.temperature.stale;
+    const at = stale ? new Date(this.now() - MOCK_STALE_AGE_MS).toISOString() : this.iso();
+    this.setSensors({ ...sensors, temperature: { ...sensors.temperature, stale, at }, humidity: { ...sensors.humidity, stale, at } });
+  }
+
+  /** S1.E45: door Open (amber) ↔ Closed. */
+  toggleDoor(): void {
+    const { sensors } = this.state.environment;
+    const value = sensors.contact.kind === "contact" && sensors.contact.value === "open" ? "closed" : "open";
+    this.setSensors({ ...sensors, contact: { kind: "contact", value, node: sensors.contact.node, at: this.iso(), stale: false } });
+  }
+
+  /** H11: the door sensor has never reported ("—", "No reading yet"). */
+  doorNoReading(): void {
+    const { sensors } = this.state.environment;
+    this.setSensors({ ...sensors, contact: { kind: "contact", value: null, node: sensors.contact.node, at: null, stale: false } });
   }
 
   /** H24: the session times out on the server → remote `view`, kiosk `control`. */
@@ -294,6 +346,20 @@ export class FakeRoom {
   private setSession(next: ClientSession): void {
     this.session = next;
     this.emitAll({ type: "session", session: next });
+  }
+
+  private withDevicesOnline(match: (device: Device) => boolean, online: boolean): RoomState {
+    const ctx = { at: this.iso(), by: "by hand" as const };
+    const devices = this.state.devices.map((device) =>
+      match(device) ? { ...device, online: observe(device.online, online, ctx) } : device,
+    );
+    const blasterOnline = devices.find((device) => device.id === "ir_blaster")?.online.value !== false;
+    const irBlaster = this.state.ir_blaster;
+    return { ...this.state, devices, ir_blaster: { ...irBlaster, online: observe(irBlaster.online, blasterOnline, ctx) } };
+  }
+
+  private setSensors(sensors: RoomState["environment"]["sensors"]): void {
+    this.commit({ ...this.state, environment: { ...this.state.environment, sensors } });
   }
 
   private setOccupancy(value: "detected" | "clear"): void {

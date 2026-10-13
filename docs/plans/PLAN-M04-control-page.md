@@ -1524,7 +1524,7 @@ exit 0 (`mock-client.ts` reads `window` only in the browser; no test imports it)
 **Commit:** `git commit -m "feat(kiosk): mock projector ramp, H7b and screen travel with time scale"`
 
 ### T12 — FakeRoom: panel actions for the S1 hidden states
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room-panel.test.ts`
 
