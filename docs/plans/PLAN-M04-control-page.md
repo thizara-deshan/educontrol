@@ -2155,7 +2155,7 @@ describe("screenView (S1.E17/E18)", () => {
 **Commit:** `git commit -m "feat(kiosk): projection screen selector"`
 
 ### T17 — Selector: level cards (S1.E21/E22, H18)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/audio/audio.view.ts`, `apps/kiosk/src/features/control/audio/audio.view.test.ts`
 
