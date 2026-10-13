@@ -4,7 +4,12 @@ import type { Confidence } from "@eduscope/contracts";
 // colours themselves; they ask for a tone and use these class maps. Literal strings only, so
 // Tailwind generates every class.
 
-export type StateTone = "confirmed" | "selected" | "assumed" | "off" | "unknown" | "offline";
+/**
+ * `warning` is the solid amber dot SPEC uses outside the assumed ring: projector warming up /
+ * cooling down (H14), "no change in draw" (H7b), audio muted (S1.E23), "2 of 3 reporting"
+ * (S1.E41), screen moving. Callers pick it explicitly; `stateTone()` never returns it.
+ */
+export type StateTone = "confirmed" | "selected" | "assumed" | "warning" | "off" | "unknown" | "offline";
 
 export interface StateInput {
   confidence: Confidence;
@@ -32,6 +37,7 @@ export const DOT_CLASS: Record<StateTone, string> = {
   confirmed: "bg-accent",
   selected: "bg-accent",
   assumed: "border-2 border-warn bg-transparent",
+  warning: "bg-warn",
   off: "bg-text-3",
   unknown: "border-2 border-text-3 bg-transparent",
   offline: "bg-danger",
@@ -42,6 +48,7 @@ export const TEXT_CLASS: Record<StateTone, string> = {
   confirmed: "text-accent",
   selected: "text-accent",
   assumed: "text-warn",
+  warning: "text-warn",
   off: "text-text-3",
   unknown: "text-text-3",
   offline: "text-danger",
@@ -58,6 +65,7 @@ export const CARD_VARIANT_FOR_TONE: Record<StateTone, CardVariant> = {
   confirmed: "solid",
   selected: "solid",
   assumed: "dashed",
+  warning: "solid",
   off: "solid",
   unknown: "dashed",
   offline: "danger",

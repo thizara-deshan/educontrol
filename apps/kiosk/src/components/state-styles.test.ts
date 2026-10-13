@@ -37,6 +37,11 @@ describe("SPEC §3.4 class maps", () => {
     expect(DOT_CLASS.unknown).toContain("border-text-3");
     expect(CARD_VARIANT_FOR_TONE.unknown).toBe("dashed");
   });
+  it("warning is a solid amber dot with warn text on a solid card", () => {
+    expect(DOT_CLASS.warning).toBe("bg-warn");
+    expect(TEXT_CLASS.warning).toBe("text-warn");
+    expect(CARD_VARIANT_FOR_TONE.warning).toBe("solid");
+  });
   it("offline is danger with a 40% danger border", () => {
     expect(DOT_CLASS.offline).toBe("bg-danger");
     expect(CARD_VARIANT_FOR_TONE.offline).toBe("danger");

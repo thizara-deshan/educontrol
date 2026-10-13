@@ -18,7 +18,7 @@ import { LiveDemo } from "./LiveDemo";
 // Temporary dev-only page (`/dev/components`, M02 AC6): every shared component in every SPEC
 // §3.4 state. Removed when M04–M06 use the components for real.
 
-const TONES: StateTone[] = ["confirmed", "selected", "assumed", "off", "unknown", "offline"];
+const TONES: StateTone[] = ["confirmed", "selected", "assumed", "warning", "off", "unknown", "offline"];
 const noop = (): void => undefined;
 
 function Demo({ title, children }: { title: string; children: ReactNode }) {

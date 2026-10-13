@@ -142,7 +142,7 @@ All paths under `apps/kiosk/src/` unless they start with `docs/`.
 ## Tasks
 
 ### T1 — `warning` state tone (solid amber dot)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/state-styles.ts`, `apps/kiosk/src/components/state-styles.test.ts`,
 `apps/kiosk/src/app/dev/ComponentGallery.tsx`
