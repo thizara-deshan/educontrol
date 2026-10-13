@@ -2064,7 +2064,7 @@ describe("projectorView (S1.E13–E15)", () => {
 **Commit:** `git commit -m "feat(kiosk): projector selector"`
 
 ### T16 — Selector: projection screen (S1.E17/E18)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/screen.view.ts`,
 `apps/kiosk/src/features/control/display/screen.view.test.ts`
