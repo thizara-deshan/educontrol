@@ -2347,7 +2347,7 @@ describe("lightsView (S1.E31)", () => {
 **Commit:** `git commit -m "feat(kiosk): lights selector"`
 
 ### T20 — Selector: air conditioning (S1.E34–E40)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/environment/ac.view.ts`,
 `apps/kiosk/src/features/control/environment/ac.view.test.ts`
