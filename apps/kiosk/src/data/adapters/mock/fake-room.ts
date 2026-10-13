@@ -5,8 +5,8 @@ import {
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
 import {
-  applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, setProjectorPhase, statusFor,
-  withDerived, type RampTimes,
+  applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, rebaseNodeTimes, setProjectorPhase,
+  statusFor, withDerived, withNodesOnline, type RampTimes,
 } from "./mock-rules";
 
 // In-memory room (ARCHITECTURE §4.4). Emits the SAME ServerEvents the real server will, through
@@ -85,7 +85,7 @@ export class FakeRoom {
     this.random = options.random ?? Math.random;
     this.now = options.now ?? Date.now;
     this.timeScale = options.timeScale ?? 1;
-    this.state = RoomState.parse(roomNormal);
+    this.state = rebaseNodeTimes(RoomState.parse(roomNormal), this.now());
     // SPEC §2.3: a remote browser without a PIN starts at `view`.
     this.session = ClientSession.parse({
       public_id: OWN_PUBLIC_ID, client_type: "remote", label: this.helloLabel, access: "view",
@@ -278,12 +278,18 @@ export class FakeRoom {
     });
   }
 
-  /** H10: the climate sensor (temperature + humidity) is 14 min old; again → fresh. */
+  /** H10: the climate sensor (temperature + humidity) is 14 min old, and so is its node's last seen; again → fresh. */
   toggleClimateStale(): void {
-    const { sensors } = this.state.environment;
+    const { environment, zigbee } = this.state;
+    const { sensors } = environment;
     const stale = !sensors.temperature.stale;
     const at = stale ? new Date(this.now() - MOCK_STALE_AGE_MS).toISOString() : this.iso();
-    this.setSensors({ ...sensors, temperature: { ...sensors.temperature, stale, at }, humidity: { ...sensors.humidity, stale, at } });
+    const nodes = zigbee.nodes.map((node) => (node.friendly_name === sensors.temperature.node ? { ...node, last_seen: at } : node));
+    this.commit({
+      ...this.state,
+      environment: { ...environment, sensors: { ...sensors, temperature: { ...sensors.temperature, stale, at }, humidity: { ...sensors.humidity, stale, at } } },
+      zigbee: { ...zigbee, nodes },
+    });
   }
 
   /** S1.E45: door Open (amber) ↔ Closed. */
@@ -355,7 +361,12 @@ export class FakeRoom {
     );
     const blasterOnline = devices.find((device) => device.id === "ir_blaster")?.online.value !== false;
     const irBlaster = this.state.ir_blaster;
-    return { ...this.state, devices, ir_blaster: { ...irBlaster, online: observe(irBlaster.online, blasterOnline, ctx) } };
+    // S2: the matching Zigbee nodes follow (online flag + last seen).
+    const nodeNames = new Set(
+      this.state.devices.flatMap((device) => (match(device) && device.transport === "zigbee" && device.hw_ref !== null ? [device.hw_ref] : [])),
+    );
+    const next = { ...this.state, devices, ir_blaster: { ...irBlaster, online: observe(irBlaster.online, blasterOnline, ctx) } };
+    return withNodesOnline(next, nodeNames, online, this.now());
   }
 
   private setSensors(sensors: RoomState["environment"]["sensors"]): void {
