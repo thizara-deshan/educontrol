@@ -5759,7 +5759,7 @@ with:
 ---
 
 ### T46 — About selectors: uptime text and the QR path (S3e)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/about/about.view.ts`, `apps/kiosk/src/features/settings/about/about.view.test.ts`, `apps/kiosk/package.json`, `pnpm-lock.yaml`
 
