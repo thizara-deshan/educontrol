@@ -3959,7 +3959,7 @@ export function AddDeviceSheet({ open, onOpenChange }: { open: boolean; onOpenCh
 ---
 
 ### T26 — `AddCommandSheet` (S3.E16)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/AddCommandSheet.tsx`
 
