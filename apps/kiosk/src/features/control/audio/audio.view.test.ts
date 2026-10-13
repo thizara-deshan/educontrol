@@ -1,6 +1,6 @@
 import type { Observed } from "@eduscope/contracts";
 import { describe, expect, it } from "vitest";
-import { levelView } from "./audio.view";
+import { levelView, muteBarView } from "./audio.view";
 
 const obs = <T,>(value: T | null): Observed<T> => ({
   value, confidence: "confirmed", source: "mixer", updated_at: null, stale: false, changed_by: null,
@@ -22,5 +22,14 @@ describe("levelView (S1.E21/E22)", () => {
   });
   it("mixer offline (H8)", () => {
     expect(levelView(obs(62), obs(false), null, false, "Audio mixer").offlineLine).toBe("Audio mixer offline · last known state");
+  });
+});
+
+describe("muteBarView (S1.E23)", () => {
+  it("unmuted: grey dot, Mute all audio", () => {
+    expect(muteBarView(obs(false))).toEqual({ label: "Mute all audio", dotTone: "off", active: null, nextMuted: true });
+  });
+  it("muted: amber dot, warn fill, Unmute all audio", () => {
+    expect(muteBarView(obs(true))).toEqual({ label: "Unmute all audio", dotTone: "warning", active: "assumed", nextMuted: false });
   });
 });

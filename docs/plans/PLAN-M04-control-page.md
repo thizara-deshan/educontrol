@@ -2227,7 +2227,7 @@ describe("levelView (S1.E21/E22)", () => {
 **Commit:** `git commit -m "feat(kiosk): level card selector"`
 
 ### T18 — Selector: mute-all bar (S1.E23)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/audio/audio.view.ts`, `apps/kiosk/src/features/control/audio/audio.view.test.ts`
 
