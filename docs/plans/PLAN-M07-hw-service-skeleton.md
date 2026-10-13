@@ -871,7 +871,7 @@ async def test_stream_ends_when_its_subscriber_is_dropped() -> None:
 ---
 
 ### T5 — Fake-driver support: scaled time and owned tasks
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/fake_support.py`, `services/hw/tests/test_fake_support.py`
 
