@@ -124,3 +124,19 @@ export const VALUE_TONE_CLASS: Record<ValueTone, string> = {
   muted: "text-text-2",
   faint: "text-text-3",
 };
+
+/**
+ * S2.E22 mesh redundancy callout (R7): both routers online (green, screenshot 02), one left
+ * (amber, SPEC), none online (`[INFERRED]` red, e.g. coordinator offline).
+ */
+export type CalloutVariant = "redundant" | "one_left" | "none";
+export const CALLOUT_BOX_CLASS: Record<CalloutVariant, string> = {
+  redundant: "border-callout-border bg-callout-fill",
+  one_left: "border-warn bg-warn-fill",
+  none: "border-danger/40 bg-danger-fill",
+};
+export const CALLOUT_TITLE_CLASS: Record<CalloutVariant, string> = {
+  redundant: "text-accent",
+  one_left: "text-warn",
+  none: "text-danger",
+};

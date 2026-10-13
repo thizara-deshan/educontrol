@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  ACTIVE_CONTROL_CLASS, CARD_VARIANT_CLASS, CARD_VARIANT_FOR_TONE, DOT_CLASS, HEADER_LINE_CLASS, stateTone, STATUS_DOT_CLASS, TEXT_CLASS,
+  ACTIVE_CONTROL_CLASS, CALLOUT_BOX_CLASS, CALLOUT_TITLE_CLASS, CARD_VARIANT_CLASS, CARD_VARIANT_FOR_TONE, DOT_CLASS, HEADER_LINE_CLASS, stateTone, STATUS_DOT_CLASS, TEXT_CLASS,
   VALUE_TONE_CLASS, type StateInput, type StateTone,
 } from "./state-styles";
 
@@ -57,11 +57,19 @@ describe("SPEC §3.4 class maps", () => {
     expect(ACTIVE_CONTROL_CLASS.selected).toContain("bg-selected-fill");
     expect(ACTIVE_CONTROL_CLASS.assumed).toContain("bg-warn-fill");
   });
+  it("callout: green when redundant, amber with one router left, red with none (S2.E22)", () => {
+    expect(CALLOUT_BOX_CLASS.redundant).toBe("border-callout-border bg-callout-fill");
+    expect(CALLOUT_TITLE_CLASS.redundant).toBe("text-accent");
+    expect(CALLOUT_BOX_CLASS.one_left).toBe("border-warn bg-warn-fill");
+    expect(CALLOUT_TITLE_CLASS.one_left).toBe("text-warn");
+    expect(CALLOUT_BOX_CLASS.none).toBe("border-danger/40 bg-danger-fill");
+    expect(CALLOUT_TITLE_CLASS.none).toBe("text-danger");
+  });
   it("never contains raw colour values", () => {
     const all = [
       ...Object.values(DOT_CLASS), ...Object.values(TEXT_CLASS), ...Object.values(CARD_VARIANT_CLASS),
       ...Object.values(ACTIVE_CONTROL_CLASS), ...Object.values(STATUS_DOT_CLASS),
-      ...Object.values(VALUE_TONE_CLASS),
+      ...Object.values(VALUE_TONE_CLASS), ...Object.values(CALLOUT_BOX_CLASS), ...Object.values(CALLOUT_TITLE_CLASS),
     ];
     for (const cls of all) expect(cls).not.toMatch(/#|rgb\(|\[/);
   });

@@ -329,7 +329,7 @@ const { value, tone } = sensorReadingDisplay(reading);
 **Commit:** `git commit -m "refactor(kiosk): share the sensor reading formatter"`
 
 ### T3 — Callout state styles (S2.E22)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/components/state-styles.ts`, `apps/kiosk/src/components/state-styles.test.ts`
 
