@@ -5703,7 +5703,7 @@ export function PinsCard() {
 ---
 
 ### T45 — `DevicesTab` (S3d), wired into Settings
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/DevicesTab.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 
