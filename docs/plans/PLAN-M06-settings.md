@@ -2490,7 +2490,7 @@ export function useWritable(): boolean {
 ---
 
 ### T13 — Settings header (S3.E1–E4)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/app/Header.tsx`, `apps/kiosk/src/features/settings/TechnicianAccess.tsx`
 

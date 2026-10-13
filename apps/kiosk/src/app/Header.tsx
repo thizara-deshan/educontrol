@@ -4,6 +4,7 @@ import { kioskEnv } from "@/data/env";
 import { useRequireAccess, useRoomState } from "@/data/hooks";
 import { CoordinatorStatus } from "@/features/devices/header/CoordinatorStatus";
 import { HeaderLockButton } from "@/features/session/HeaderLockButton";
+import { TechnicianAccess } from "@/features/settings/TechnicianAccess";
 import { formatDate, formatTime } from "@/lib/format";
 import { useServerNow } from "@/lib/server-time";
 import { usePressed } from "@/lib/use-pressed";
@@ -65,9 +66,36 @@ function DevicesHeaderContent() {
   );
 }
 
+/** The `R-101` chip (S1.E5, S3.E4). */
+function RoomChip() {
+  const roomId = useRoomState((state) => state.room.id) ?? kioskEnv.VITE_ROOM_ID;
+  return (
+    <span className="flex h-10 shrink-0 items-center whitespace-nowrap rounded-chip border border-border-strong bg-control px-2 font-mono text-card-title font-semibold text-text-1 sm:h-12 sm:px-3">
+      {roomId}
+    </span>
+  );
+}
+
+/** S3.E1–E4. Phone: the back link is icon-only so "Technician access", Lock and `R-101` fit 390px. */
+function SettingsHeaderContent() {
+  const pressed = usePressed();
+  return (
+    <>
+      <Link to="/" aria-label="Controls" {...pressed} className={cn(HEADER_BUTTON_CLASS, "sm:px-3")}>
+        <ArrowLeft aria-hidden="true" className="size-5 shrink-0" />
+        <span className="hidden whitespace-nowrap sm:inline">Controls</span>
+      </Link>
+      <h1 className="min-w-0 flex-1 truncate text-card-title font-bold text-text-1 sm:text-title">Settings</h1>
+      <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3">
+        <TechnicianAccess />
+        <RoomChip />
+      </div>
+    </>
+  );
+}
+
 /** S1.E1–E8. Phone (<600): one 56px row (SPEC §2.2). */
 function ControlHeaderContent() {
-  const roomId = useRoomState((state) => state.room.id) ?? kioskEnv.VITE_ROOM_ID;
   const now = useServerNow();
 
   return (
@@ -90,9 +118,7 @@ function ControlHeaderContent() {
 
       <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3 lg:flex-1">
         <StatusIndicator />
-        <span className="flex h-10 shrink-0 items-center whitespace-nowrap rounded-chip border border-border-strong bg-control px-2 font-mono text-card-title font-semibold text-text-1 sm:h-12 sm:px-3">
-          {roomId}
-        </span>
+        <RoomChip />
         <HeaderLink to="/devices" icon={Wifi} label="Devices" />
         <SettingsButton />
         <HeaderLockButton />
@@ -101,12 +127,13 @@ function ControlHeaderContent() {
   );
 }
 
-/** One header (ARCHITECTURE §4.1); `/devices` gets the S2 variant. */
+/** One header (ARCHITECTURE §4.1); `/devices` gets the S2 variant, `/settings/*` the S3 one. */
 export function Header() {
   const onDevices = useMatch("/devices") !== null;
+  const onSettings = useMatch("/settings/*") !== null;
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-header px-4 sm:h-16 lg:px-6">
-      {onDevices ? <DevicesHeaderContent /> : <ControlHeaderContent />}
+      {onDevices ? <DevicesHeaderContent /> : onSettings ? <SettingsHeaderContent /> : <ControlHeaderContent />}
     </header>
   );
 }
