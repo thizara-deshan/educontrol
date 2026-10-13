@@ -2399,7 +2399,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
 ---
 
 ### T12 — `QueryStatus`, `SettingsRow` and `useWritable`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/shared/QueryStatus.tsx`, `apps/kiosk/src/features/settings/shared/SettingsRow.tsx`, `apps/kiosk/src/features/settings/shared/use-writable.ts`
 
