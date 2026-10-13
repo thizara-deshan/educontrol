@@ -2185,7 +2185,7 @@ import { LightingSwitchCard } from "./routers/LightingSwitchCard";
 **Commit:** `git commit -m "feat(kiosk): lighting switch card"`
 
 ### T26 — `ProjectorSocketCard` (S2.E10–E13)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/routers/ProjectorSocketCard.tsx`, `apps/kiosk/src/features/devices/DevicesPage.tsx`
 
