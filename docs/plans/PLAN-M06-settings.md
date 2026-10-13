@@ -4296,7 +4296,7 @@ with:
 ---
 
 ### T30 — Network selectors (S3b)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/network/network.view.ts`, `apps/kiosk/src/features/settings/network/network.view.test.ts`
 
