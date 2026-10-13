@@ -2660,7 +2660,7 @@ export function CardHeader({ title, tone, line, aside, locked, className }: Card
 **Commit:** `git commit -m "feat(kiosk): S1 card header"`
 
 ### T23 — `ControlPage` grid: three sections, responsive columns
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/ControlPage.tsx`
 
