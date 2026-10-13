@@ -3894,3 +3894,9 @@ then collapse the panel ("Mock panel −") unless a step uses it. Use Chromium D
 - Remove `app/dev/LiveDemo.tsx` from the component gallery now that S1 uses every component for real.
 - Mock: reject `ac.step` while off at the HTTP level (like core-api's precondition error) instead of ignoring it.
 - A "Stop" for the projection screen if Q2 says the driver has one.
+
+## Fix tasks (review 1)
+
+Review: `docs/reviews/REVIEW-M04.md` (2026-10-13). **No MUST-FIX findings, so there are no fix tasks.** All 12
+acceptance criteria pass (the two-browser check is CAN'T VERIFY until M08, M02-L3). The 3 LATER items are in
+`docs/milestones/M00-index.md` → Backlog (M04-L1…L3).

@@ -177,3 +177,6 @@ LATER items from reviews. Not scheduled; a milestone plan picks one up only by l
 | M03-L3 | REVIEW-M03 | `/favicon.ico` 404 (console error) on every load | `apps/kiosk/index.html` |
 | M03-L4 | REVIEW-M03 | `LockButton` duplicates the `HEADER_BUTTON_CLASS` string from `Header.tsx`; share one class from `components/` | `components/LockButton.tsx`, `app/Header.tsx` |
 | M03-L5 | REVIEW-M03 | (Not reproduced, from code reading) `computeControlGate` returns `locked` while the session is still loading, so a padlock badge may flash before `/api/session` answers | `apps/kiosk/src/data/gate.ts` |
+| M04-L1 | REVIEW-M04 | At 390 the collapsed mock panel still covers the bottom bar's Audio/Environment segments; dock it above the bar below `sm` or start it hidden (extends M02-L4, M03-L1) | `apps/kiosk/src/app/dev/MockPanel.tsx` |
+| M04-L2 | REVIEW-M04 | While dragging a level slider the big number shows the server value; only the thumb follows the finger. Show the dragged level in the number too | `features/control/audio/LevelCard.tsx`, `components/LevelSlider.tsx` |
+| M04-L3 | REVIEW-M04 | Quick AC −/+ taps are dropped while one is pending (H5, correct), so manual and scripted step tests need ≥1.5 s between taps; document it in the mock panel or in the plan's walk-through | `data/commands/command-sender.ts` |
