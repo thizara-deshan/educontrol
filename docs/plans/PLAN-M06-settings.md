@@ -731,7 +731,7 @@ describe("FakeSchedule (S3c)", () => {
 ---
 
 ### T3 — Mock registry edits and permit joining
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room-settings.test.ts`
 

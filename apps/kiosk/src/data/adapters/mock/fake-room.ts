@@ -1,9 +1,9 @@
 import {
-  ClientSession, Command, CommandRequest, LoginRequest, RoomState, ServerEvent, type ChangedBy, type ClientLabel,
-  type ClientType, type CommandBody, type Device, type LoginResult,
+  ClientSession, Command, CommandRequest, DevicePatch, LoginRequest, RoomState, ServerEvent, type ChangedBy,
+  type ClientLabel, type ClientType, type CommandBody, type Device, type LoginResult,
 } from "@eduscope/contracts";
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
-import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
+import { ApiRequestError, type RealtimeConnection, type RealtimeHandlers } from "@/data/api-client";
 import { FakeIr } from "./fake-ir";
 import { FakeSchedule } from "./fake-schedule";
 import type { MockHost } from "./mock-host";
@@ -45,6 +45,8 @@ export const MOCK_STALE_AGE_MS = 14 * 60_000;
 export const MOCK_JOIN_WINDOW_MS = (4 * 60 + 12) * 1000;
 /** "Toggle interlock holding": the projector is cooling at this draw (H15 "… · 112 W"). */
 export const MOCK_HOLDING_WATTS = 112;
+/** S3d "Permit joining": the mesh opens for 4 min (PermitJoinRequest). Not time-scaled. */
+export const MOCK_PERMIT_JOIN_MS = 240_000;
 /** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
 const CONTROL_SESSION_MS = 2 * 60 * 60_000;
 const TECHNICIAN_SESSION_MS = 15 * 60_000;
@@ -205,6 +207,45 @@ export class FakeRoom {
     };
   }
 
+  // ── Settings (S3b–S3e) ───────────────────────────────────────────────────────────────
+
+  /** S3d registry = the room's devices. */
+  async listDevices(): Promise<Device[]> {
+    await this.delay();
+    return this.state.devices;
+  }
+
+  /** S3d edit sheet: rename, transport, hardware id. S1/S2/S3 follow through `state` + invalidate. */
+  async updateDevice(id: string, patch: DevicePatch): Promise<Device> {
+    const parsed = DevicePatch.parse(patch);
+    await this.delay();
+    const current = this.state.devices.find((device) => device.id === id);
+    if (current === undefined) throw new ApiRequestError("not_found", "Device not found", 404);
+    const updated: Device = {
+      ...current,
+      ...(parsed.name === undefined ? {} : { name: parsed.name }),
+      ...(parsed.transport === undefined ? {} : { transport: parsed.transport }),
+      ...(parsed.hw_ref === undefined ? {} : { hw_ref: parsed.hw_ref }),
+    };
+    this.commit({ ...this.state, devices: this.state.devices.map((device) => (device.id === id ? updated : device)) });
+    this.invalidateDevices();
+    return updated;
+  }
+
+  async removeDevice(id: string): Promise<void> {
+    await this.delay();
+    if (!this.state.devices.some((device) => device.id === id)) throw new ApiRequestError("not_found", "Device not found", 404);
+    this.ir.forgetDevice(id);
+    this.commit({ ...this.state, devices: this.state.devices.filter((device) => device.id !== id) });
+    this.invalidateDevices();
+  }
+
+  /** S3d "Permit joining": the mesh opens for 4 min; S2.E21 counts down from `joining.until`. */
+  async permitJoin(): Promise<void> {
+    await this.delay();
+    this.openJoiningFor(MOCK_PERMIT_JOIN_MS);
+  }
+
   // ── Mock panel (`?mock-panel`) ───────────────────────────────────────────────────────
 
   /** Close every socket now and refuse reconnects until restore(). */
@@ -352,13 +393,7 @@ export class FakeRoom {
 
   /** S2.E21: joining opens for 4:12 and closes by itself (permit join itself is S3d, M06). */
   openJoining(): void {
-    if (this.joinTimer !== null) clearTimeout(this.joinTimer);
-    const until = new Date(this.now() + MOCK_JOIN_WINDOW_MS).toISOString();
-    this.setJoining({ state: "open", until });
-    this.joinTimer = setTimeout(() => {
-      this.joinTimer = null;
-      this.setJoining({ state: "closed" });
-    }, MOCK_JOIN_WINDOW_MS);
+    this.openJoiningFor(MOCK_JOIN_WINDOW_MS);
   }
 
   /** H15 / S2.E23: the projector is cooling at 112 W and the interlock holds; again → running, armed. */
@@ -438,6 +473,20 @@ export class FakeRoom {
     );
     const next = { ...this.state, devices, ir_blaster: { ...irBlaster, online: observe(irBlaster.online, blasterOnline, ctx) } };
     return withNodesOnline(next, nodeNames, online, this.now());
+  }
+
+  private openJoiningFor(ms: number): void {
+    if (this.joinTimer !== null) clearTimeout(this.joinTimer);
+    const until = new Date(this.now() + ms).toISOString();
+    this.setJoining({ state: "open", until });
+    this.joinTimer = setTimeout(() => {
+      this.joinTimer = null;
+      this.setJoining({ state: "closed" });
+    }, ms);
+  }
+
+  private invalidateDevices(): void {
+    this.emitAll({ type: "invalidate", keys: [["devices"], ["ir", "devices"]] });
   }
 
   private setJoining(joining: RoomState["zigbee"]["mesh"]["joining"]): void {
