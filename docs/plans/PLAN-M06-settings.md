@@ -3559,7 +3559,7 @@ export function useCommandRow(command: IrCommand, device: IrDevice) {
 ---
 
 ### T20 — `CommandRow` (S3.E14/E15)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/CommandRow.tsx`
 
