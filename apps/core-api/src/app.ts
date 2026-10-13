@@ -23,6 +23,7 @@ import { authPlugin } from "./plugins/auth.ts";
 import { errorsPlugin } from "./plugins/errors.ts";
 import { originCheckPlugin } from "./plugins/origin-check.ts";
 import { staticPlugin } from "./plugins/static.ts";
+import { commandRoutes } from "./routes/commands.ts";
 import { healthRoutes } from "./routes/health.ts";
 import { sessionRoutes } from "./routes/session.ts";
 import { stateRoutes } from "./routes/state.ts";
@@ -141,6 +142,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     async (api) => {
       await api.register(sessionRoutes, { db, sessions, throttle: createPinThrottle(clock), log });
       await api.register(stateRoutes, { store });
+      await api.register(commandRoutes, { dispatcher, sessions });
       await api.register(healthRoutes, { store });
     },
     { prefix: "/api" },

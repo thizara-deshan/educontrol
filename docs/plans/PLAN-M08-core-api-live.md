@@ -5689,7 +5689,7 @@ describe("origin check (CSRF, §5)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): origin check"` (includes this plan file with the box ticked)
 
 ### T27 — `POST /api/commands`
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/routes/commands.ts`, `apps/core-api/src/app.ts`, `apps/core-api/test/routes/commands.test.ts`
 
