@@ -1,23 +1,30 @@
 import { PlaceholderPage } from "@/components/PlaceholderPage";
-import { TechnicianAccess } from "./TechnicianAccess";
+import { SettingsTabs } from "./SettingsTabs";
+import type { SettingsTab } from "./tabs";
 
-// S3.E5 tab names. SettingsGuard (router) keeps this page technician-only.
-const TABS = {
-  remote: { title: "Remote configuration", spec: "S3" },
-  network: { title: "Network", spec: "S3b" },
-  schedule: { title: "Schedule", spec: "S3c" },
-  devices: { title: "Devices", spec: "S3d" },
-  about: { title: "About", spec: "S3e" },
-} as const;
-export type SettingsTab = keyof typeof TABS;
+export type { SettingsTab } from "./tabs";
 
-/** `/settings/*` — placeholder until M06. */
+function TabContent({ tab }: { tab: SettingsTab }) {
+  switch (tab) {
+    case "remote":
+      return <PlaceholderPage title="Remote configuration" spec="S3" milestone="M06" />;
+    case "network":
+      return <PlaceholderPage title="Network" spec="S3b" milestone="M06" />;
+    case "schedule":
+      return <PlaceholderPage title="Schedule" spec="S3c" milestone="M06" />;
+    case "devices":
+      return <PlaceholderPage title="Devices" spec="S3d" milestone="M06" />;
+    case "about":
+      return <PlaceholderPage title="About" spec="S3e" milestone="M06" />;
+  }
+}
+
+/** `/settings/*` (S3–S3e). SettingsGuard (router) keeps it technician-only; the header shows S3.E1–E4. */
 export function SettingsPage({ tab }: { tab: SettingsTab }) {
-  const { title, spec } = TABS[tab];
   return (
-    <div className="flex flex-col gap-4">
-      <TechnicianAccess />
-      <PlaceholderPage title={`Settings › ${title}`} spec={spec} milestone="M06" />
+    <div className="flex flex-col gap-4 lg:gap-6">
+      <SettingsTabs active={tab} />
+      <TabContent tab={tab} />
     </div>
   );
 }

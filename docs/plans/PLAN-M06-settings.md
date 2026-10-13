@@ -2633,7 +2633,7 @@ export function TechnicianAccess() {
 ---
 
 ### T14 — Settings tab strip (S3.E5) and page frame
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/tabs.ts`, `apps/kiosk/src/features/settings/SettingsTabs.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 
