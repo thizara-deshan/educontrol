@@ -4516,7 +4516,7 @@ def test_command_shows_up_on_the_stream(base_url: str) -> None:
 ---
 
 ### T18 — `transports/mqtt.py` placeholder
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/transports/__init__.py` (empty), `services/hw/app/transports/mqtt.py`
 
