@@ -2868,7 +2868,7 @@ describe("hw client", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): hw-service HTTP client"` (includes this plan file with the box ticked)
 
 ### T16 — hw SSE stream: parser, backoff, dead detection
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/hw/stream.ts`, `apps/core-api/test/hw/stream.test.ts`
 
