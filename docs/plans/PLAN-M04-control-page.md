@@ -1880,7 +1880,7 @@ describe("sourceTileView (S1.E11/E12)", () => {
 **Commit:** `git commit -m "feat(kiosk): source tile selector"`
 
 ### T15 — Selector: projector state line, wattage and buttons (S1.E13–E15)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/projector.view.ts`,
 `apps/kiosk/src/features/control/display/projector.view.test.ts`
