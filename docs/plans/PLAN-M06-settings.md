@@ -5436,7 +5436,7 @@ export function DeviceEditSheet({ device, onClose }: { device: Device; onClose: 
 ---
 
 ### T41 — `RegistryCard` (S3d device list)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/RegistryCard.tsx`
 
