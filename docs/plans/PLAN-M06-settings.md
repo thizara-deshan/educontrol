@@ -5651,7 +5651,7 @@ export function PinChangeSheet({ level, onClose }: { level: PinLevel; onClose: (
 ---
 
 ### T44 — `PinsCard` (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/PinsCard.tsx`
 
