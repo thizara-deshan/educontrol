@@ -3809,7 +3809,7 @@ The four sensor tiles (S1.E42–E45) fit in one row in a 400px column (1280 wide
 **Commit:** `git commit -m "docs: decision D-20 S1 height budget"`
 
 ### T37 — Acceptance walk-through (M04 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan file only (tick the boxes below; write any failure under `## Blockers` and stop).
 
@@ -3820,7 +3820,7 @@ then collapse the panel ("Mock panel −") unless a step uses it. Use Chromium D
 
 **Do:** check each item; tick it when it holds.
 
-- [ ] **AC1 — 1280×800, three columns, no page scroll, matches screenshot 01.** Open `/?mock-panel`, collapse the
+- [x] **AC1 — 1280×800, three columns, no page scroll, matches screenshot 01.** Open `/?mock-panel`, collapse the
   panel. Console: `[document.documentElement.scrollHeight, innerHeight]` → `[800, 800]`. Compare with
   `reference/screens/01-control-page.png` column by column: DISPLAY (Podium PC "Selected, confirmed" | Smart board
   "Tap to select"; Projector "On · confirmed by draw" `287 W` Power on green | Power off; caption; Projection screen
@@ -3828,7 +3828,7 @@ then collapse the panel ("Mock panel −") unless a step uses it. Use Chromium D
   by the switch" `ZBM5`, Front of room On, Rear of room Off; Air conditioning "On · assumed" `IR REMOTE` dashed, Power on
   amber, Setpoint − `24°` +; ROOM SENSORS "● 3 reporting", `26.4°` `61%` Detected Closed with model captions).
   Expected differences: primary buttons are 56px (SPEC §3.3), padlocks show for `view` (AC11).
-- [ ] **AC2 — 800 and 390.** At 800×1000: console
+- [x] **AC2 — 800 and 390.** At 800×1000: console
   `[...document.querySelectorAll("main section")].filter(s=>s.id).map(s=>[s.id,Math.round(s.getBoundingClientRect().left)])`
   → `[["display",16],["audio",16],["environment",408]]`, Audio below Display. At 390×844 (touch): one column in the
   order Display → Audio → Environment; the bottom bar has three 48px segments that jump to each section (T35); source
@@ -3836,35 +3836,35 @@ then collapse the panel ("Mock panel −") unless a step uses it. Use Chromium D
   Console: `document.documentElement.scrollWidth === innerWidth` → `true`, and
   `[...document.querySelectorAll("main button, main a, main [role=slider], nav button")].filter(e=>{const r=e.getBoundingClientRect();return r.width<48||r.height<48}).length`
   → `0`.
-- [ ] **AC3 — source tiles.** Kiosk. Tap "Smart board": "Switching…" with a pulsing border, then "Selected, confirmed";
+- [x] **AC3 — source tiles.** Kiosk. Tap "Smart board": "Switching…" with a pulsing border, then "Selected, confirmed";
   Podium PC "Tap to select". Tap Smart board again: no pulse, nothing sent. Panel "Source assumed": "Selected, assumed",
   amber border.
-- [ ] **AC4 — projector.** Reload `/?mock-panel&time-scale=0.1`, kiosk. Power off, wait for "Standby · confirmed by draw"
+- [x] **AC4 — projector.** Reload `/?mock-panel&time-scale=0.1`, kiosk. Power off, wait for "Standby · confirmed by draw"
   `3 W`. Power on: "Power on sent · waiting for draw" → "Warming up" (amber dot, live W) → "On · confirmed by draw" green
   `287 W`. Panel "No draw change (next IR)", Power off: ~9 s later "Power off sent · no change in draw" in amber.
   Panel "Toggle power meter offline": hollow ring, "— W", "Power meter offline · state unknown".
-- [ ] **AC5 — screen.** "Raise" when Lowered; tap → "Moving…" → "Raised" with "Lower". Panel "Screen position unknown":
+- [x] **AC5 — screen.** "Raise" when Lowered; tap → "Moving…" → "Raised" with "Lower". Panel "Screen position unknown":
   "Unknown".
-- [ ] **AC6 — sliders and mute.** Kiosk. Drag the mic thumb: it follows the pointer; on release the number settles to
+- [x] **AC6 — sliders and mute.** Kiosk. Drag the mic thumb: it follows the pointer; on release the number settles to
   the released value. Panel "Phone changes PC audio (in 3 s)", then drag the PC slider and hold for 4 s: the toast
   appears, the thumb stays under the pointer until release. "Mute all audio" → "Unmute all audio" (amber), sliders
   dimmed, both values "Muted"; "Unmute all audio" → `62` / previous PC level again (R9).
-- [ ] **AC7 — lights.** Tap the "Rear of room" label (far left of the row): it toggles. Panel "Change by hand": toast
+- [x] **AC7 — lights.** Tap the "Rear of room" label (far left of the row): it toggles. Panel "Change by hand": toast
   "Front of room turned … · by hand". Panel "Toggle lights offline": red dot, "Switch offline · last known state", rows
   disabled.
-- [ ] **AC8 — AC.** Panel "Restart controller (AC unknown)": "Unknown", dashed border. Power on → "On · assumed", amber
+- [x] **AC8 — AC.** Panel "Restart controller (AC unknown)": "Unknown", dashed border. Power on → "On · assumed", amber
   ring; − / + step 23° … 18° / 25° … 30°; − disabled at 18°, + at 30° (H19); Power off → both disabled.
-- [ ] **AC9 — sensors.** Panel "Toggle climate stale": `26.4°` and `61%` grey with "· 14 min ago", header "2 of 3
+- [x] **AC9 — sensors.** Panel "Toggle climate stale": `26.4°` and `61%` grey with "· 14 min ago", header "2 of 3
   reporting" amber. Panel "Door: no reading": "—" + "No reading yet". "Toggle door open": "Open" amber.
-- [ ] **AC10 — coordinator / blaster.** Panel "Toggle coordinator offline": header status red "Coordinator offline";
+- [x] **AC10 — coordinator / blaster.** Panel "Toggle coordinator offline": header status red "Coordinator offline";
   Lights in H8; sensor captions "· offline", "No sensors reporting"; projector and AC IR buttons disabled with "IR blaster
   offline" (the ZS06 is a Zigbee device). Toggle back. Panel "Toggle blaster offline": projector and AC buttons
   disabled, both cards show "IR blaster offline" (H25); header amber "ZS06 offline".
-- [ ] **AC11 — view-only.** Reload `/?mock-panel` (remote `view`). Console:
+- [x] **AC11 — view-only.** Reload `/?mock-panel` (remote `view`). Console:
   `document.querySelectorAll("main [aria-label=Locked]").length` → `9` (2 tiles, Projector, Screen, 2 levels, Mute,
   Lights, AC). Tap Power off → "Enter room PIN"; enter `1234`: the projector did **not** change; tap again → it acts.
   Pressing a slider while locked also opens the PIN.
-- [ ] **AC12 — `pnpm verify` green** and the selector tests exist: `projector.view.test.ts` (state line text),
+- [x] **AC12 — `pnpm verify` green** and the selector tests exist: `projector.view.test.ts` (state line text),
   `ac.view.test.ts` (button enablement), `sensors.view.test.ts` (reporting text), `source-tiles.view.test.ts` (tile
   label), `screen.view.test.ts` (button label). `pnpm build` → exit 0 (the >500 kB chunk warning is M02-L1).
 
