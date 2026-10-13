@@ -1,5 +1,6 @@
 import { SectionLabel } from "@/components/SectionLabel";
 import { SourceTiles } from "./display/SourceTiles";
+import { ProjectorCard } from "./display/ProjectorCard";
 
 // SPEC §2.2 / ARCHITECTURE §4.1: one grid. Phone: Display → Audio → Environment. 600–1023:
 // Display + Audio stacked left, Environment right. ≥1024: three columns, no scroll at 1280×800.
@@ -12,6 +13,7 @@ export function ControlPage() {
       <section id="display" aria-label="Display" className={SECTION}>
         <SectionLabel>Display</SectionLabel>
         <SourceTiles />
+        <ProjectorCard />
       </section>
       <section id="audio" aria-label="Audio" className={`${SECTION} sm:col-start-1 lg:col-start-2 lg:row-start-1`}>
         <SectionLabel>Audio</SectionLabel>

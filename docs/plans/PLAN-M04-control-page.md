@@ -2877,7 +2877,7 @@ amber fill and border. Panel "Toggle HDMI switch offline": tiles dimmed and the 
 **Commit:** `git commit -m "feat(kiosk): source tiles on S1"`
 
 ### T26 — `ProjectorCard` (S1.E13–E16)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/control/display/ProjectorCard.tsx`, `apps/kiosk/src/features/control/ControlPage.tsx`
 
