@@ -2751,7 +2751,7 @@ export function SettingsPage({ tab }: { tab: SettingsTab }) {
 ---
 
 ### T15 — Remote selectors: capture status, device count, subtitles, selection
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/remote.view.ts`, `apps/kiosk/src/features/settings/remote/remote.view.test.ts`
 
