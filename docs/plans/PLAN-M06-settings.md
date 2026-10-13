@@ -5204,7 +5204,7 @@ describe("permitJoinView", () => {
 ---
 
 ### T39 — PIN change confirm logic (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/devices/pin-change.ts`, `apps/kiosk/src/features/settings/devices/pin-change.test.ts`
 
