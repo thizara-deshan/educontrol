@@ -3716,7 +3716,7 @@ export function DeviceList({ devices, selectedId, onSelect }: {
 ---
 
 ### T22 — `BlasterCard` (S3.E10)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/BlasterCard.tsx`
 
