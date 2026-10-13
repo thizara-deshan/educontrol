@@ -5,8 +5,8 @@ import {
 import roomNormal from "@eduscope/contracts/fixtures/state/room-normal.json";
 import type { RealtimeConnection, RealtimeHandlers } from "@/data/api-client";
 import {
-  applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, rebaseNodeTimes, setProjectorPhase,
-  statusFor, withDerived, withNodesOnline, type RampTimes,
+  applyCommandToState, applyProjectorStep, describeCommand, observe, projectorRamp, rebaseNodeTimes, RUNNING_WATTS,
+  setProjectorPhase, statusFor, withDerived, withNodesOnline, type ProjectorStep, type RampTimes,
 } from "./mock-rules";
 
 // In-memory room (ARCHITECTURE §4.4). Emits the SAME ServerEvents the real server will, through
@@ -38,6 +38,10 @@ export const MOCK_POWER_TICK_MS = 1_000;
 export const MOCK_SCREEN_TRAVEL_MS = 8_000;
 /** "Toggle climate stale" backdates the reading by this much (H10 "· 14 min ago"). */
 export const MOCK_STALE_AGE_MS = 14 * 60_000;
+/** "Open joining": the window the panel opens, so S2.E21 starts at "Open · 4:12 left". Not time-scaled. */
+export const MOCK_JOIN_WINDOW_MS = (4 * 60 + 12) * 1000;
+/** "Toggle interlock holding": the projector is cooling at this draw (H15 "… · 112 W"). */
+export const MOCK_HOLDING_WATTS = 112;
 /** SPEC §2.3 session lengths, shown in `expires_at` only (the mock never expires on its own). */
 const CONTROL_SESSION_MS = 2 * 60 * 60_000;
 const TECHNICIAN_SESSION_MS = 15 * 60_000;
@@ -77,6 +81,7 @@ export class FakeRoom {
   private projectorTimer: ReturnType<typeof setTimeout> | null = null;
   private screenTimer: ReturnType<typeof setTimeout> | null = null;
   private noDrawChangeNext = false;
+  private joinTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly random: () => number;
   private readonly now: () => number;
   private readonly timeScale: number;
@@ -305,6 +310,57 @@ export class FakeRoom {
     this.setSensors({ ...sensors, contact: { kind: "contact", value: null, node: sensors.contact.node, at: null, stale: false } });
   }
 
+  /** S2.E16 / H16: set one battery node's level (18 → amber, 8 → red, 98 → back to normal). */
+  setBattery(friendlyName: string, pct: number): void {
+    const { zigbee } = this.state;
+    const nodes = zigbee.nodes.map((node) => (node.friendly_name === friendlyName ? { ...node, battery_pct: pct } : node));
+    this.commit({ ...this.state, zigbee: { ...zigbee, nodes } });
+  }
+
+  /** S2.E19: every battery end device is unpaired (reload the page to undo). */
+  noBatteryDevices(): void {
+    const { zigbee } = this.state;
+    const nodes = zigbee.nodes.filter((node) => node.power_source !== "battery");
+    const routers = nodes.filter((node) => node.role === "router").length;
+    this.commit({
+      ...this.state,
+      zigbee: { ...zigbee, nodes, mesh: { ...zigbee.mesh, paired: nodes.length, routers, end_devices: nodes.length - routers } },
+    });
+  }
+
+  /** S2.E3 "Coordinator starting…" ↔ online. */
+  toggleCoordinatorStarting(): void {
+    const { zigbee } = this.state;
+    const status = zigbee.coordinator.status === "starting" ? "online" : "starting";
+    this.commit({ ...this.state, zigbee: { ...zigbee, coordinator: { ...zigbee.coordinator, status } } });
+  }
+
+  /** S2.E21: joining opens for 4:12 and closes by itself (permit join itself is S3d, M06). */
+  openJoining(): void {
+    if (this.joinTimer !== null) clearTimeout(this.joinTimer);
+    const until = new Date(this.now() + MOCK_JOIN_WINDOW_MS).toISOString();
+    this.setJoining({ state: "open", until });
+    this.joinTimer = setTimeout(() => {
+      this.joinTimer = null;
+      this.setJoining({ state: "closed" });
+    }, MOCK_JOIN_WINDOW_MS);
+  }
+
+  /** H15 / S2.E23: the projector is cooling at 112 W and the interlock holds; again → running, armed. */
+  toggleInterlockHolding(): void {
+    const step: ProjectorStep =
+      this.state.interlock.status === "holding"
+        ? { watts: RUNNING_WATTS, state: "running", phase: "idle", done: true }
+        : { watts: MOCK_HOLDING_WATTS, state: "cooling_down", phase: "idle", done: true };
+    this.commit(applyProjectorStep(this.state, step, this.iso())); // cooling_down → holding, running → armed
+  }
+
+  /** S2.E23 "Bypassed" ↔ armed (the bypass itself is a technician action, not built). */
+  toggleInterlockBypassed(): void {
+    const status = this.state.interlock.status === "bypassed" ? "armed" : "bypassed";
+    this.commit({ ...this.state, interlock: { ...this.state.interlock, status } });
+  }
+
   /** H24: the session times out on the server → remote `view`, kiosk `control`. */
   expireSession(): void {
     this.setSession(this.downgraded());
@@ -367,6 +423,11 @@ export class FakeRoom {
     );
     const next = { ...this.state, devices, ir_blaster: { ...irBlaster, online: observe(irBlaster.online, blasterOnline, ctx) } };
     return withNodesOnline(next, nodeNames, online, this.now());
+  }
+
+  private setJoining(joining: RoomState["zigbee"]["mesh"]["joining"]): void {
+    const { zigbee } = this.state;
+    this.commit({ ...this.state, zigbee: { ...zigbee, mesh: { ...zigbee.mesh, joining } } });
   }
 
   private setSensors(sensors: RoomState["environment"]["sensors"]): void {

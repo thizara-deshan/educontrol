@@ -718,7 +718,7 @@ describe("FakeRoom: Zigbee nodes follow the room (S2)", () => {
 **Commit:** `git commit -m "feat(kiosk): mock zigbee nodes follow offline and stale"`
 
 ### T8 — FakeRoom: panel methods for the S2 hidden states
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-room.ts`, `apps/kiosk/src/data/adapters/mock/fake-room-devices.test.ts`
 
