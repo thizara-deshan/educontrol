@@ -2034,7 +2034,7 @@ async def test_routes() -> None:
 ---
 
 ### T10 — `projector_power` module (relay, power meter, IR-driven ramp, meter-offline route)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/projector_power/{__init__,schemas,service,driver_real,driver_fake,router}.py`,
 `services/hw/tests/test_projector_power.py`
