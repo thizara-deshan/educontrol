@@ -1,4 +1,5 @@
 import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { RemoteTab } from "./remote/RemoteTab";
 import { SettingsTabs } from "./SettingsTabs";
 import type { SettingsTab } from "./tabs";
 
@@ -7,7 +8,7 @@ export type { SettingsTab } from "./tabs";
 function TabContent({ tab }: { tab: SettingsTab }) {
   switch (tab) {
     case "remote":
-      return <PlaceholderPage title="Remote configuration" spec="S3" milestone="M06" />;
+      return <RemoteTab />;
     case "network":
       return <PlaceholderPage title="Network" spec="S3b" milestone="M06" />;
     case "schedule":

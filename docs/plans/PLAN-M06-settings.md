@@ -4163,7 +4163,7 @@ export function DeviceDetail({ device }: { device: IrDevice }) {
 ---
 
 ### T28 — `RemoteTab`: master → detail, wired into Settings
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/RemoteTab.tsx`, `apps/kiosk/src/features/settings/SettingsPage.tsx`
 
