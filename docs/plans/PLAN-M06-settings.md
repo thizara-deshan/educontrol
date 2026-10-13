@@ -4075,7 +4075,7 @@ export function AddCommandSheet({ device, open, onOpenChange }: { device: IrDevi
 ---
 
 ### T27 — `DeviceDetail`: right column (S3.E12–E17)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/DeviceDetail.tsx`
 
