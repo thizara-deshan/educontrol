@@ -75,6 +75,28 @@ export function BatteryList() {
           </tbody>
         </table>
       </div>
+      <ul className="flex flex-col gap-3 sm:hidden">
+        {rows.map((row) => (
+          <li key={row.key} className="flex flex-col gap-1 rounded-card border border-border bg-surface p-4">
+            <div className="flex items-start justify-between gap-3">
+              <span className="min-w-0 text-card-title font-semibold text-text-1">{row.name}</span>
+              <Reading row={row} />
+            </div>
+            <p className="break-all font-mono text-caption text-text-3">{row.ids}</p>
+            <p className="flex flex-wrap gap-x-2 text-caption text-text-3">
+              <span>
+                Battery <span className={cn("font-mono", VALUE_TONE_CLASS[row.batteryTone])}>{row.battery}</span>
+              </span>
+              <span aria-hidden="true">·</span>
+              <span>
+                Link <span className="font-mono text-text-2">{row.link}</span>
+              </span>
+              <span aria-hidden="true">·</span>
+              <span className={VALUE_TONE_CLASS[row.lastSeenTone]}>{row.lastSeen}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
     </>
   );
 }

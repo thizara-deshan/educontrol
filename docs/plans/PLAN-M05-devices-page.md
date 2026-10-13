@@ -2385,7 +2385,7 @@ import { BatteryList } from "./battery/BatteryList";
 **Commit:** `git commit -m "feat(kiosk): battery table"`
 
 ### T28 — `BatteryList` phone cards (<600px)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/devices/battery/BatteryList.tsx`
 
