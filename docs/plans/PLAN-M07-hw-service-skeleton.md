@@ -1458,7 +1458,7 @@ async def test_route() -> None:
 ---
 
 ### T8 — `projection_screen` module (raise/lower, `projection_screen.state`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/projection_screen/{__init__,schemas,service,driver_real,driver_fake,router}.py`,
 `services/hw/tests/test_projection_screen.py`
