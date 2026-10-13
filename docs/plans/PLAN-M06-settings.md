@@ -1953,7 +1953,7 @@ export function useServerMutation<TArgs, TResult>(run: (api: ApiClient, args: TA
 ---
 
 ### T8 — shadcn `dialog` primitive
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/ui/dialog.tsx`
 
