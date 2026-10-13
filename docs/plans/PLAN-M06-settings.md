@@ -3003,7 +3003,7 @@ describe("blasterView (S3.E10, H25)", () => {
 ---
 
 ### T17 — Command row state machine: capture (H21), test (H22), blaster offline (H25)
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/features/settings/remote/command-row.ts`, `apps/kiosk/src/features/settings/remote/command-row.test.ts`
 
