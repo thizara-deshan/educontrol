@@ -9,7 +9,6 @@ import type { z } from "zod";
 import { ApiRequestError, type ApiClient, type RealtimeConnection } from "@/data/api-client";
 
 // fetch + WebSocket adapter (ARCHITECTURE §4.4). Every response and frame is zod-parsed.
-// Exercised by tests only until M08 brings core-api.
 
 /** The slice of the browser WebSocket this adapter uses (a fake implements it in tests). */
 export interface SocketLike {
@@ -150,40 +149,48 @@ export function createHttpApiClient(options: HttpClientOptions): ApiClient {
       restart: () => requestVoid("/api/system/restart", postJson({})),
     },
     connect(label, handlers): RealtimeConnection {
-      const socket = createSocket(options.wsUrl);
+      let socket: SocketLike | null = null;
       let closed = false;
-      const send = (message: ClientMessage): void => socket.send(JSON.stringify(ClientMessage.parse(message)));
+      const send = (message: ClientMessage): void => socket?.send(JSON.stringify(ClientMessage.parse(message)));
       const finish = (): void => {
         if (closed) return;
         closed = true;
         handlers.onClose();
       };
-      socket.onopen = () => {
-        send({ type: "hello", label });
-        handlers.onOpen();
+      const open = (): void => {
+        if (closed) return; // close() came first
+        const ws = createSocket(options.wsUrl);
+        socket = ws;
+        ws.onopen = () => {
+          send({ type: "hello", label });
+          handlers.onOpen();
+        };
+        ws.onmessage = (message) => {
+          let raw: unknown;
+          try {
+            raw = JSON.parse(String(message.data));
+          } catch {
+            console.warn("ws: dropped a non-JSON frame");
+            return;
+          }
+          const parsed = ServerEvent.safeParse(raw);
+          if (!parsed.success) {
+            console.warn("ws: dropped an invalid frame", parsed.error.issues);
+            return;
+          }
+          if (parsed.data.type === "ping") send({ type: "pong" });
+          handlers.onEvent(parsed.data);
+        };
+        ws.onclose = finish;
+        ws.onerror = finish;
       };
-      socket.onmessage = (message) => {
-        let raw: unknown;
-        try {
-          raw = JSON.parse(String(message.data));
-        } catch {
-          console.warn("ws: dropped a non-JSON frame");
-          return;
-        }
-        const parsed = ServerEvent.safeParse(raw);
-        if (!parsed.success) {
-          console.warn("ws: dropped an invalid frame", parsed.error.issues);
-          return;
-        }
-        if (parsed.data.type === "ping") send({ type: "pong" });
-        handlers.onEvent(parsed.data);
-      };
-      socket.onclose = finish;
-      socket.onerror = finish;
+      // The upgrade must carry the session cookie so core-api can push `session` events to this
+      // socket (H24). GET /api/session issues the cookie on a first visit; its body is not needed.
+      doFetch(`${baseUrl}/api/session`, { credentials: "same-origin" }).then(open, finish);
       return {
         close() {
           closed = true; // a deliberate close is not reported as a drop
-          socket.close();
+          socket?.close();
         },
       };
     },

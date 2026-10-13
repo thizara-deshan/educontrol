@@ -6588,7 +6588,7 @@ console.log("built dist/main.js");
 **Commit:** `git add -A && git commit -m "feat(core-api): main, build and pnpm dev"` (includes this plan file with the box ticked)
 
 ### T30 — Kiosk http adapter: open the WebSocket after `GET /api/session`
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/http/http-client.ts`, `apps/kiosk/src/data/adapters/http/http-client.test.ts`
 

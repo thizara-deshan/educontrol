@@ -136,38 +136,66 @@ describe("http adapter: session", () => {
 });
 
 describe("http adapter: WebSocket", () => {
-  function connect() {
+  async function connect(fetchImpl: typeof fetch = vi.fn(async () => json(200, {}))) {
     const socket = new FakeSocket();
-    const api = createHttpApiClient({ fetch: vi.fn(), wsUrl: "ws://r-101.local/ws", createSocket: () => socket });
+    const createSocket = vi.fn(() => socket);
+    const api = createHttpApiClient({ fetch: fetchImpl, wsUrl: "ws://r-101.local/ws", createSocket });
     const handlers = { onOpen: vi.fn(), onEvent: vi.fn(), onClose: vi.fn() };
     const connection = api.connect("phone", handlers);
-    return { socket, handlers, connection };
+    await vi.waitFor(() => expect(createSocket).toHaveBeenCalledWith("ws://r-101.local/ws"));
+    return { socket, handlers, connection, fetchImpl };
   }
 
-  it("sends hello with the client label on open", () => {
-    const { socket, handlers } = connect();
+  it("GETs /api/session first so the upgrade carries the session cookie", async () => {
+    const { fetchImpl } = await connect();
+    expect(fetchImpl).toHaveBeenCalledWith("/api/session", { credentials: "same-origin" });
+  });
+
+  it("a failed session fetch is reported as a close and opens no socket", async () => {
+    const createSocket = vi.fn(() => new FakeSocket());
+    const api = createHttpApiClient({ fetch: vi.fn(async () => Promise.reject(new TypeError("offline"))), wsUrl: "ws://x/ws", createSocket });
+    const handlers = { onOpen: vi.fn(), onEvent: vi.fn(), onClose: vi.fn() };
+    api.connect("phone", handlers);
+    await vi.waitFor(() => expect(handlers.onClose).toHaveBeenCalledTimes(1));
+    expect(createSocket).not.toHaveBeenCalled();
+  });
+
+  it("close() before the session answer never opens the socket", async () => {
+    const createSocket = vi.fn(() => new FakeSocket());
+    const fetchImpl = vi.fn(async () => json(200, {}));
+    const api = createHttpApiClient({ fetch: fetchImpl, wsUrl: "ws://x/ws", createSocket });
+    const handlers = { onOpen: vi.fn(), onEvent: vi.fn(), onClose: vi.fn() };
+    api.connect("phone", handlers).close();
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalled());
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(createSocket).not.toHaveBeenCalled();
+    expect(handlers.onClose).not.toHaveBeenCalled();
+  });
+
+  it("sends hello with the client label on open", async () => {
+    const { socket, handlers } = await connect();
     socket.onopen?.(new Event("open"));
     expect(socket.sent).toEqual([JSON.stringify({ type: "hello", label: "phone" })]);
     expect(handlers.onOpen).toHaveBeenCalled();
   });
 
-  it("parses frames and forwards valid ServerEvents", () => {
-    const { socket, handlers } = connect();
+  it("parses frames and forwards valid ServerEvents", async () => {
+    const { socket, handlers } = await connect();
     const event: ServerEvent = { type: "activity", text: "Rear of room turned on", by: "phone", public_id: "x" };
     socket.emit(JSON.stringify(event));
     expect(handlers.onEvent).toHaveBeenCalledWith(event);
   });
 
-  it("answers ping with pong", () => {
-    const { socket, handlers } = connect();
+  it("answers ping with pong", async () => {
+    const { socket, handlers } = await connect();
     socket.emit(JSON.stringify({ type: "ping" }));
     expect(socket.sent).toContain(JSON.stringify({ type: "pong" }));
     expect(handlers.onEvent).toHaveBeenCalledWith({ type: "ping" });
   });
 
-  it("drops non-JSON and invalid frames", () => {
+  it("drops non-JSON and invalid frames", async () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-    const { socket, handlers } = connect();
+    const { socket, handlers } = await connect();
     socket.emit("not json");
     socket.emit(JSON.stringify({ type: "state", state: { rev: -1 } }));
     expect(handlers.onEvent).not.toHaveBeenCalled();
@@ -175,13 +203,13 @@ describe("http adapter: WebSocket", () => {
     warn.mockRestore();
   });
 
-  it("reports close once, and not after a deliberate close()", () => {
-    const first = connect();
+  it("reports close once, and not after a deliberate close()", async () => {
+    const first = await connect();
     first.socket.fireError();
     first.socket.fireClose();
     expect(first.handlers.onClose).toHaveBeenCalledTimes(1);
 
-    const second = connect();
+    const second = await connect();
     second.connection.close();
     second.socket.fireClose();
     expect(second.socket.closed).toBe(true);
