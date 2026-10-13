@@ -1,4 +1,6 @@
+import { ServerEvent } from "@eduscope/contracts";
 import type { FastifyInstance, LightMyRequestResponse } from "fastify";
+import type { WebSocket } from "ws";
 import { buildApp } from "../../src/app.ts";
 import { fixedClock, type FixedClock } from "../../src/clock.ts";
 import type { Config } from "../../src/config.ts";
@@ -65,3 +67,36 @@ export const commandBody = (body: unknown): { client_cmd_id: string; body: unkno
   client_cmd_id: `00000000-0000-4000-8000-${String(++seq).padStart(12, "0")}`,
   body,
 });
+
+const isType =
+  <T extends ServerEvent["type"]>(type: T) =>
+  (frame: ServerEvent): frame is Extract<ServerEvent, { type: T }> =>
+    frame.type === type;
+
+export interface TestSocket {
+  ws: WebSocket;
+  frames: ServerEvent[];
+  /** Resolves with the next frame of `type` (already received ones count). */
+  next<T extends ServerEvent["type"]>(type: T, after?: number): Promise<Extract<ServerEvent, { type: T }>>;
+}
+
+export async function openSocket(app: FastifyInstance, options: { cookie?: string | null; origin?: string } = {}): Promise<TestSocket> {
+  const frames: ServerEvent[] = [];
+  const headers: Record<string, string> = { host: HOST, origin: options.origin ?? ORIGIN };
+  if (options.cookie) headers.cookie = `ec_sid=${options.cookie}`;
+  const ws = await app.injectWS("/ws", { headers }, {
+    onInit: (socket) => socket.on("message", (data) => frames.push(ServerEvent.parse(JSON.parse(String(data))))),
+  });
+  return {
+    ws,
+    frames,
+    async next(type, after = 0) {
+      for (let i = 0; i < 100; i += 1) {
+        const found = frames.slice(after).find(isType(type));
+        if (found !== undefined) return found;
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+      throw new Error(`no ${type} frame`);
+    },
+  };
+}

@@ -5965,7 +5965,7 @@ describe("POST /api/commands by level", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): POST /api/commands"` (includes this plan file with the box ticked)
 
 ### T28 — WebSocket hub: snapshot on connect, fan-out, session pushes, ping
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/plugins/realtime.ts`, `apps/core-api/src/app.ts`, `apps/core-api/test/routes/app-helpers.ts`, `apps/core-api/test/routes/realtime.test.ts`
 

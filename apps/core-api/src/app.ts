@@ -22,6 +22,7 @@ import { createIngest, type Ingest } from "./hw/ingest.ts";
 import { authPlugin } from "./plugins/auth.ts";
 import { errorsPlugin } from "./plugins/errors.ts";
 import { originCheckPlugin } from "./plugins/origin-check.ts";
+import { createHub, PING_MS, realtimePlugin, type Hub } from "./plugins/realtime.ts";
 import { staticPlugin } from "./plugins/static.ts";
 import { commandRoutes } from "./routes/commands.ts";
 import { healthRoutes } from "./routes/health.ts";
@@ -48,6 +49,7 @@ export interface Room {
   dispatcher: Dispatcher;
   ingest: Ingest;
   sessions: SessionService;
+  hub: Hub;
 }
 
 declare module "fastify" {
@@ -91,6 +93,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   await seed(db, config, clock.now().toISOString());
 
   const log = createEventLogger(db, clock);
+  const hub = createHub();
   const store = createStateStore({
     clock,
     rules: {
@@ -108,12 +111,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     }),
   });
   const dispatcher = createDispatcher({
-    store, hw: deps.hw, ir: createIrCodeLookup(db), timeouts: hwTimeouts(config), clock, emit: () => undefined, log,
+    store, hw: deps.hw, ir: createIrCodeLookup(db), timeouts: hwTimeouts(config), clock, emit: (event) => hub.broadcast(event), log,
   });
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const ingest = createIngest({
     store, dispatcher, log,
-    emit: () => undefined,
+    emit: (event) => hub.broadcast(event),
     persistBaseline: (baseline: KwhBaseline) => writeSetting(db, "kwh_baseline", baseline, clock.now().toISOString()),
     scheduleTick: (delayMs) => {
       const timer = setTimeout(() => {
@@ -126,18 +129,20 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   });
   const sessions = createSessionService({
     db, clock, log,
-    onChange: () => undefined,
+    onChange: (session) => hub.sendToSession(session.public_id, { type: "session", session }),
   });
+  store.subscribe((state) => hub.broadcast({ type: "state", state }));
 
   const app = Fastify({ logger: deps.logger ?? false, trustProxy: false });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
-  app.decorate("room", { db, store, dispatcher, ingest, sessions });
+  app.decorate("room", { db, store, dispatcher, ingest, sessions, hub });
 
   await app.register(errorsPlugin);
   await app.register(cookie, { secret: config.COOKIE_SECRET });
   await app.register(authPlugin, { sessions, localhostIsKiosk: config.LOCALHOST_IS_KIOSK });
   await app.register(originCheckPlugin);
+  await app.register(realtimePlugin, { hub, store, sessions });
   await app.register(
     async (api) => {
       await api.register(sessionRoutes, { db, sessions, throttle: createPinThrottle(clock), log });
@@ -152,6 +157,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   app.addHook("onReady", async () => {
     timers.add(setInterval(() => store.tick(), TICK_MS));
     timers.add(setInterval(() => sessions.sweep(), SESSION_SWEEP_MS));
+    timers.add(setInterval(() => hub.ping(), PING_MS));
   });
   app.addHook("onClose", async () => {
     for (const timer of timers) clearTimeout(timer);
