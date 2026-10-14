@@ -3976,7 +3976,7 @@ describe("PIN changes (S3d)", () => {
 
 
 ### T19 — Network rules for S3b (pure)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/network.ts`, `apps/core-api/test/domain/network.test.ts`
 
