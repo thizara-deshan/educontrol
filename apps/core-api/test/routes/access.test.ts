@@ -25,6 +25,8 @@ const ROUTES: readonly [Method, string, unknown?][] = [
   ["PATCH", "/api/devices/nope", { name: "x" }],
   ["DELETE", "/api/devices/nope"],
   ["POST", "/api/zigbee/permit-join", { seconds: 240 }],
+  ["PUT", "/api/settings/pins/room", { pin: "4321" }],
+  ["PUT", "/api/settings/pins/technician", { pin: "654321" }],
 ];
 
 describe("M09 routes need technician", () => {

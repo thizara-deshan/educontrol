@@ -3784,7 +3784,7 @@ describe("device routes (S3d)", () => {
 
 
 ### T18 — PIN changes (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/routes/settings.ts`, `apps/core-api/test/routes/access.test.ts`, `apps/core-api/test/routes/settings.test.ts`
 
