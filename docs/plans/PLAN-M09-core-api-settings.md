@@ -5522,3 +5522,7 @@ ROUTES
   show when it will lock; today the block end is enforced by the scheduler only.
 - Refuse removing a device that S1 needs (projector, AC, lights…) or ask twice in S3d; today a technician may remove any.
 - Log refused permit-join and failed restart commands into `event_log` (today pino only for the restart).
+
+## Fix tasks (review 1)
+
+None. REVIEW-M09 found 0 MUST-FIX; 7 LATER items went to `docs/milestones/M00-index.md` → Backlog (M09-L1…L7).

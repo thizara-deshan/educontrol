@@ -196,3 +196,10 @@ LATER items from reviews. Not scheduled; a milestone plan picks one up only by l
 | M08-L5 | REVIEW-M08 | The `dev` script hardcodes the dev cookie secret and PINs 1234/123456 in tracked `package.json`; move to a git-ignored env file | `apps/core-api/package.json` |
 | M08-L6 | REVIEW-M08 | PIN throttle race: `check()` precedes the async scrypt verify and `fail()` follows it; 60 parallel wrong PINs → 16 evaluated before the lock (not 5). Bounded by the global 20/min lock. Reserve the attempt before verifying | `routes/session.ts`, `auth/pin-throttle.ts` |
 | M08-L7 | REVIEW-M08 | Failed-command inline error and the "Back online" banner not seen in a real browser against core-api; add an `HW_FAKE_*` "fail next ack" route and re-check in M09's walk-through | `services/hw/app/` fake routes, M09 walk-through |
+| M09-L1 | REVIEW-M09 | `requireBlaster` only checks the ZS06; an `ir_mcu` device's learn/test is attempted without checking the ESP32 is online | `ir/service.ts` |
+| M09-L2 | REVIEW-M09 | Class-block end drops every remote control session, not only those of the current block (SPEC §2.3); back-to-back blocks also drop sessions at the boundary | `scheduler/scheduler.ts`, `domain/schedule.ts` |
+| M09-L3 | REVIEW-M09 | S3e Restart and "Back online" not driven in a browser; M08-L7 (HW fail-next-ack route, failed-command inline error) not picked up by the M09 walk-through | `services/hw/app/` fake routes, M10 walk-through |
+| M09-L4 | REVIEW-M09 | IR fake re-learn stores a random code so the fake projector stops reacting after AC1; add `/v1/_fake/ir/next_code` | `services/hw/app/modules/ir/driver_fake.py` |
+| M09-L5 | REVIEW-M09 | `DELETE /api/devices/:id` removes any device (projector, AC, lights) with no guard | `routes/devices.ts` |
+| M09-L6 | REVIEW-M09 | Sessions ended by PIN change / block end are logged only as a count; refused permit-join and failed restart are not in `event_log` | `routes/settings.ts`, `routes/devices.ts`, `routes/system.ts` |
+| M09-L7 | REVIEW-M09 | `touch` extends `expires_at` without pushing `session` (M08-L4 still open, now reached by more routes) | `plugins/auth.ts` |
