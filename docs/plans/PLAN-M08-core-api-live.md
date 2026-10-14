@@ -7034,3 +7034,7 @@ pnpm --filter @eduscope/core-api exec node -e "const D=require('better-sqlite3')
 - Push a `session` event after each command so `expires_at` on the client tracks idle resets (nothing reads it yet).
 - Rate-limit `GET /api/session` row creation per IP (a LAN script could create many view rows; they expire in 7 days).
 - Mesh card: show online routers next to paired (M05-L2 follow-up in the UI, D7).
+
+## Fix tasks (review 1)
+
+None. `docs/reviews/REVIEW-M08.md` found 0 MUST-FIX items; its 7 LATER items are in `docs/milestones/M00-index.md` → Backlog.
