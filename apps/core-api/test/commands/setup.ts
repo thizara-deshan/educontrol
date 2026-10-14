@@ -10,7 +10,7 @@ import { createIngest } from "../../src/hw/ingest.ts";
 import { bootModel, fakeHw, RULES, snapshotEvent, T0 } from "../helpers.ts";
 
 /** Short deadlines so timeout tests run on real timers. */
-export const TEST_TIMEOUTS = { zigbeeMs: 60, irSendMs: 60, hdmiMs: 60, mixerMs: 60, screenMs: 60 };
+export const TEST_TIMEOUTS = { zigbeeMs: 60, irSendMs: 60, irLearnMs: 60, hdmiMs: 60, mixerMs: 60, screenMs: 60 };
 
 export const PHONE: Issuer = { public_id: "pub-phone", label: "phone", access: "control" };
 export const LAPTOP: Issuer = { public_id: "pub-laptop", label: "laptop", access: "control" };

@@ -445,7 +445,7 @@ describe("config", () => {
 
 
 ### T3 — hw client: learn, cancel, permit join
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/hw/client.ts`, `apps/core-api/test/commands/policies.test.ts`, `apps/core-api/test/commands/setup.ts`, `apps/core-api/test/helpers.ts`, `apps/core-api/test/hw/client.test.ts`
 

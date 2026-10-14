@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { DeviceKind, HwEvent, Transport, type HwAck } from "@eduscope/contracts";
 import { vi } from "vitest";
 import { Config } from "../src/config.ts";
-import type { HwClient } from "../src/hw/client.ts";
+import type { HwClient, IrLearnOutcome } from "../src/hw/client.ts";
 import { initialModel } from "../src/domain/initial.ts";
 import type { DeviceInfo, RoomModel, RuleConfig } from "../src/domain/model.ts";
 import { SEED_DEVICES } from "../src/db/seed.ts";
@@ -70,6 +70,8 @@ export interface FakeHw extends HwClient {
   calls: { method: keyof HwClient; body: unknown }[];
   /** Answer of the next calls (default `{ok:true}`). */
   nextAcks: HwAck[];
+  /** Answer of the next `irLearn` calls (default captured "Q0FQVFVSRUQ="); a promise lets a test hold the learn open. */
+  nextLearns: (IrLearnOutcome | Promise<IrLearnOutcome>)[];
   /** Runs after each call is recorded (e.g. to feed the echo event into ingest). */
   onCall?: (method: keyof HwClient, body: unknown) => void;
 }
@@ -78,6 +80,7 @@ export function fakeHw(): FakeHw {
   const hw: FakeHw = {
     calls: [],
     nextAcks: [],
+    nextLearns: [],
     lightsSet: vi.fn(async (body) => record("lightsSet", body)),
     projectorRelay: vi.fn(async (body) => record("projectorRelay", body)),
     irSend: vi.fn(async (body) => record("irSend", body)),
@@ -85,6 +88,13 @@ export function fakeHw(): FakeHw {
     screenMove: vi.fn(async (body) => record("screenMove", body)),
     audioLevel: vi.fn(async (body) => record("audioLevel", body)),
     audioMute: vi.fn(async (body) => record("audioMute", body)),
+    irLearnCancel: vi.fn(async () => record("irLearnCancel", {})),
+    permitJoin: vi.fn(async (body) => record("permitJoin", body)),
+    irLearn: vi.fn(async (body): Promise<IrLearnOutcome> => {
+      hw.calls.push({ method: "irLearn", body });
+      hw.onCall?.("irLearn", body);
+      return hw.nextLearns.shift() ?? { status: "captured", code_format: "tuya", code: "Q0FQVFVSRUQ=" };
+    }),
   };
   function record(method: keyof HwClient, body: unknown): HwAck {
     hw.calls.push({ method, body });

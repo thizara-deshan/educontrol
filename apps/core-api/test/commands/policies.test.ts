@@ -7,7 +7,7 @@ import { applyHwDown, applyHwEvent } from "../../src/domain/hw-events.ts";
 import type { RoomModel } from "../../src/domain/model.ts";
 import { bootModel, hwEvent, must, RULES, snapshotEvent, T0 } from "../helpers.ts";
 
-const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000 };
+const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, irLearnMs: 25_000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000 };
 
 const ir = (codes: Record<string, string>): IrCodeLookup => ({
   find(deviceId, match) {

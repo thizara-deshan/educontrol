@@ -67,6 +67,7 @@ export function hwTimeouts(config: Config): HwTimeouts {
   return {
     zigbeeMs: config.TIMEOUT_ZIGBEE_MS,
     irSendMs: config.TIMEOUT_IR_SEND_MS,
+    irLearnMs: config.TIMEOUT_IR_LEARN_MS,
     hdmiMs: config.TIMEOUT_HDMI_MS,
     mixerMs: config.TIMEOUT_MIXER_MS,
     screenMs: config.TIMEOUT_SCREEN_MS,
