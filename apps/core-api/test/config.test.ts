@@ -8,6 +8,13 @@ describe("config", () => {
     const config = loadConfig(BASE);
     expect(config).toMatchObject({ PORT: 3000, HOST: "0.0.0.0", HW_URL: "http://127.0.0.1:8081", ROOM_ID: "R-101", ROOM_HOSTNAME: "r-101.local" });
     expect(config).toMatchObject({ LOCALHOST_IS_KIOSK: false, SEED_FAKE_IR_CODES: false, TIMEOUT_IR_SEND_MS: 3000, HW_DOWN_GRACE_MS: 10_000 });
+    expect(config).toMatchObject({ TIMEOUT_IR_LEARN_MS: 25_000 });
+    expect(config.RESTART_COMMAND).toBeUndefined();
+  });
+  it("keeps RESTART_COMMAND as one trimmed string", () => {
+    expect(loadConfig({ ...BASE, RESTART_COMMAND: " sudo systemctl restart eduscope.target " }).RESTART_COMMAND).toBe(
+      "sudo systemctl restart eduscope.target",
+    );
   });
   it("parses booleans and numbers from strings", () => {
     expect(loadConfig({ ...BASE, LOCALHOST_IS_KIOSK: "true", PORT: "80" })).toMatchObject({ LOCALHOST_IS_KIOSK: true, PORT: 80 });

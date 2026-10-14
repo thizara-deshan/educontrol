@@ -29,6 +29,10 @@ export const Config = z.object({
   TIMEOUT_HDMI_MS: Ms.default(5000),
   TIMEOUT_MIXER_MS: Ms.default(2000),
   TIMEOUT_SCREEN_MS: Ms.default(5000),
+  /** §6.3/§6.9: hw-service blocks a learn up to the 20 s window; the HTTP call may take this long. */
+  TIMEOUT_IR_LEARN_MS: Ms.default(25_000),
+  /** S3e "Restart controller": split on spaces and run without a shell (M10 sets it). Unset: core-api exits. */
+  RESTART_COMMAND: z.string().trim().min(1).optional(),
   /** §6.7: hw down this long ⇒ every hw-backed device offline. */
   HW_DOWN_GRACE_MS: Ms.default(10_000),
   /** §6.3: no SSE frame this long ⇒ the stream is dead and reconnects. */

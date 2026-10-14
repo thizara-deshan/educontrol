@@ -341,7 +341,7 @@ async def test_real_projector_ignores_fake_ir() -> None:
 
 
 ### T2 — Config: IR learn HTTP timeout and `RESTART_COMMAND`
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/config.ts`, `apps/core-api/test/config.test.ts`
 
