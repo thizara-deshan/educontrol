@@ -113,7 +113,7 @@ system → scheduler → acceptance. There are no shared kiosk components or scr
 ## Tasks
 
 ### T1 — hw fake: "nothing received" switch for IR learn
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/ir/driver_fake.py`, `services/hw/tests/test_ir.py`, `services/hw/tests/test_registry.py`
 

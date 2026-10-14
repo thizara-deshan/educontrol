@@ -1,5 +1,6 @@
 """Fake IR blaster. Sent codes go to listeners (the fake projector); learning "captures" a
-random opaque code after LEARN_CAPTURE_S (scaled), seeded by HW_FAKE_SEED."""
+random opaque code after LEARN_CAPTURE_S (scaled), seeded by HW_FAKE_SEED, unless
+`/v1/_fake/ir/nothing_received` is on (then every learn waits out its timeout, H21)."""
 
 import asyncio
 import base64
@@ -39,6 +40,7 @@ class FakeIrDriver:
         self._settings = settings
         self._rng = random.Random(settings.fake_seed)
         self._online = True
+        self._nothing_received = False
         self._listeners: list[CodeListener] = []
         self._learn_cancel: asyncio.Event | None = None
         self._emit: IrEmit | None = None
@@ -63,14 +65,15 @@ class FakeIrDriver:
         return ACK_OK
 
     async def learn(self, request: HwIrLearnRequest) -> HwIrLearnResult:
-        """One capture at a time: a new learn cancels the one in progress. Offline or a timeout
-        shorter than LEARN_CAPTURE_S ends in `timeout`."""
+        """One capture at a time: a new learn cancels the one in progress. Offline, "nothing
+        received" or a timeout shorter than LEARN_CAPTURE_S ends in `timeout`."""
         if self._learn_cancel is not None:
             self._learn_cancel.set()
         cancel = asyncio.Event()
         self._learn_cancel = cancel
         self._report_learn("listening")
-        captures = self._online and LEARN_CAPTURE_S <= request.timeout_s
+        hears = self._online and not self._nothing_received
+        captures = hears and LEARN_CAPTURE_S <= request.timeout_s
         wait_s = LEARN_CAPTURE_S if captures else request.timeout_s
         result: HwIrLearnResult
         try:
@@ -97,6 +100,9 @@ class FakeIrDriver:
         self._online = online
         self._report_blaster()
 
+    def set_nothing_received(self, on: bool) -> None:
+        self._nothing_received = on
+
     def _report_blaster(self) -> None:
         if self._emit is not None:
             lqi = BLASTER_LQI if self._online else None
@@ -111,12 +117,21 @@ class FakeOnlineRequest(HwModel):
     online: bool = False
 
 
+class FakeNothingReceivedRequest(HwModel):
+    on: bool = True
+
+
 def build_fake_router(driver: FakeIrDriver) -> APIRouter:
     router = APIRouter(prefix="/v1/_fake/ir", tags=["fake"])
 
     @router.post("/blaster_offline")
     async def blaster_offline(body: FakeOnlineRequest | None = None) -> HwAckOk:
         driver.set_online((body or FakeOnlineRequest()).online)
+        return ACK_OK
+
+    @router.post("/nothing_received")
+    async def nothing_received(body: FakeNothingReceivedRequest | None = None) -> HwAckOk:
+        driver.set_nothing_received((body or FakeNothingReceivedRequest()).on)
         return ACK_OK
 
     return router

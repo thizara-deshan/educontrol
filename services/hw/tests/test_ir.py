@@ -79,6 +79,15 @@ async def test_learn_times_out_while_the_blaster_is_offline() -> None:
     assert await service.learn(LEARN) == HwIrLearnTimeout(status="timeout")
 
 
+async def test_nothing_received_times_out_until_switched_off() -> None:
+    service, driver, sub = await start_fake()
+    driver.set_nothing_received(True)
+    assert await service.learn(LEARN) == HwIrLearnTimeout(status="timeout")
+    assert await learn_statuses(sub, 2) == ["listening", "timeout"]
+    driver.set_nothing_received(False)
+    assert isinstance(await service.learn(LEARN), HwIrLearnCaptured)
+
+
 async def test_cancel_ends_a_learn_in_progress() -> None:
     service, _, sub = await start_fake(time_scale=1.0)  # capture would take 3 real seconds
     learning = asyncio.create_task(service.learn(LEARN))
@@ -111,5 +120,12 @@ async def test_routes() -> None:
         assert (await http.post("/v1/ir/learn/cancel")).json() == {"ok": True}
         bad = await http.post("/v1/ir/learn", json={"transport": "ir_zs06", "timeout_s": 61})
         assert bad.status_code == 422
+        assert (await http.post("/v1/_fake/ir/nothing_received")).json() == {"ok": True}
+        nothing = await http.post("/v1/ir/learn", json={"transport": "ir_zs06", "timeout_s": 20})
+        assert nothing.json() == {"status": "timeout"}
+        off = await http.post("/v1/_fake/ir/nothing_received", json={"on": False})
+        assert off.json() == {"ok": True}
+        again = await http.post("/v1/ir/learn", json={"transport": "ir_zs06", "timeout_s": 20})
+        assert again.json()["status"] == "captured"
         assert (await http.post("/v1/_fake/ir/blaster_offline")).json() == {"ok": True}
     assert service.snapshot().blaster == HwIrBlasterData(online=False, lqi=None)

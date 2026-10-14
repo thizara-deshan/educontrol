@@ -50,6 +50,7 @@ def fake_paths(mode: str, drivers: str = "") -> list[str]:
 def test_fake_mode_mounts_simulation_routes() -> None:
     assert fake_paths("fake") == [
         "/v1/_fake/ir/blaster_offline",
+        "/v1/_fake/ir/nothing_received",
         "/v1/_fake/lights/by_hand",
         "/v1/_fake/projector_power/meter_offline",
         "/v1/_fake/sensors/value",
