@@ -5385,7 +5385,7 @@ describe("scheduler (§6.8)", () => {
 **Commit:** `git add -A && git commit -m "feat(core-api): scheduler for timed actions, class-block end, midnight and pruning"` (with the ticked box in this plan)
 
 ### T27 — Acceptance walk-through (M09 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan file only (tick the boxes; write any failure under `## Blockers` and stop).
 
