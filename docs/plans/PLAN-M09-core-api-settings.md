@@ -4254,7 +4254,7 @@ describe("system info", () => {
 
 
 ### T21 — Network, about and restart routes (S3b, S3e)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/routes/system.ts`, `apps/core-api/src/system/restart.ts`, `apps/core-api/test/routes/access.test.ts`, `apps/core-api/test/routes/system.test.ts`, `apps/core-api/test/system/restart.test.ts`
 

@@ -1,0 +1,32 @@
+import type { FastifyInstance } from "fastify";
+import type { Clock } from "../clock.ts";
+import type { Config } from "../config.ts";
+import type { EventLogger } from "../db/event-log.ts";
+import type { StateStore } from "../domain/state-store.ts";
+import type { Hub } from "../plugins/realtime.ts";
+import { aboutInfo, networkInfo, type SystemProbe } from "../system/info.ts";
+
+// ARCHITECTURE §3.3 api/system.ts — S3b Network, S3e About and Restart. Technician only.
+
+const TECHNICIAN = { access: "technician" } as const;
+/** The 202 reaches the browser before the controller goes away (H3 → H4 on the clients). */
+export const RESTART_DELAY_MS = 250;
+
+export async function systemRoutes(
+  app: FastifyInstance,
+  options: { store: StateStore; hub: Hub; probe: SystemProbe; config: Config; clock: Clock; bootedAt: Date; restart: () => void; log: EventLogger },
+) {
+  const { store, hub, probe, config, clock } = options;
+
+  app.get("/system/network", { config: TECHNICIAN }, async () => networkInfo(probe, store.get().connection.hw, hub.clients()));
+
+  app.get("/system/about", { config: TECHNICIAN }, async () =>
+    aboutInfo(probe, { id: config.ROOM_ID, hostname: config.ROOM_HOSTNAME, uptimeS: (clock.now().getTime() - options.bootedAt.getTime()) / 1000 }),
+  );
+
+  app.post("/system/restart", { config: TECHNICIAN }, async (request, reply) => {
+    options.log({ type: "system", actor: request.client.label, public_id: request.client.row?.public_id ?? null, subject: "restart" });
+    setTimeout(options.restart, RESTART_DELAY_MS);
+    return reply.status(202).send();
+  });
+}

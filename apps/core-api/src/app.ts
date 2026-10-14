@@ -25,6 +25,7 @@ import { originCheckPlugin } from "./plugins/origin-check.ts";
 import { createHub, PING_MS, realtimePlugin, type Hub } from "./plugins/realtime.ts";
 import { staticPlugin } from "./plugins/static.ts";
 import { createRegistrySync } from "./registry-sync.ts";
+import { systemProbe, type SystemProbe } from "./system/info.ts";
 import { commandRoutes } from "./routes/commands.ts";
 import { deviceRoutes } from "./routes/devices.ts";
 import { healthRoutes } from "./routes/health.ts";
@@ -32,6 +33,7 @@ import { irRoutes } from "./routes/ir.ts";
 import { scheduleRoutes } from "./routes/schedule.ts";
 import { sessionRoutes } from "./routes/session.ts";
 import { settingsRoutes } from "./routes/settings.ts";
+import { systemRoutes } from "./routes/system.ts";
 import { stateRoutes } from "./routes/state.ts";
 
 // ARCHITECTURE §6.1: buildApp(deps) is used by main.ts and by tests (fastify.inject / injectWS).
@@ -45,6 +47,10 @@ export interface AppDeps {
   clock: Clock;
   config: Config;
   logger?: FastifyServerOptions["logger"];
+  /** S3e "Restart controller" (main.ts: system/restart.ts). Default: nothing happens (tests). */
+  restart?: () => void;
+  /** S3b/S3e OS facts. Default: the real probe. */
+  system?: SystemProbe;
 }
 
 /** What tests and main.ts reach into. */
@@ -84,6 +90,7 @@ const KwhBaselineSchema = z.object({ date: z.string(), kwh_total: z.number() });
 
 export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const { config, clock } = deps;
+  const bootedAt = clock.now();
   const { db, close: closeDb } = openDb(deps.db);
   await seed(db, config, clock.now().toISOString());
 
@@ -153,6 +160,9 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(scheduleRoutes, { db, emit: (event) => hub.broadcast(event) });
       await api.register(deviceRoutes, { db, store, hw: deps.hw, sync, emit: (event) => hub.broadcast(event) });
       await api.register(settingsRoutes, { db, sessions, clock, log });
+      await api.register(systemRoutes, {
+        store, hub, probe: deps.system ?? systemProbe, config, clock, bootedAt, restart: deps.restart ?? (() => undefined), log,
+      });
     },
     { prefix: "/api" },
   );
