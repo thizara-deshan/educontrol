@@ -3203,7 +3203,7 @@ PATCH
 
 
 ### T15 — `db/schedule.ts`: class blocks and timed actions
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/schedule.ts`, `apps/core-api/test/db/schedule.test.ts`
 
