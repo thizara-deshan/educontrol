@@ -1,4 +1,4 @@
-import { ClientMessage, type ClientLabel, type ConnectedClient, type ServerEvent } from "@eduscope/contracts";
+import { ClientMessage, type ClientLabel, type ClientSession, type ConnectedClient, type ServerEvent } from "@eduscope/contracts";
 import websocket from "@fastify/websocket";
 import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
@@ -27,7 +27,9 @@ export interface Hub {
   remove(client: HubClient): void;
   broadcast(event: ServerEvent): void;
   sendToSession(publicId: string, event: ServerEvent): void;
-  /** S3b connected clients (used by M09's network route). */
+  /** Keeps the S3b list current after a login, lock or expiry of that session. */
+  updateSession(session: ClientSession): void;
+  /** S3b connected clients (GET /api/system/network). */
   clients(): ConnectedClient[];
   /** One ping round: terminate silent sockets, ping the rest. */
   ping(): void;
@@ -47,6 +49,13 @@ export function createHub(): Hub {
     },
     sendToSession(publicId, event) {
       for (const client of clients) if (client.publicId === publicId) send(client, event);
+    },
+    updateSession(session) {
+      for (const client of clients) {
+        if (client.publicId !== session.public_id) continue;
+        client.label = session.label;
+        client.info = { ...client.info, access: session.access };
+      }
     },
     clients: () => [...clients].map((client) => ({ public_id: client.publicId, label: client.label, ...client.info })),
     ping() {

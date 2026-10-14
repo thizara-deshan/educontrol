@@ -117,7 +117,10 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   });
   const sessions = createSessionService({
     db, clock, log,
-    onChange: (session) => hub.sendToSession(session.public_id, { type: "session", session }),
+    onChange: (session) => {
+      hub.updateSession(session);
+      hub.sendToSession(session.public_id, { type: "session", session });
+    },
   });
   store.subscribe((state) => hub.broadcast({ type: "state", state }));
 

@@ -2444,7 +2444,7 @@ describe("session service", () => {
 
 
 ### T12 — WS hub: keep the S3b client list current
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/plugins/realtime.ts`, `apps/core-api/test/routes/realtime.test.ts`
 

@@ -53,6 +53,19 @@ describe("WS hub (§6.6)", () => {
     await app.close();
   });
 
+  it("the S3b client list follows login and lock", async () => {
+    const { app } = await startApp();
+    const cookie = await sessionAt(app, "view");
+    const socket = await openSocket(app, { cookie });
+    await socket.next("snapshot");
+    await call(app, "POST", "/api/session/login", { cookie, payload: { level: "technician", pin: "123456", label: "tablet" } });
+    expect(app.room.hub.clients()).toEqual([expect.objectContaining({ label: "tablet", access: "technician" })]);
+    await call(app, "POST", "/api/session/lock", { cookie });
+    expect(app.room.hub.clients()).toEqual([expect.objectContaining({ access: "view" })]);
+    socket.ws.terminate();
+    await app.close();
+  });
+
   it("never carries IR codes or PIN data", async () => {
     const { app } = await startApp({ SEED_FAKE_IR_CODES: "true" });
     const socket = await openSocket(app);
