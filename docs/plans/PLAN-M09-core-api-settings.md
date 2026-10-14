@@ -4633,7 +4633,7 @@ No new test: `main.ts` is wiring (restart logic is tested in T20).
 
 
 ### T23 — Scheduler due-calculation (days, minute boundary, midnight)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/schedule.ts`, `apps/core-api/test/domain/schedule.test.ts`
 
