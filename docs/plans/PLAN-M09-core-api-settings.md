@@ -1883,7 +1883,7 @@ describe("registry sync", () => {
 
 
 ### T10 — IR service: CRUD, learn (H21), cancel, test (R5/H22)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/ir/service.ts`, `apps/core-api/test/ir/service.test.ts`
 
