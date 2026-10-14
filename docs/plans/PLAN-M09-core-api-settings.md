@@ -5124,7 +5124,7 @@ describe("schedule as issuer (§6.8)", () => {
 
 
 ### T26 — Scheduler: 30 s tick wired into `buildApp`
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/scheduler/scheduler.ts`, `apps/core-api/test/scheduler/scheduler.test.ts`
 

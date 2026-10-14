@@ -25,6 +25,7 @@ import { originCheckPlugin } from "./plugins/origin-check.ts";
 import { createHub, PING_MS, realtimePlugin, type Hub } from "./plugins/realtime.ts";
 import { staticPlugin } from "./plugins/static.ts";
 import { createRegistrySync } from "./registry-sync.ts";
+import { createScheduler, SCHEDULER_TICK_MS, type Scheduler } from "./scheduler/scheduler.ts";
 import { systemProbe, type SystemProbe } from "./system/info.ts";
 import { commandRoutes } from "./routes/commands.ts";
 import { deviceRoutes } from "./routes/devices.ts";
@@ -62,6 +63,7 @@ export interface Room {
   sessions: SessionService;
   hub: Hub;
   ir: IrService;
+  scheduler: Scheduler;
 }
 
 declare module "fastify" {
@@ -116,10 +118,11 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     store, hw: deps.hw, ir: createIrCodeLookup(db), timeouts: hwTimeouts(config), clock, emit: (event) => hub.broadcast(event), log,
   });
   const timers = new Set<ReturnType<typeof setTimeout>>();
+  const persistBaseline = (baseline: KwhBaseline): void => writeSetting(db, "kwh_baseline", baseline, clock.now().toISOString());
   const ingest = createIngest({
     store, dispatcher, log,
     emit: (event) => hub.broadcast(event),
-    persistBaseline: (baseline: KwhBaseline) => writeSetting(db, "kwh_baseline", baseline, clock.now().toISOString()),
+    persistBaseline,
     scheduleTick: (delayMs) => {
       const timer = setTimeout(() => {
         timers.delete(timer);
@@ -139,11 +142,12 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   store.subscribe((state) => hub.broadcast({ type: "state", state }));
   const sync = createRegistrySync(db, store);
   const ir = createIrService({ db, store, hw: deps.hw, clock, emit: (event) => hub.broadcast(event), log, sync });
+  const scheduler = createScheduler({ db, store, dispatcher, sessions, clock, log, persistBaseline });
 
   const app = Fastify({ logger: deps.logger ?? false, trustProxy: false });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
-  app.decorate("room", { db, store, dispatcher, ingest, sessions, hub, ir });
+  app.decorate("room", { db, store, dispatcher, ingest, sessions, hub, ir, scheduler });
 
   await app.register(errorsPlugin);
   await app.register(cookie, { secret: config.COOKIE_SECRET });
@@ -172,6 +176,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     timers.add(setInterval(() => store.tick(), TICK_MS));
     timers.add(setInterval(() => sessions.sweep(), SESSION_SWEEP_MS));
     timers.add(setInterval(() => hub.ping(), PING_MS));
+    timers.add(setInterval(() => scheduler.tick(), SCHEDULER_TICK_MS));
   });
   app.addHook("onClose", async () => {
     for (const timer of timers) clearTimeout(timer);
