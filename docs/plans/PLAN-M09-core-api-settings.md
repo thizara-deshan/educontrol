@@ -1229,7 +1229,7 @@ describe("devices registry", () => {
 
 
 ### T6 — IR domain rules (capture window, R5, H22, R4 uniqueness)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/ir.ts`, `apps/core-api/test/domain/ir.test.ts`
 
