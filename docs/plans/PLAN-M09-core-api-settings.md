@@ -4759,7 +4759,7 @@ describe("scheduler due-calculation", () => {
 
 
 ### T24 — Midnight kWh baseline and event-log pruning
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/event-log.ts`, `apps/core-api/src/domain/energy.ts`, `apps/core-api/test/db/event-log.test.ts`, `apps/core-api/test/domain/energy.test.ts`
 
