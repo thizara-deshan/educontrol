@@ -108,3 +108,18 @@ describe("kiosk exemption (D-09)", () => {
     await app.close();
   });
 });
+
+describe("activity (§5)", () => {
+  it("a successful technician mutation resets the 15 min idle timer; a refused one does not", async () => {
+    const { app, clock } = await startApp();
+    const cookie = await sessionAt(app, "technician");
+    clock.advance(10 * 60_000);
+    const created = await call(app, "POST", "/api/ir/devices", { cookie, payload: { name: "Fan", brand: "Acme", kind: "other", transport: "ir_mcu" } });
+    expect(created.statusCode).toBe(201);
+    expect((await call(app, "GET", "/api/session", { cookie })).json()).toMatchObject({ expires_at: "2026-10-05T11:07:00.000Z" });
+    clock.advance(10 * 60_000);
+    expect((await call(app, "DELETE", "/api/ir/commands/nope", { cookie })).statusCode).toBe(404);
+    expect((await call(app, "GET", "/api/session", { cookie })).json()).toMatchObject({ access: "technician", expires_at: "2026-10-05T11:07:00.000Z" });
+    await app.close();
+  });
+});

@@ -3074,7 +3074,7 @@ describe("IR routes (S3)", () => {
 
 
 ### T14 — Activity: every authorised mutation resets the idle timer
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/plugins/auth.ts`, `apps/core-api/test/routes/session.test.ts`
 

@@ -6,8 +6,8 @@ import type { ResolvedClient, SessionRow, SessionService } from "../auth/session
 import { hasAccess, isKioskRequest } from "../domain/session-rules.ts";
 
 // ARCHITECTURE §5 guard. Resolves `request.client` from the signed `ec_sid` cookie and the socket
-// address (never a header, trustProxy is false), enforces `config.access`, and refuses to start
-// when a mutating route forgets to declare it.
+// address (never a header, trustProxy is false), enforces `config.access`, refuses to start when a
+// mutating route forgets to declare it, and counts every successful guarded mutation as activity.
 
 export const SESSION_COOKIE = "ec_sid";
 
@@ -70,5 +70,11 @@ export const authPlugin = fp(async (app: FastifyInstance, options: { sessions: S
         ? { code: "unauthorized", message: "Enter the room PIN" }
         : { code: "forbidden", message: "Technician PIN required" };
     return reply.status(body.code === "unauthorized" ? 401 : 403).send(body);
+  });
+
+  // §5 "Activity = any authorised mutation": a 2xx on a guarded non-GET route resets the idle timer.
+  app.addHook("onResponse", async (request, reply) => {
+    if (READ_METHODS.has(request.method) || request.routeOptions.config.access === undefined) return;
+    if (reply.statusCode < 300) options.sessions.touch(request.client);
   });
 });
