@@ -6,8 +6,9 @@ import type { Db } from "./client.ts";
 import { readSetting, writeSetting } from "./settings.ts";
 import { devices, irCommands } from "./schema.ts";
 
-// Idempotent first-boot data for R-101 (ARCHITECTURE §6.2). Every insert is "insert if missing",
-// so a restart never duplicates rows and never overwrites a PIN, a rename or a captured code.
+// Idempotent first-boot data for R-101 (ARCHITECTURE §6.2). Devices and IR commands are inserted
+// only into an empty registry (a device or command removed in S3/S3d stays removed); settings are
+// "insert if missing". A restart never duplicates rows and never overwrites a PIN, a rename or a code.
 
 type DeviceRow = typeof devices.$inferInsert;
 type IrCommandRow = typeof irCommands.$inferInsert;
@@ -55,8 +56,10 @@ export const FAKE_PROJECTOR_CODES: Readonly<Record<string, string>> = {
 const fakeCode = (id: string): string => FAKE_PROJECTOR_CODES[id] ?? Buffer.from(`fake:${id}`).toString("base64");
 
 export async function seed(db: Db, config: Pick<Config, "INITIAL_ROOM_PIN" | "INITIAL_TECH_PIN" | "SEED_FAKE_IR_CODES">, now: string): Promise<void> {
-  db.insert(devices).values([...SEED_DEVICES]).onConflictDoNothing().run();
-  db.insert(irCommands).values([...SEED_IR_COMMANDS]).onConflictDoNothing().run();
+  if (db.select({ id: devices.id }).from(devices).limit(1).all().length === 0) {
+    db.insert(devices).values([...SEED_DEVICES]).run();
+    db.insert(irCommands).values([...SEED_IR_COMMANDS]).run();
+  }
 
   if (config.SEED_FAKE_IR_CODES) {
     for (const command of SEED_IR_COMMANDS) {

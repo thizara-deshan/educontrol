@@ -36,6 +36,16 @@ describe("seed", () => {
     expect(readSetting(db, "room_pin_hash", z.string())).toBe(hash);
   });
 
+  it("a removed device or IR command is not seeded again", async () => {
+    const { db } = openDb(":memory:");
+    await seed(db, testConfig(), NOW);
+    db.delete(devices).where(eq(devices.id, "door")).run();
+    db.delete(irCommands).where(eq(irCommands.id, "ac.setpoint_30")).run();
+    await seed(db, testConfig(), NOW);
+    expect(db.select().from(devices).all().map((d) => d.id)).not.toContain("door");
+    expect(db.select().from(irCommands).all().map((c) => c.id)).not.toContain("ac.setpoint_30");
+  });
+
   it("SEED_FAKE_IR_CODES fills only missing codes, with the fake projector codes", async () => {
     const { db } = openDb(":memory:");
     await seed(db, testConfig(), NOW);

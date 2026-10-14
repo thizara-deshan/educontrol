@@ -897,7 +897,7 @@ describe("hw client", () => {
 
 
 ### T4 — Seed: registry rows on first boot only
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/seed.ts`, `apps/core-api/test/db/seed.test.ts`
 
