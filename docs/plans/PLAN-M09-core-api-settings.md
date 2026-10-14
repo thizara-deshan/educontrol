@@ -3344,7 +3344,7 @@ describe("schedule records", () => {
 
 
 ### T16 — Schedule routes (S3c)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/routes/schedule.ts`, `apps/core-api/test/routes/access.test.ts`, `apps/core-api/test/routes/schedule.test.ts`
 

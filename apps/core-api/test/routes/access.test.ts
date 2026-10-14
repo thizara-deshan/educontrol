@@ -14,6 +14,13 @@ const ROUTES: readonly [Method, string, unknown?][] = [
   ["POST", "/api/ir/commands/nope/learn/cancel", {}],
   ["POST", "/api/ir/commands/nope/test", {}],
   ["POST", "/api/ir/commands/nope/test-result", { reacted: true }],
+  ["GET", "/api/schedule"],
+  ["POST", "/api/schedule/blocks", { days: ["mon"], start: "08:00", end: "10:00" }],
+  ["PUT", "/api/schedule/blocks/nope", { days: ["mon"], start: "08:00", end: "10:00" }],
+  ["DELETE", "/api/schedule/blocks/nope"],
+  ["POST", "/api/schedule/actions", { name: "All off", time: "18:00", days: ["fri"], enabled: true, steps: [{ kind: "ac.power", on: false }] }],
+  ["PUT", "/api/schedule/actions/nope", { name: "All off", time: "18:00", days: ["fri"], enabled: true, steps: [{ kind: "ac.power", on: false }] }],
+  ["DELETE", "/api/schedule/actions/nope"],
 ];
 
 describe("M09 routes need technician", () => {

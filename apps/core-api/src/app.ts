@@ -28,6 +28,7 @@ import { createRegistrySync } from "./registry-sync.ts";
 import { commandRoutes } from "./routes/commands.ts";
 import { healthRoutes } from "./routes/health.ts";
 import { irRoutes } from "./routes/ir.ts";
+import { scheduleRoutes } from "./routes/schedule.ts";
 import { sessionRoutes } from "./routes/session.ts";
 import { stateRoutes } from "./routes/state.ts";
 
@@ -147,6 +148,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(commandRoutes, { dispatcher, sessions });
       await api.register(healthRoutes, { store });
       await api.register(irRoutes, { ir });
+      await api.register(scheduleRoutes, { db, emit: (event) => hub.broadcast(event) });
     },
     { prefix: "/api" },
   );
