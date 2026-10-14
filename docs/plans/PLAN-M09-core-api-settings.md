@@ -1332,7 +1332,7 @@ describe("IR rules", () => {
 
 
 ### T7 — `db/ir.ts`: IR devices and commands as contract objects
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/ir.ts`, `apps/core-api/test/db/ir.test.ts`
 
