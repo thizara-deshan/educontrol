@@ -36,6 +36,12 @@ export interface SessionService {
   setLabel(publicId: string, label: Label): void;
   /** Ends idle sessions (pushes `session`) and drops old view rows. */
   sweep(): void;
+  /**
+   * Ends every unlocked session at `level` except `exceptPublicId` (pushes `session` to each): a PIN
+   * change (S3d) or the end of a class block (§2.3, control only). Remote control rows only for
+   * "control" (the kiosk is always control). Returns how many ended.
+   */
+  endAccess(level: "control" | "technician", exceptPublicId: string | null, reason: string): number;
   toClientSession(client: ResolvedClient & { row: SessionRow }): ClientSession;
 }
 
@@ -145,6 +151,16 @@ export function createSessionService(deps: {
       for (const row of expired) deps.onChange(toClientSession(downgrade(row, "expired")));
       const cutoff = new Date(clock.now().getTime() - VIEW_ROW_TTL_MS).toISOString();
       db.delete(sessions).where(and(eq(sessions.access, "view"), lt(sessions.created_at, cutoff))).run();
+    },
+    endAccess(level, exceptPublicId, reason) {
+      const rows = db
+        .select()
+        .from(sessions)
+        .where(and(eq(sessions.access, level), level === "control" ? eq(sessions.client_type, "remote") : undefined))
+        .all()
+        .filter((row) => row.public_id !== exceptPublicId);
+      for (const row of rows) deps.onChange(toClientSession(downgrade(row, reason)));
+      return rows.length;
     },
     toClientSession: (client) => toClientSession(client.row),
   };

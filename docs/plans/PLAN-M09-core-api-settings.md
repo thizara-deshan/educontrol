@@ -2264,7 +2264,7 @@ describe("IR devices and commands", () => {
 
 
 ### T11 — Sessions: end every other session of a level
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/auth/sessions.ts`, `apps/core-api/test/auth/sessions.test.ts`
 

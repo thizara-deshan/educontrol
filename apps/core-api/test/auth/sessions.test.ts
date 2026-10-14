@@ -95,4 +95,26 @@ describe("session service", () => {
     sessions.sweep();
     expect(db.select().from(sessionsTable).all()).toHaveLength(0);
   });
+
+  it("endAccess ends the other sessions of one level and pushes each (PIN change, class-block end)", () => {
+    const { sessions, pushed, logs } = service();
+    const unlock = (ip: string, level: "control" | "technician", kiosk = false) => {
+      const { client } = sessions.ensure(sessions.resolve(null, ip, kiosk));
+      return sessions.login(client, level, "phone");
+    };
+    const me = unlock("192.168.1.50", "control");
+    const other = unlock("192.168.1.51", "control");
+    const tech = unlock("192.168.1.52", "technician");
+    const kioskTech = unlock("127.0.0.1", "technician", true);
+    pushed.length = 0;
+    expect(sessions.endAccess("control", me.public_id, "room PIN changed")).toBe(1);
+    expect(pushed).toEqual([expect.objectContaining({ public_id: other.public_id, access: "view", expires_at: null })]);
+    expect(logs.at(-1)).toMatchObject({ type: "session", subject: "room PIN changed", result: "view" });
+    expect(sessions.endAccess("technician", null, "technician PIN changed")).toBe(2);
+    expect(pushed.slice(1)).toEqual([
+      expect.objectContaining({ public_id: tech.public_id, access: "view" }),
+      expect.objectContaining({ public_id: kioskTech.public_id, access: "control" }),
+    ]);
+    expect(sessions.endAccess("control", null, "class block ended")).toBe(1); // `me`; the kiosk row is control by default
+  });
 });
