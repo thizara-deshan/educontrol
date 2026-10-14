@@ -1,4 +1,3 @@
-import { DeviceKind, Transport } from "@eduscope/contracts";
 import cookie from "@fastify/cookie";
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
@@ -10,12 +9,12 @@ import { createDispatcher, type Dispatcher } from "./commands/dispatcher.ts";
 import { capturedSetpoints, createIrCodeLookup } from "./commands/ir-codes.ts";
 import type { Config } from "./config.ts";
 import { openDb, type Db } from "./db/client.ts";
+import { loadRegistry } from "./db/devices.ts";
 import { createEventLogger } from "./db/event-log.ts";
-import { devices } from "./db/schema.ts";
 import { seed } from "./db/seed.ts";
 import { readSetting, writeSetting } from "./db/settings.ts";
 import { initialModel } from "./domain/initial.ts";
-import type { DeviceInfo, KwhBaseline } from "./domain/model.ts";
+import type { KwhBaseline } from "./domain/model.ts";
 import { createStateStore, type StateStore } from "./domain/state-store.ts";
 import type { HwClient, HwTimeouts } from "./hw/client.ts";
 import { createIngest, type Ingest } from "./hw/ingest.ts";
@@ -75,18 +74,6 @@ export function hwTimeouts(config: Config): HwTimeouts {
 }
 
 const KwhBaselineSchema = z.object({ date: z.string(), kwh_total: z.number() });
-
-function loadRegistry(db: Db): DeviceInfo[] {
-  return db
-    .select()
-    .from(devices)
-    .orderBy(devices.sort)
-    .all()
-    .map((row) => ({
-      id: row.id, name: row.name, kind: DeviceKind.parse(row.kind), transport: Transport.parse(row.transport),
-      brand: row.brand, model: row.model, hw_ref: row.hw_ref,
-    }));
-}
 
 export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
   const { config, clock } = deps;

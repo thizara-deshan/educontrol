@@ -1068,7 +1068,7 @@ describe("seed", () => {
 
 
 ### T5 — `db/devices.ts`: registry reads and writes
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/db/devices.ts`, `apps/core-api/test/db/devices.test.ts`
 
