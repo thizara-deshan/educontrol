@@ -4094,7 +4094,7 @@ describe("S3b network", () => {
 
 
 ### T20 — System probe: OS facts for network and about
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/paths.ts`, `apps/core-api/src/system/info.ts`, `apps/core-api/test/system/info.test.ts`
 
