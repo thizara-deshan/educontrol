@@ -14,9 +14,18 @@ import { type CommandPlan, planCommand, requiredAccess } from "./policies.ts";
 // read-back (confirmed) | IR ack (assumed) | deadline (timed_out). Last write wins per output.
 
 export interface Issuer {
-  public_id: string;
-  label: ClientLabel;
+  /** null = the scheduler. */
+  public_id: string | null;
+  label: ClientLabel | "schedule";
   access: AccessLevel;
+}
+
+/** Timed actions (ARCHITECTURE §6.8): `issued_by: null`, attribution "· by schedule", any command kind. */
+export const SCHEDULE_ISSUER: Issuer = { public_id: null, label: "schedule", access: "technician" };
+
+function issuedBy(issuer: Issuer): Command["issued_by"] {
+  if (issuer.public_id === null || issuer.label === "schedule") return null;
+  return { public_id: issuer.public_id, label: issuer.label };
 }
 
 /** 403 (access), 409 (precondition) or 503 (hw down): no Command is created. */
@@ -38,7 +47,7 @@ interface Inflight {
 /** A command that a hw report just proved (returned by claim, finished by confirm). */
 export interface Claim {
   readonly inflight: Inflight;
-  readonly by: ClientLabel;
+  readonly by: ClientLabel | "schedule";
 }
 
 export interface Dispatcher {
@@ -116,7 +125,7 @@ export function createDispatcher(deps: {
 
       const command: Command = {
         id: newId(), client_cmd_id: request.client_cmd_id, body,
-        issued_by: { public_id: issuer.public_id, label: issuer.label },
+        issued_by: issuedBy(issuer),
         status: "pending", error: null, at: deps.clock.now().toISOString(),
       };
       const older = inflight.get(plan.key);

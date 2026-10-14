@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CommandRejected } from "../../src/commands/dispatcher.ts";
+import { CommandRejected, SCHEDULE_ISSUER } from "../../src/commands/dispatcher.ts";
 import { applyHwDown } from "../../src/domain/hw-events.ts";
 import { hwEvent, T0 } from "../helpers.ts";
 import { LAPTOP, PHONE, room } from "./setup.ts";
@@ -90,5 +90,27 @@ describe("dispatcher outcomes", () => {
     const r = room();
     expect(() => r.send({ kind: "projector.mains", on: true }, PHONE)).toThrow(CommandRejected);
     expect(() => r.send({ kind: "projector.mains", on: true }, PHONE)).toThrow(expect.objectContaining({ status: 403, code: "forbidden" }));
+  });
+});
+
+describe("schedule as issuer (§6.8)", () => {
+  it("issued_by null, attribution 'schedule' on the value and the activity, logged as schedule", async () => {
+    const r = room();
+    r.echo((method) => (method === "lightsSet" ? hwEvent("lights.state", { gang: "rear", on: false }) : null));
+    r.report(hwEvent("lights.state", { gang: "rear", on: true }));
+    const command = r.send({ kind: "lights.set", gang: "rear", on: false }, SCHEDULE_ISSUER);
+    expect(command.issued_by).toBeNull();
+    await expect.poll(() => r.statuses(command).at(-1)).toBe("confirmed");
+    expect(r.store.get().environment.lights.rear).toMatchObject({ value: false, changed_by: "schedule" });
+    expect(r.events.filter((e) => e.type === "activity").at(-1)).toEqual({
+      type: "activity", text: "Rear of room turned off", by: "schedule", public_id: null,
+    });
+    expect(r.logs.at(-1)).toMatchObject({ type: "command", actor: "schedule", public_id: null, result: "confirmed" });
+  });
+
+  it("may run technician kinds", () => {
+    const r = room();
+    r.report(hwEvent("projector_power.reading", { watts: 0, volts: 231, energy_kwh_total: 412.7 }));
+    expect(() => r.send({ kind: "projector.mains", on: false }, SCHEDULE_ISSUER)).not.toThrow();
   });
 });

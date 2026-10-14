@@ -4937,7 +4937,7 @@ describe("midnight baseline", () => {
 
 
 ### T25 — Dispatcher: the scheduler as an issuer
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/commands/dispatcher.ts`, `apps/core-api/test/commands/dispatcher.test.ts`
 
