@@ -1796,7 +1796,7 @@ describe("R8 transport change", () => {
 
 
 ### T9 — Registry sync into the state store
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/registry-sync.ts`, `apps/core-api/test/registry-sync.test.ts`
 
