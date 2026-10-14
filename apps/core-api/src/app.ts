@@ -18,13 +18,16 @@ import type { KwhBaseline } from "./domain/model.ts";
 import { createStateStore, type StateStore } from "./domain/state-store.ts";
 import type { HwClient, HwTimeouts } from "./hw/client.ts";
 import { createIngest, type Ingest } from "./hw/ingest.ts";
+import { createIrService, type IrService } from "./ir/service.ts";
 import { authPlugin } from "./plugins/auth.ts";
 import { errorsPlugin } from "./plugins/errors.ts";
 import { originCheckPlugin } from "./plugins/origin-check.ts";
 import { createHub, PING_MS, realtimePlugin, type Hub } from "./plugins/realtime.ts";
 import { staticPlugin } from "./plugins/static.ts";
+import { createRegistrySync } from "./registry-sync.ts";
 import { commandRoutes } from "./routes/commands.ts";
 import { healthRoutes } from "./routes/health.ts";
+import { irRoutes } from "./routes/ir.ts";
 import { sessionRoutes } from "./routes/session.ts";
 import { stateRoutes } from "./routes/state.ts";
 
@@ -49,6 +52,7 @@ export interface Room {
   ingest: Ingest;
   sessions: SessionService;
   hub: Hub;
+  ir: IrService;
 }
 
 declare module "fastify" {
@@ -123,11 +127,13 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
     },
   });
   store.subscribe((state) => hub.broadcast({ type: "state", state }));
+  const sync = createRegistrySync(db, store);
+  const ir = createIrService({ db, store, hw: deps.hw, clock, emit: (event) => hub.broadcast(event), log, sync });
 
   const app = Fastify({ logger: deps.logger ?? false, trustProxy: false });
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
-  app.decorate("room", { db, store, dispatcher, ingest, sessions, hub });
+  app.decorate("room", { db, store, dispatcher, ingest, sessions, hub, ir });
 
   await app.register(errorsPlugin);
   await app.register(cookie, { secret: config.COOKIE_SECRET });
@@ -140,6 +146,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(stateRoutes, { store });
       await api.register(commandRoutes, { dispatcher, sessions });
       await api.register(healthRoutes, { store });
+      await api.register(irRoutes, { ir });
     },
     { prefix: "/api" },
   );

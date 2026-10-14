@@ -2717,7 +2717,7 @@ describe("WS hub (§6.6)", () => {
 
 
 ### T13 — IR routes (S3) behind technician + access table
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/routes/ir.ts`, `apps/core-api/test/routes/access.test.ts`, `apps/core-api/test/routes/app-helpers.ts`, `apps/core-api/test/routes/ir.test.ts`
 

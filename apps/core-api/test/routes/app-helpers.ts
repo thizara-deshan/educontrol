@@ -35,14 +35,18 @@ export interface Call {
   remoteAddress?: string;
 }
 
-export function call(app: FastifyInstance, method: "GET" | "POST", url: string, options: Call = {}): Promise<LightMyRequestResponse> {
+export type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+/** A browser request: JSON body for POST/PUT/PATCH; DELETE has no body and no content type (like the kiosk). */
+export function call(app: FastifyInstance, method: Method, url: string, options: Call = {}): Promise<LightMyRequestResponse> {
   const headers: Record<string, string> = { host: HOST };
+  const hasBody = method === "POST" || method === "PUT" || method === "PATCH";
   if (options.origin !== null) headers.origin = options.origin ?? ORIGIN;
   if (options.cookie) headers.cookie = `ec_sid=${options.cookie}`;
-  if (method === "POST") headers["content-type"] = options.contentType ?? "application/json";
+  if (hasBody) headers["content-type"] = options.contentType ?? "application/json";
   return app.inject({
     method, url, headers, remoteAddress: options.remoteAddress ?? PHONE_IP,
-    ...(method === "POST" ? { payload: JSON.stringify(options.payload ?? {}) } : {}),
+    ...(hasBody ? { payload: JSON.stringify(options.payload ?? {}) } : {}),
   });
 }
 
