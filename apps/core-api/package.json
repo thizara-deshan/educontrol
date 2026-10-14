@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "PORT=3000 HOST=0.0.0.0 DB_PATH=./data/dev.db HW_URL=http://127.0.0.1:8081 COOKIE_SECRET=dev-only-cookie-secret-never-used-on-the-pi LOCALHOST_IS_KIOSK=false INITIAL_ROOM_PIN=1234 INITIAL_TECH_PIN=123456 SEED_FAKE_IR_CODES=true tsx watch src/main.ts",
+    "dev": "PORT=3000 HOST=0.0.0.0 DB_PATH=./data/dev.db HW_URL=http://127.0.0.1:8081 COOKIE_SECRET=dev-only-cookie-secret-never-used-on-the-pi LOCALHOST_IS_KIOSK=false INITIAL_ROOM_PIN=1234 INITIAL_TECH_PIN=123456 SEED_FAKE_IR_CODES=true RESTART_COMMAND='touch src/main.ts' tsx watch src/main.ts",
     "build": "tsx scripts/build.ts",
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json",

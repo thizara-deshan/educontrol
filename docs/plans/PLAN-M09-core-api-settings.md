@@ -4531,7 +4531,7 @@ describe("restart controller (S3e)", () => {
 
 
 ### T22 — `main.ts` restarts the controller; dev restarts through `tsx watch`
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/package.json`, `apps/core-api/src/main.ts`
 
