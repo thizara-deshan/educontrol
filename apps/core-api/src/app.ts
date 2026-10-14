@@ -26,6 +26,7 @@ import { createHub, PING_MS, realtimePlugin, type Hub } from "./plugins/realtime
 import { staticPlugin } from "./plugins/static.ts";
 import { createRegistrySync } from "./registry-sync.ts";
 import { commandRoutes } from "./routes/commands.ts";
+import { deviceRoutes } from "./routes/devices.ts";
 import { healthRoutes } from "./routes/health.ts";
 import { irRoutes } from "./routes/ir.ts";
 import { scheduleRoutes } from "./routes/schedule.ts";
@@ -149,6 +150,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(healthRoutes, { store });
       await api.register(irRoutes, { ir });
       await api.register(scheduleRoutes, { db, emit: (event) => hub.broadcast(event) });
+      await api.register(deviceRoutes, { db, store, hw: deps.hw, sync, emit: (event) => hub.broadcast(event) });
     },
     { prefix: "/api" },
   );

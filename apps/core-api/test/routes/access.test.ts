@@ -21,6 +21,10 @@ const ROUTES: readonly [Method, string, unknown?][] = [
   ["POST", "/api/schedule/actions", { name: "All off", time: "18:00", days: ["fri"], enabled: true, steps: [{ kind: "ac.power", on: false }] }],
   ["PUT", "/api/schedule/actions/nope", { name: "All off", time: "18:00", days: ["fri"], enabled: true, steps: [{ kind: "ac.power", on: false }] }],
   ["DELETE", "/api/schedule/actions/nope"],
+  ["GET", "/api/devices"],
+  ["PATCH", "/api/devices/nope", { name: "x" }],
+  ["DELETE", "/api/devices/nope"],
+  ["POST", "/api/zigbee/permit-join", { seconds: 240 }],
 ];
 
 describe("M09 routes need technician", () => {

@@ -3540,7 +3540,7 @@ describe("schedule routes (S3c)", () => {
 
 
 ### T17 — Device registry and permit-join routes (S3d)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/app.ts`, `apps/core-api/src/routes/devices.ts`, `apps/core-api/test/routes/access.test.ts`, `apps/core-api/test/routes/devices.test.ts`
 
