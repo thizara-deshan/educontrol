@@ -1,4 +1,5 @@
 import type { AcState, ChangedBy } from "@eduscope/contracts";
+import type { RoomModel } from "./model.ts";
 import { assumed } from "./observed.ts";
 
 // R3 (always assumed, Unknown after start), R4 (−/+ step through captured frames only), Q5, H19.
@@ -35,4 +36,10 @@ export function acSent(ac: AcState, change: { power?: "on" | "off"; setpoint_c?:
     power: change.power === undefined ? ac.power : assumed(change.power, at, by),
     setpoint_c: change.setpoint_c === undefined ? ac.setpoint_c : assumed(change.setpoint_c, at, by),
   };
+}
+
+/** R4: S1's −/+ range after S3 captured or removed a setpoint frame (captured temperatures, ascending). */
+export function withAvailableSetpoints(model: RoomModel, setpoints: readonly number[]): RoomModel {
+  const { environment } = model.state;
+  return { ...model, state: { ...model.state, environment: { ...environment, ac: { ...environment.ac, available_setpoints: [...setpoints] } } } };
 }

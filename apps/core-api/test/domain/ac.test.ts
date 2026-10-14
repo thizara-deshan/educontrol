@@ -1,8 +1,8 @@
 import type { AcState } from "@eduscope/contracts";
 import { describe, expect, it } from "vitest";
-import { acSent, powerOnSetpoint, stepTarget } from "../../src/domain/ac.ts";
+import { acSent, powerOnSetpoint, stepTarget, withAvailableSetpoints } from "../../src/domain/ac.ts";
 import { unknown } from "../../src/domain/observed.ts";
-import { T0 } from "../helpers.ts";
+import { bootModel, T0 } from "../helpers.ts";
 
 function ac(power: "on" | "off" | null, setpoint: number | null, available: number[]): AcState {
   const obs = <T>(value: T | null) => ({ ...unknown<T>("ir"), value, confidence: value === null ? ("unknown" as const) : ("assumed" as const) });
@@ -37,5 +37,15 @@ describe("R4 AC setpoints", () => {
     expect(next.power).toEqual({ value: "on", confidence: "assumed", source: "ir", updated_at: T0, stale: false, changed_by: "phone" });
     expect(next.setpoint_c.value).toBe(24);
     expect(acSent(next, { power: "off" }, T0, "laptop").setpoint_c).toBe(next.setpoint_c);
+  });
+});
+
+describe("R4 setpoint list rebuild", () => {
+  it("replaces S1's −/+ range and keeps the rest of the AC state", () => {
+    const model = bootModel({ acSetpoints: [18, 24] });
+    const next = withAvailableSetpoints(model, [18, 24, 31]);
+    expect(next.state.environment.ac.available_setpoints).toEqual([18, 24, 31]);
+    expect(next.state.environment.ac.power).toBe(model.state.environment.ac.power);
+    expect(model.state.environment.ac.available_setpoints).toEqual([18, 24]);
   });
 });

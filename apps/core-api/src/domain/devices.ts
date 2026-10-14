@@ -1,4 +1,5 @@
-import type { Device, Observed, RoomState, Source } from "@eduscope/contracts";
+import type { Device, Observed, RoomState, Source, Transport } from "@eduscope/contracts";
+import { isIrTransport } from "./ir.ts";
 import type { DeviceInfo } from "./model.ts";
 import { OUTPUTS } from "./model.ts";
 
@@ -71,4 +72,11 @@ export function deriveDevices(
     const value = link.hwOffline ? false : link.hwDown ? (prev?.value ?? null) : factOnline(info, state);
     return { ...info, online: onlineValue(prev, info, value, link.hwOffline, now), outputs: [...(OUTPUTS[info.id] ?? [])] };
   });
+}
+
+/** S3d/R8: only IR devices switch transport, and only between ZS06 and MCU. Null = allowed. */
+export function transportChangeError(current: Transport, next: Transport | undefined): string | null {
+  if (next === undefined || next === current) return null;
+  if (isIrTransport(current) && isIrTransport(next)) return null;
+  return "Only IR devices change transport (ZS06 or MCU)";
 }

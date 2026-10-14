@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { derive } from "../../src/domain/derive.ts";
+import { transportChangeError } from "../../src/domain/devices.ts";
 import { applyHwDown, applyHwEvent } from "../../src/domain/hw-events.ts";
 import { bootModel, hwEvent, RULES, snapshotEvent, T0 } from "../helpers.ts";
 
@@ -37,5 +38,19 @@ describe("H8 device online", () => {
     expect(back.state.connection.hw).toBe("up");
     expect(back.state.devices.every((d) => d.online.value === true && !d.online.stale)).toBe(true);
     expect(back.state.environment.lights.front.stale).toBe(false);
+  });
+});
+
+describe("R8 transport change", () => {
+  it.each([
+    ["ir_zs06", "ir_mcu", null],
+    ["ir_mcu", "ir_zs06", null],
+    ["zigbee", "zigbee", null],
+    ["zigbee", undefined, null],
+    ["ir_zs06", "zigbee", "Only IR devices change transport (ZS06 or MCU)"],
+    ["zigbee", "ir_mcu", "Only IR devices change transport (ZS06 or MCU)"],
+    ["local", "zigbee", "Only IR devices change transport (ZS06 or MCU)"],
+  ] as const)("%s → %s: %s", (current, next, expected) => {
+    expect(transportChangeError(current, next)).toBe(expected);
   });
 });

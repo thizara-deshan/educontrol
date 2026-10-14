@@ -1530,7 +1530,7 @@ describe("IR records", () => {
 
 
 ### T8 — R4 setpoint-list rebuild and R8 transport rule (pure)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/domain/ac.ts`, `apps/core-api/src/domain/devices.ts`, `apps/core-api/test/domain/ac.test.ts`, `apps/core-api/test/domain/devices.test.ts`
 
