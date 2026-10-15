@@ -115,7 +115,7 @@ adds one complete file and the installer works (and is re-run) after every insta
 ## Tasks
 
 ### T1 — Decision record D-22: platform (Debian 13, Pi 5, Node 24)
-- [ ] done
+- [x] done
 
 **Files:** `docs/decisions/D-22-pi-platform.md`
 
