@@ -205,7 +205,7 @@ passed).
 **Commit:** `git commit -m "feat(hw): MQTT broker settings for zigbee2mqtt"`
 
 ### T2 — Shared MQTT transport (`transports/mqtt.py`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/pyproject.toml`, `services/hw/uv.lock`, `services/hw/app/transports/mqtt.py`,
 `services/hw/tests/test_mqtt.py`

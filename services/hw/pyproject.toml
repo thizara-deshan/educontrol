@@ -9,6 +9,7 @@ dependencies = [
     "pydantic>=2.14",
     "pydantic-settings>=2.15",
     "sse-starlette>=3.5",
+    "aiomqtt>=2.4",
 ]
 
 [dependency-groups]
