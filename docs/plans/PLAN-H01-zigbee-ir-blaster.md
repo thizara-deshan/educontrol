@@ -1736,7 +1736,7 @@ PATCH
 **Commit:** `git commit -m "feat(deploy): pinned zigbee2mqtt install and config template"`
 
 ### T10 — Install step 50: `zigbee2mqtt.service` on the system Node
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/systemd/zigbee2mqtt.service`, `deploy/pi/steps/50-zigbee.sh`
 
@@ -2060,4 +2060,4 @@ AC7's 30 s budget relies on zigbee2mqtt reconnecting to mosquitto by itself (sys
   `dist/` non-empty (`[[ -d $Z2M_DIR/dist ]]`); (c) accept the rebuild-every-run behaviour (not recommended: `No changes.` never occurs
   and each run needs the network/CPU for a build).
 - **Status:** T10 files (`zigbee2mqtt.service`, step block) are in the tree but T10 is not ticked. Stopped.
-
+- **Resolved (human):** option (a) — marker changed to `dist/controller.js` in `50-zigbee.sh`.

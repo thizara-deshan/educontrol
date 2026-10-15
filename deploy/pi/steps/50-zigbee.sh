@@ -43,7 +43,7 @@ fi
 z2m_version=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$Z2M_DIR/package.json" | head -n 1)
 [[ $z2m_version == "$Z2M_VERSION" ]] ||
   die "$Z2M_DIR has zigbee2mqtt '$z2m_version', this installer pins $Z2M_VERSION; upgrade it by hand (deploy/pi/README.md §10)"
-if [[ ! -f $Z2M_DIR/dist/index.js ]]; then
+if [[ ! -f $Z2M_DIR/dist/controller.js ]]; then
   z2m_home=$(getent passwd "$SERVICE_USER" | cut -d: -f6)
   log "building zigbee2mqtt $Z2M_VERSION as $SERVICE_USER"
   (cd "$Z2M_DIR" && runuser -u "$SERVICE_USER" -- env -i HOME="$z2m_home" PATH=/usr/bin:/bin LANG=C.UTF-8 CI=true \
