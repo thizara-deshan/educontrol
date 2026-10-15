@@ -1,0 +1,7 @@
+# Started only by eduscope-restart.path (D-23). --no-block: queue the restart and return.
+[Unit]
+Description=Restart Eduscope Central on request
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --no-block restart eduscope.target

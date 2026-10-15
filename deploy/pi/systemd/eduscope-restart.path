@@ -1,0 +1,11 @@
+# S3e "Restart controller" (D-23): core-api's RESTART_COMMAND touches the request file; this path
+# unit then starts eduscope-restart.service (as root, outside core-api's cgroup).
+[Unit]
+Description=Watch for Eduscope restart requests
+
+[Path]
+PathChanged=/var/lib/eduscope/restart.request
+Unit=eduscope-restart.service
+
+[Install]
+WantedBy=multi-user.target

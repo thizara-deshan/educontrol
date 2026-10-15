@@ -678,7 +678,7 @@ T=$(mktemp -d) && . deploy/pi/lib.sh && for f in deploy/pi/systemd/*; do render 
 ---
 
 ### T6 — Restart request units: `eduscope-restart.path` / `eduscope-restart.service`
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/systemd/eduscope-restart.path`, `deploy/pi/systemd/eduscope-restart.service`
 
