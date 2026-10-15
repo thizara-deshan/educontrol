@@ -1544,7 +1544,7 @@ async def test_learn_with_no_press_times_out_cleanly(caplog: pytest.LogCaptureFi
 **Commit:** `git commit -m "test(hw): ZS06 hardware tests (online, learn timeout)"`
 
 ### T7 — Install step 50: mosquitto on 127.0.0.1:1883
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/steps/50-zigbee.sh`, `deploy/pi/zigbee/eduscope-local.conf`
 
