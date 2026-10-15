@@ -2061,3 +2061,14 @@ AC7's 30 s budget relies on zigbee2mqtt reconnecting to mosquitto by itself (sys
   and each run needs the network/CPU for a build).
 - **Status:** T10 files (`zigbee2mqtt.service`, step block) are in the tree but T10 is not ticked. Stopped.
 - **Resolved (human):** option (a) — marker changed to `dist/controller.js` in `50-zigbee.sh`.
+
+### Request during T13 — AC "Power on" has no Test / Re-learn in S3 (not implemented)
+- **Request (human):** the Air conditioner has no "Power on" command with Test and Learn in S3; add it.
+- **Why it is not done:** H01 is "No UI work" and no scope may be added. By SPEC the AC has no separate power-on command: S1.E35
+  "Power on" sends the frame for the **current setpoint** (the frame includes power on), and Q23 fixes the AC command set at
+  power off + 13 setpoints. Adding a command touches SPEC (AC command list), contracts, core-api seed data and the S3 UI.
+- **Options:** (a) keep SPEC as is: power on works through the learned setpoint frames (re-learn those, as in T13 AC4/AC6);
+  (b) a new milestone/plan plus a decision record in `docs/decisions/` adding an explicit AC power-on command with Test + Re-learn;
+  (c) decide that S1.E35 uses a dedicated "Power on" code and fall back to the setpoint frame when none is learned (same record).
+- **Status:** informational; does not block T13. Nothing changed in code.
+
