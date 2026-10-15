@@ -723,7 +723,7 @@ T=$(mktemp -d) && . deploy/pi/lib.sh && for f in deploy/pi/systemd/*; do render 
 ---
 
 ### T7 — `install.sh` entry point + step 10 (apt, Node 24, pnpm, uv)
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/install.sh`, `deploy/pi/steps/10-packages.sh`
 
@@ -830,6 +830,13 @@ fi
 pnpm_version=$(sed -n 's/.*"packageManager": *"pnpm@\([^"]*\)".*/\1/p' "$REPO/package.json")
 [[ -n $pnpm_version ]] || die "package.json has no \"packageManager\": \"pnpm@…\""
 if [[ $(cd / && /usr/bin/pnpm --version 2>/dev/null || true) != "$pnpm_version" ]]; then
+  # Purging Debian's node-corepack leaves dangling links that make `npm -g` fail with EEXIST (Blocker 2).
+  for link in /usr/bin/pnpm /usr/bin/pnpx; do
+    if [[ -L $link && ! -e $link ]]; then
+      rm -f "$link"
+      changed "removed dangling $link"
+    fi
+  done
   npm install -g --no-fund --no-audit "pnpm@$pnpm_version"
   changed "installed pnpm $pnpm_version"
 fi
@@ -1708,3 +1715,4 @@ command (its command line contains "core-api") and would kill it.
      card would not have them, but the same purge on another Pi would leave them again.
 - **Recommended:** option 1.
 - **Status:** stopped. T7 files are created in the working tree but not committed or ticked. Waiting for a decision.
+- **Resolved:** the user chose option 1; the T7 `10-packages.sh` block and the file were amended.
