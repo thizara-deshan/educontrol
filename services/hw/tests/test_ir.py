@@ -11,11 +11,12 @@ from app.modules.ir.schemas import (
     HwIrLearnCaptured,
     HwIrLearnEvent,
     HwIrLearnRequest,
+    HwIrLearnResult,
     HwIrLearnTimeout,
     HwIrSendRequest,
     HwIrSnapshot,
 )
-from app.modules.ir.service import IrService
+from app.modules.ir.service import IrRefused, IrService
 from tests.helpers import http_client, make_settings, next_event
 
 SEND = HwIrSendRequest(transport="ir_zs06", code_format="tuya", code="C/8hRgHrBkYBgAMH")
@@ -95,6 +96,21 @@ async def test_cancel_ends_a_learn_in_progress() -> None:
     assert await service.cancel_learn() == ACK_OK
     assert await asyncio.wait_for(learning, 1) == HwIrLearnCancelled(status="cancelled")
     assert await learn_statuses(sub, 1) == ["cancelled"]
+
+
+class RefusingIrDriver(FakeIrDriver):
+    async def learn(self, request: HwIrLearnRequest) -> HwIrLearnResult:
+        raise IrRefused("invalid", "ir_mcu is not available yet")
+
+
+async def test_a_refused_learn_reports_its_code_and_times_out() -> None:
+    bus = EventBus(8)
+    sub = bus.subscribe()
+    service = IrService(RefusingIrDriver(make_settings()), bus)
+    await service.start()
+    assert await service.learn(LEARN) == HwIrLearnTimeout(status="timeout")
+    error = await next_event(sub, HwErrorEvent)
+    assert (error.data.code, error.data.message) == ("invalid", "ir: ir_mcu is not available yet")
 
 
 async def test_real_driver_errors_become_transport_and_timeout() -> None:

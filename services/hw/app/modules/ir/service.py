@@ -3,7 +3,15 @@
 from collections.abc import Callable
 from typing import Protocol
 
-from app.contracts import HwAck, HwDriverKind, HwErrorData, HwErrorEvent, guard, logger
+from app.contracts import (
+    HwAck,
+    HwDriverKind,
+    HwErrorCode,
+    HwErrorData,
+    HwErrorEvent,
+    guard,
+    logger,
+)
 from app.events import EventBus
 from app.modules.ir.schemas import (
     HwIrBlasterEvent,
@@ -17,6 +25,14 @@ from app.modules.ir.schemas import (
 
 IrEvent = HwIrBlasterEvent | HwIrLearnEvent
 IrEmit = Callable[[IrEvent], None]
+
+
+class IrRefused(Exception):
+    """A driver refuses a command: `send` answers it as an ack error, `learn` as `hw.error`."""
+
+    def __init__(self, code: HwErrorCode, message: str) -> None:
+        super().__init__(message)
+        self.code: HwErrorCode = code
 
 
 class IrDriver(Protocol):
@@ -54,13 +70,19 @@ class IrService:
     async def learn(self, request: HwIrLearnRequest) -> HwIrLearnResult:
         """The learn response has no error variant: a driver failure is reported as `hw.error`
         and answered with `timeout` (nothing was captured, the old code stays untouched)."""
+        code: HwErrorCode
         try:
             return await self.driver.learn(request)
+        except IrRefused as exc:
+            code = exc.code
+            message = str(exc)
         except Exception as exc:
-            logger.warning("ir learn failed: %s", exc)
-            data = HwErrorData(module="ir", code="transport", message=f"ir: {exc}")
-            self._bus.publish(HwErrorEvent(data=data))
-            return HwIrLearnTimeout(status="timeout")
+            code = "transport"
+            message = str(exc)
+        logger.warning("ir learn failed (%s): %s", code, message)
+        data = HwErrorData(module="ir", code=code, message=f"ir: {message}")
+        self._bus.publish(HwErrorEvent(data=data))
+        return HwIrLearnTimeout(status="timeout")
 
     async def cancel_learn(self) -> HwAck:
         return await guard("ir", self.driver.cancel_learn())

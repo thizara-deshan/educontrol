@@ -596,7 +596,7 @@ handler doesn't stop the others, `subscribe()` after `start()` raises.
 **Commit:** `git commit -m "feat(hw): shared aiomqtt transport with reconnect backoff"`
 
 ### T3 — `IrRefused`: a refused learn reports its own error code
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/ir/service.py`, `services/hw/tests/test_ir.py`
 
