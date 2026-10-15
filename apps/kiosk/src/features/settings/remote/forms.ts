@@ -1,4 +1,4 @@
-import { IrCommandCreate, IrDeviceCreate, type IrDeviceKind, type IrSetpoint, type IrTransport } from "@eduscope/contracts";
+import { type IrCommand, IrCommandCreate, IrDeviceCreate, type IrDeviceKind, type IrSetpoint, type IrTransport } from "@eduscope/contracts";
 import type { Choice } from "../shared/ChoiceGroup";
 import type { FormResult } from "../shared/form-result";
 
@@ -63,10 +63,28 @@ export function clampTemp(tempC: number): number {
   return Math.min(AC_TEMP_MAX, Math.max(AC_TEMP_MIN, tempC));
 }
 
-/** AC → a setpoint frame (R4); any other device → a named command. */
-export function commandInput(kind: IrDeviceKind, name: string, setpoint: IrSetpoint): FormResult<IrCommandCreate, "name"> {
+/** An AC command is a setpoint frame (R4) or, once, the remote's own Power on button (D-26). */
+export type AcCommandKind = "setpoint" | "power_on";
+export const AC_KIND_CHOICES: readonly Choice<AcCommandKind>[] = [
+  { value: "setpoint", label: "Setpoint" },
+  { value: "power_on", label: "Power on" },
+];
+
+/** D-26: "Power on" is offered only while the AC has none (a deleted row can be re-created). */
+export function acKindsOffered(commands: readonly Pick<IrCommand, "role">[]): readonly AcCommandKind[] {
+  return commands.some((command) => command.role === "power_on") ? ["setpoint"] : ["setpoint", "power_on"];
+}
+
+/** AC → a setpoint frame (R4) or Power on; any other device → a named command. */
+export function commandInput(
+  kind: IrDeviceKind, name: string, setpoint: IrSetpoint, acKind: AcCommandKind = "setpoint",
+): FormResult<IrCommandCreate, "name"> {
   const candidate: IrCommandCreate =
-    kind === "ac" ? { name: acCommandName(setpoint), role: "setpoint", setpoint } : { name, role: "other", setpoint: null };
+    kind === "ac"
+      ? acKind === "power_on"
+        ? { name: "Power on", role: "power_on", setpoint: null }
+        : { name: acCommandName(setpoint), role: "setpoint", setpoint }
+      : { name, role: "other", setpoint: null };
   const parsed = IrCommandCreate.safeParse(candidate);
   if (parsed.success) return { ok: true, value: parsed.data };
   const issue = parsed.error.issues.find((candidateIssue) => candidateIssue.path[0] === "name");

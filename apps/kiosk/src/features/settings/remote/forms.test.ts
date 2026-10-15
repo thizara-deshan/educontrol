@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { acCommandName, clampTemp, commandInput, EMPTY_DEVICE_FORM, validateDeviceForm } from "./forms";
+import { acCommandName, acKindsOffered, clampTemp, commandInput, EMPTY_DEVICE_FORM, validateDeviceForm } from "./forms";
 
 describe("validateDeviceForm (S3.E9)", () => {
   it("returns the IrDeviceCreate input, trimmed", () => {
@@ -27,6 +27,15 @@ describe("commandInput (S3.E16)", () => {
       ok: true, value: { name: "Freeze", role: "other", setpoint: null },
     });
     expect(commandInput("other", "  ", { temp_c: 24, mode: "cool", fan: "auto" })).toEqual({ ok: false, errors: { name: "Enter a name" } });
+  });
+  it("AC Power on (D-26): the remote's own button, no setpoint", () => {
+    expect(commandInput("ac", "", { temp_c: 25, mode: "cool", fan: "auto" }, "power_on")).toEqual({
+      ok: true, value: { name: "Power on", role: "power_on", setpoint: null },
+    });
+  });
+  it("Power on is offered only while the AC has none", () => {
+    expect(acKindsOffered([{ role: "power_off" }, { role: "setpoint" }])).toEqual(["setpoint", "power_on"]);
+    expect(acKindsOffered([{ role: "power_on" }, { role: "setpoint" }])).toEqual(["setpoint"]);
   });
   it("clampTemp keeps 16–30", () => {
     expect([clampTemp(15), clampTemp(25), clampTemp(31)]).toEqual([16, 25, 30]);

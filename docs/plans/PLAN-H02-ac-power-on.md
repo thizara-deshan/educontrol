@@ -72,7 +72,7 @@ unknown setpoint is refused by `stepTarget` (existing message).
 **Commit:** `feat(core-api): AC Power on uses the captured power-on code`
 
 ### T3 — kiosk: mock data and "+ Add a command" for the AC Power on
-- [ ] done
+- [x] done
 
 **Files:** `apps/kiosk/src/data/adapters/mock/fake-ir.ts`, `apps/kiosk/src/features/settings/remote/{forms.ts,
 AddCommandSheet.tsx}`, tests next to them (`forms.test.ts`, `remote.view.test.ts`, mock tests that count AC commands).

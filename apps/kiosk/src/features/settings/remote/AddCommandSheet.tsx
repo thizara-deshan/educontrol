@@ -9,7 +9,8 @@ import { SheetActions } from "../shared/SheetActions";
 import { TextField } from "../shared/TextField";
 import { useWritable } from "../shared/use-writable";
 import {
-  AC_FAN_CHOICES, AC_MODE_CHOICES, AC_TEMP_MAX, AC_TEMP_MIN, acCommandName, clampTemp, commandInput, DEFAULT_SETPOINT,
+  AC_FAN_CHOICES, AC_KIND_CHOICES, AC_MODE_CHOICES, AC_TEMP_MAX, AC_TEMP_MIN, type AcCommandKind, acCommandName, acKindsOffered, clampTemp,
+  commandInput, DEFAULT_SETPOINT,
 } from "./forms";
 
 /** −  25°  + for the AC setpoint (same shape as S1's AC row, 48px keys). */
@@ -29,12 +30,14 @@ function TempStepper({ value, onChange }: { value: number; onChange: (value: num
 }
 
 /**
- * S3.E16 sheet. AC: setpoint °C, mode, fan (the row is named "25°"); other devices: a name.
+ * S3.E16 sheet. AC: setpoint °C, mode, fan (the row is named "25°") or, while it has none, Power on (D-26);
+ * other devices: a name.
  * Save creates the row ("Not captured") and starts its capture (H21).
  */
 export function AddCommandSheet({ device, open, onOpenChange }: { device: IrDevice; open: boolean; onOpenChange: (open: boolean) => void }) {
   const [name, setName] = useState("");
   const [setpoint, setSetpoint] = useState<IrSetpoint>(DEFAULT_SETPOINT);
+  const [acKind, setAcKind] = useState<AcCommandKind>("setpoint");
   const [showErrors, setShowErrors] = useState(false);
   const writable = useWritable();
   const create = useServerMutation(async (api, input: IrCommandCreate) => {
@@ -42,14 +45,17 @@ export function AddCommandSheet({ device, open, onOpenChange }: { device: IrDevi
     await api.ir.learn(command.id).catch(() => undefined); // a refused capture leaves the row "Not captured" with Learn
     return command;
   }, [queryKeys.irDevices()]);
-  const result = commandInput(device.kind, name, setpoint);
+  const result = commandInput(device.kind, name, setpoint, acKind);
   const nameError = showErrors && !result.ok ? (result.errors.name ?? null) : null;
   const isAc = device.kind === "ac";
+  const kindsOffered = isAc ? acKindsOffered(device.commands) : [];
+  const powerOn = isAc && acKind === "power_on";
 
   const close = (): void => {
     onOpenChange(false);
     setName("");
     setSetpoint(DEFAULT_SETPOINT);
+    setAcKind("setpoint");
     setShowErrors(false);
     create.reset();
   };
@@ -66,17 +72,19 @@ export function AddCommandSheet({ device, open, onOpenChange }: { device: IrDevi
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : close())}
       title={`Add a command · ${device.name}`}
-      description={isAc ? `Saves as “${acCommandName(setpoint)}”, then listens for the remote.` : "Saves the command, then listens for the remote."}
+      description={isAc ? `Saves as “${powerOn ? "Power on" : acCommandName(setpoint)}”, then listens for the remote.` : "Saves the command, then listens for the remote."}
     >
-      {isAc ? (
+      {kindsOffered.length > 1 ? (
+        <ChoiceGroup label="Command" columns={2} options={AC_KIND_CHOICES} value={acKind} onChange={setAcKind} />
+      ) : null}
+      {isAc && !powerOn ? (
         <>
           <TempStepper value={setpoint.temp_c} onChange={(temp_c) => setSetpoint({ ...setpoint, temp_c })} />
           <ChoiceGroup label="Mode" columns={3} options={AC_MODE_CHOICES} value={setpoint.mode} onChange={(mode) => setSetpoint({ ...setpoint, mode })} />
           <ChoiceGroup label="Fan" columns={4} options={AC_FAN_CHOICES} value={setpoint.fan} onChange={(fan) => setSetpoint({ ...setpoint, fan })} />
         </>
-      ) : (
-        <TextField label="Name" value={name} error={nameError} onChange={setName} />
-      )}
+      ) : null}
+      {!isAc ? <TextField label="Name" value={name} error={nameError} onChange={setName} /> : null}
       <SheetActions
         saveLabel="Save and learn"
         onCancel={close}

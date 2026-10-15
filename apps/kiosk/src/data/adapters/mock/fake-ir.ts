@@ -17,13 +17,14 @@ const AC_SETPOINTS = [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] as con
 
 /**
  * Screenshot 03: every seeded code is captured and was tested before this system kept test
- * times (`reacted`, `tested_at: null` → "Tuya code · captured"). Projector 2, AC 14 (Q23).
+ * times (`reacted`, `tested_at: null` → "Tuya code · captured"). Projector 2, AC 15 (Q23, D-26).
  */
 function seededCommands(): IrCommand[] {
   const base = { code_format: "tuya" as const, captured: true, captured_at: SEEDED_AT, test: "reacted" as const, tested_at: null };
   return [
     { ...base, id: "ir-proj-on", device_id: "projector", name: "Power on", role: "power_on", setpoint: null },
     { ...base, id: "ir-proj-off", device_id: "projector", name: "Power off", role: "power_off", setpoint: null },
+    { ...base, id: "ir-ac-on", device_id: "ac", name: "Power on", role: "power_on", setpoint: null },
     { ...base, id: "ir-ac-off", device_id: "ac", name: "Power off", role: "power_off", setpoint: null },
     ...AC_SETPOINTS.map((temp_c): IrCommand => ({
       ...base, id: `ir-ac-${temp_c}`, device_id: "ac", name: `${temp_c}°`, role: "setpoint",

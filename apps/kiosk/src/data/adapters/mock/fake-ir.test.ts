@@ -35,7 +35,7 @@ describe("FakeIr (S3, H20–H22, H25)", () => {
     const { room, settle } = connected();
     const devices = await settle(room.ir.listDevices());
     expect(devices.map((d) => [d.name, d.brand, d.transport, d.commands.length])).toEqual([
-      ["Air conditioning", "Panasonic", "ir_zs06", 14],
+      ["Air conditioning", "Panasonic", "ir_zs06", 15],
       ["Projector", "Epson", "ir_zs06", 2],
     ]);
     expect(devices[1]?.commands.map((c) => [c.name, c.captured, c.test, c.tested_at])).toEqual([
