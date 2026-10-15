@@ -24,6 +24,8 @@ The installer:
   missing**, with a random cookie secret and the fixed demo PINs room `1234` / technician `123456`);
 - builds the code as the owner of the checkout (`pnpm install --frozen-lockfile`, `pnpm build`,
   `uv sync --frozen`);
+- installs mosquitto (broker on `127.0.0.1:1883` only), the `/dev/zigbee-coord` udev link and
+  zigbee2mqtt 2.14.2 in `/opt/zigbee2mqtt` with `zigbee2mqtt.service` (section 10);
 - installs and enables `eduscope.target`, `eduscope-hw.service`, `eduscope-core.service` and
   `eduscope-restart.path`, makes the journal persistent (max 200 MB) and sets the hostname to `r-101`;
 - with `--kiosk`: desktop autologin, OS screen blanking off, the Chromium launcher in the labwc
@@ -77,9 +79,16 @@ Restart everything: Settings → About → **Restart controller**, or
 
 ## 5 Hardware drivers
 
-`/etc/eduscope/hw.env` starts with `HW_MODE=fake`: every device is simulated. Each hardware
-milestone switches its own module, e.g. `HW_DRIVERS=ir=real`, then
-`sudo systemctl restart eduscope.target`. The installer never overwrites this file.
+`/etc/eduscope/hw.env` has `HW_MODE=fake` (every device simulated) plus a per-module override
+`HW_DRIVERS=`. Each hardware milestone switches its own module. Since H01 the IR blaster is real:
+`HW_DRIVERS=ir=real`. The installer creates this file once and never changes it, so on a Pi that
+was installed earlier set the line by hand, then restart:
+
+```sh
+sudoedit /etc/eduscope/hw.env                       # HW_DRIVERS=ir=real
+sudo systemctl restart eduscope.target
+curl -s 127.0.0.1:8081/v1/health                    # "ir":"real"
+```
 
 ## 6 Backup
 
@@ -120,3 +129,30 @@ sudo systemctl start eduscope.target
 | `eduscope-hw.service` | `services/hw/.venv/bin/uvicorn` as `eduscope` | `127.0.0.1:8081` only |
 | `eduscope-restart.path` | watches `/var/lib/eduscope/restart.request` | — |
 | `eduscope.target` | starts both services at boot | — |
+| `mosquitto.service` | MQTT broker (Debian package) | `127.0.0.1:1883` only |
+| `zigbee2mqtt.service` | `/usr/bin/node index.js` in `/opt/zigbee2mqtt` as `eduscope` | `127.0.0.1:8080` (frontend) |
+
+## 10 Zigbee (mosquitto + zigbee2mqtt)
+
+- **Only one zigbee2mqtt may run.** Never start it by hand (`pnpm start`, `node index.js`) while the
+  unit runs: two copies fight over the coordinator and can break `data/database.db`. Use
+  `sudo systemctl restart zigbee2mqtt` and `journalctl -u zigbee2mqtt -f`.
+- **Back up `/opt/zigbee2mqtt/data/`.** It holds the network key, the coordinator backup and the
+  paired devices. Losing it means re-pairing every device. It is never in git:
+  ```sh
+  sudo systemctl stop zigbee2mqtt
+  sudo tar -czf ~/zigbee2mqtt-data-$(date +%F).tar.gz -C /opt/zigbee2mqtt data
+  sudo systemctl start zigbee2mqtt
+  ```
+  Keep the archive private (network key).
+- The installer writes `data/configuration.yaml` only when it is missing (template:
+  `deploy/pi/zigbee/configuration.yaml`, keys `GENERATE`). It never changes the live file.
+- **Frontend** (pairing, logs): `ssh -L 8080:127.0.0.1:8080 eduscope@<pi>` then open
+  `http://localhost:8080` on the laptop.
+- **Coordinator:** ZG-808Z on a CH340 adapter, `/dev/zigbee-coord` (udev) or
+  `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0`. Plug it straight into the Pi (USB extension
+  cable), not into the hub with the keyboard: that hub dropped it once (INTAKE-01, Q-B3).
+- **Upgrade:** the installer pins zigbee2mqtt 2.14.2 and stops if `/opt/zigbee2mqtt` has another
+  version. To upgrade: back up `data/` (above), stop the unit, check out the new tag in
+  `/opt/zigbee2mqtt`, run `pnpm install --frozen-lockfile && pnpm run build` as `eduscope`, change
+  `Z2M_VERSION` in `deploy/pi/steps/50-zigbee.sh`, run the installer.

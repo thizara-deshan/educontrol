@@ -1882,7 +1882,7 @@ PATCH
 **Commit:** `git commit -m "feat(deploy): real IR driver on the Pi (HW_DRIVERS=ir=real)"`
 
 ### T12 — `deploy/pi/README.md`: Zigbee section
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/README.md`
 
