@@ -1,0 +1,26 @@
+# zigbee2mqtt for the room's Zigbee network (H01, INTAKE-01 §5C). Installed by deploy/pi/install.sh.
+# The only way zigbee2mqtt runs on this Pi: a second copy fights over the coordinator port
+# ("Cannot lock port") and can corrupt data/database.db (INTAKE-01, Observed). Frontend 127.0.0.1:8080.
+[Unit]
+Description=zigbee2mqtt (Zigbee coordinator bridge, frontend 127.0.0.1:8080)
+Documentation=https://www.zigbee2mqtt.io
+After=network.target mosquitto.service
+Wants=mosquitto.service
+
+[Service]
+Type=simple
+User=eduscope
+Group=eduscope
+SupplementaryGroups=dialout
+WorkingDirectory=/opt/zigbee2mqtt
+Environment=NODE_ENV=production
+# System Node 24 from NodeSource (D-22), not nvm.
+ExecStart=/usr/bin/node index.js
+Restart=always
+RestartSec=10
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

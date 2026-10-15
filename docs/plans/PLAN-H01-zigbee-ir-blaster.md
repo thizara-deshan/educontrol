@@ -2044,3 +2044,20 @@ AC7's 30 s budget relies on zigbee2mqtt reconnecting to mosquitto by itself (sys
   Verify to `grep -c '^  [a-z_]*: GENERATE'` → `3`.
 - **Status:** T9 not committed, not ticked. Stopped.
 - **Resolved (human):** option (a) — 4 matches is correct; the plan's `3` was a miscount. Continue with T9.
+
+### T10 — Installer rebuilds zigbee2mqtt on every run (`dist/index.js` does not exist)
+- **Problem:** `50-zigbee.sh` (T9) builds when `[[ ! -f $Z2M_DIR/dist/index.js ]]`. In zigbee2mqtt 2.14.2 there is no
+  `dist/index.js`: the entry point is `/opt/zigbee2mqtt/index.js`, and `dist/` holds `controller.js`, `eventBus.js`, `mqtt.js`, … (checked on
+  R-101). So each install.sh run executes `pnpm install --frozen-lockfile` + `pnpm run build` and logs
+  `==> built zigbee2mqtt 2.14.2` (observed on the T10 re-run: `1 change(s) applied` instead of `No changes.`).
+  T10 Verify step 4 therefore fails, and T9 Verify step 3 ("nothing about zigbee2mqtt is logged on R-101") was not true either.
+  The plan's input list also claims "`dist/` built"; that holds, but not for `dist/index.js`.
+  Not harmful: the service runs (`active`, `bridge/state` online), `data/` was not touched (`configuration.yaml` checksum OK).
+- **Other T10 checks:** ExecStart `path=/usr/bin/node` OK; hardware tests 2 passed; `ps -C node … | grep -c index.js` printed 0 because the
+  process name is `MainThread` (one process, PID from `systemctl show -p MainPID`, `/usr/bin/node index.js`). Ruled acceptable by the human
+  for T10; the same check appears in T13 AC1.
+- **Options:** (a) change the marker in `50-zigbee.sh` to `dist/controller.js` (exists on R-101 and in any built 2.14.2); (b) test
+  `dist/` non-empty (`[[ -d $Z2M_DIR/dist ]]`); (c) accept the rebuild-every-run behaviour (not recommended: `No changes.` never occurs
+  and each run needs the network/CPU for a build).
+- **Status:** T10 files (`zigbee2mqtt.service`, step block) are in the tree but T10 is not ticked. Stopped.
+

@@ -56,3 +56,16 @@ fi
 if [[ ! -e $Z2M_DIR/data/configuration.yaml ]]; then
   install_if_changed "$HERE/zigbee/configuration.yaml" "$Z2M_DIR/data/configuration.yaml" 600 "$SERVICE_USER" "$SERVICE_USER"
 fi
+
+# The only zigbee2mqtt on this Pi (a second copy breaks the coordinator, INTAKE-01 Observed).
+install_if_changed "$HERE/systemd/zigbee2mqtt.service" /etc/systemd/system/zigbee2mqtt.service 644 root root
+z2m_restart=$EDUSCOPE_CHANGED
+if ((z2m_restart)); then systemctl daemon-reload; fi
+if ! systemctl is-enabled -q zigbee2mqtt; then
+  systemctl enable zigbee2mqtt
+  changed "enabled zigbee2mqtt"
+fi
+if ((z2m_restart)) || ! systemctl is-active -q zigbee2mqtt; then
+  systemctl restart zigbee2mqtt
+  log "restarted zigbee2mqtt"
+fi
