@@ -25,7 +25,7 @@ INTAKE-01 (platform observations, CR-D) and H01 (it depends on M10's system Node
   them; `git ls-files -s <file>` must show mode `100755` after `git add`.
 - **What was verified while writing this plan** (in a scratch worktree on this Pi): every shell file passes
   `pnpm pi:lint` (shellcheck 0.11.0) and `bash -n`; `deploy/pi/test/test-lib.sh` (15 checks, after D-24) and the `labwc_rc.py`
-  unittests (7) pass; the T4 vitest (3) and pytest (4) pass with typecheck, eslint and ruff clean; all five units pass
+  unittests (7, removed by D-25) pass; the T4 vitest (3) and pytest (4) pass with typecheck, eslint and ruff clean; all five units pass
   `systemd-analyze verify`; `install.sh` refuses unknown options and non-root runs; `pnpm build` + `node
   apps/core-api/dist/main.js` (Node 24, `KIOSK_DIST`, `LOCALHOST_IS_KIOSK=true`) serves the SPA with history fallback, and
   `curl http://localhost:<port>/api/session` answers `"client_type":"kiosk"` with core bound to `0.0.0.0`.
@@ -66,7 +66,7 @@ INTAKE-01 (platform observations, CR-D) and H01 (it depends on M10's system Node
   autologin) and a private `--user-data-dir`. The launcher waits for `GET /api/health` before the first start (Chromium's
   error page never retries; the loaded SPA does, H1/H2), clears the "Restore pages?" crash flag before each start, and
   restarts Chromium 2 s after it exits. It takes a lock so labwc can't start it twice.
-- **D6 — No cursor** `[ASSUMED]`: labwc 0.20 has no "hide cursor" setting, but window rules can run actions on map. A user
+- **D6 — No cursor (SUPERSEDED by D-25, pointer is visible)** `[ASSUMED]`: labwc 0.20 has no "hide cursor" setting, but window rules can run actions on map. A user
   `rc.xml` rule for `identifier="chromium*"` runs `WarpCursor` (bottom-right) + `HideCursor`; a mouse movement shows the
   pointer again (useful for a technician with a mouse). Raspberry Pi OS starts labwc with `--merge-config`, so the user file
   only adds this rule. Chromium's Wayland app_id is assumed to match `chromium*` — checked in T13 on the screen.
@@ -1179,7 +1179,7 @@ done
 
 ---
 
-### T12 — labwc rule that hides the pointer (`labwc_rc.py`)
+### T12 — labwc rule that hides the pointer (`labwc_rc.py`) — SUPERSEDED by D-25 (code removed after this task was committed)
 - [x] done
 
 **Files:** `deploy/pi/kiosk/labwc_rc.py`, `deploy/pi/kiosk/test_labwc_rc.py`, `package.json`
@@ -1387,7 +1387,7 @@ if __name__ == "__main__":
 
 ---
 
-### T13 — Step 40 (`--kiosk`): autologin, no OS blanking, autostart, pointer rule
+### T13 — Step 40 (`--kiosk`): autologin, no OS blanking, autostart (pointer rule dropped, D-25)
 - [ ] done
 
 **Files:** `deploy/pi/steps/40-kiosk.sh`
@@ -1439,9 +1439,6 @@ if ((KIOSK)); then
   [[ -f $labwc_dir/autostart ]] || runuser -u "$kiosk_user" -- touch "$labwc_dir/autostart"
   ensure_line "$labwc_dir/autostart" "$(render "$HERE/kiosk/labwc-autostart" "REPO=$REPO")"
 
-  rc_result=$(runuser -u "$kiosk_user" -- python3 "$HERE/kiosk/labwc_rc.py" "$labwc_dir/rc.xml")
-  if [[ $rc_result != unchanged ]]; then changed "labwc rc.xml: cursor rule $rc_result"; fi
-
   if ((EDUSCOPE_CHANGES > kiosk_changes_before)); then
     log "kiosk configured for $kiosk_user: reboot to start it (sudo reboot)"
   fi
@@ -1451,17 +1448,14 @@ fi
 **Verify:**
 1. `pnpm pi:lint` exits 0.
 2. **[ON PI · HUMAN]** `! sudo deploy/pi/install.sh --kiosk` → shows `added to /home/eduscope/.config/labwc/autostart: /home/eduscope/edcontrol/deploy/pi/kiosk/launch.sh &`,
-   `labwc rc.xml: cursor rule added`, `kiosk configured for eduscope: reboot to start it`, then `restarted eduscope.target`
+   `kiosk configured for eduscope: reboot to start it`, then `restarted eduscope.target`
    (any change restarts the services; harmless). On R-101 autologin is already on, so there is no `desktop autologin` line.
 3. **[ON PI · HUMAN]** `! sudo deploy/pi/install.sh --kiosk` again → `No changes.`
 4. **[ON PI · HUMAN]** `! sudo reboot`. After boot, the human checks on the Pi's screen and reports:
-   S1 full screen, no browser UI, **no pointer** (moving the mouse shows it again — expected, D6); no padlocks and no Lock
+   S1 full screen, no browser UI, the mouse pointer visible and working (D-25); no padlocks and no Lock
    button; Settings asks for the technician PIN. Then, as the executor: `tail -5 ~/.cache/eduscope-kiosk.log` shows
    `waiting for http://localhost/api/health` and `starting /usr/bin/chromium http://localhost`.
-5. If the pointer stays visible after boot (and the mouse was not moved): write a Blocker "T13: Chromium's Wayland
-   app_id does not match `chromium*`" with the contents of `~/.config/labwc/rc.xml`, and stop (D6 is `[ASSUMED]`; do not
-   try other identifiers).
-6. `pnpm verify` green.
+5. `pnpm verify` green.
 
 **Commit:** `git commit -m "feat(deploy): --kiosk installs autologin, autostart and no OS blanking"`
 
@@ -1509,7 +1503,7 @@ The installer:
 - installs and enables `eduscope.target`, `eduscope-hw.service`, `eduscope-core.service` and
   `eduscope-restart.path`, makes the journal persistent (max 200 MB) and sets the hostname to `r-101`;
 - with `--kiosk`: desktop autologin, OS screen blanking off, the Chromium launcher in the labwc
-  autostart and a labwc rule that hides the mouse pointer. Reboot afterwards.
+  autostart. Reboot afterwards.
 
 The checkout must stay where it is: the services run the code from it. The `eduscope` user must be
 able to read it (true when the checkout is in `/home/eduscope`).
@@ -1648,7 +1642,7 @@ command (its command line contains "core-api") and would kill it.
 6. **AC6 — crash recovery.** Keep S1 open on the phone. **HUMAN:**
    `! sudo kill -9 $(systemctl show -p MainPID --value eduscope-core); sleep 5; systemctl is-active eduscope-core; systemctl show -p NRestarts eduscope-core`
    → `active` and `NRestarts=` one higher than before. The phone shows "Reconnecting…" then "Back online".
-7. **AC7 — kiosk.** **HUMAN (at the Pi's screen)** after the AC2 reboot: S1 full screen, no tabs/address bar, no pointer;
+7. **AC7 — kiosk.** **HUMAN (at the Pi's screen)** after the AC2 reboot: S1 full screen, no tabs/address bar, mouse pointer visible (D-25);
    no padlocks, no Lock button; Settings asks for the technician PIN (123456). Leave the screen untouched: after 5 min
    it dims, after 15 min it goes black (the app's overlays, H23); the first tap only wakes it (R15). At ~20 min, on the Pi:
    `pgrep -a swayidle` → nothing, and
@@ -1671,7 +1665,7 @@ command (its command line contains "core-api") and would kill it.
 - After T8: "Human: `ping r-101.local` from a laptop answers; `ssh eduscope@r-101.local` works (the old `eduscope.local`
   name is gone, D10)."
 - After T10: "Human: open `http://r-101.local` on a phone — S1 live (phone-width 390px layout), room PIN unlocks control."
-- After T13: "Human: reboot with the screen attached — S1 full screen at 1280×800, no browser chrome, no pointer."
+- After T13: "Human: reboot with the screen attached — S1 full screen at 1280×800, no browser chrome, pointer visible (D-25)."
 
 ## Nice-to-haves (not tasks)
 
@@ -1716,3 +1710,7 @@ command (its command line contains "core-api") and would kill it.
 - **Recommended:** option 1.
 - **Status:** stopped. T7 files are created in the working tree but not committed or ticked. Waiting for a decision.
 - **Resolved:** the user chose option 1; the T7 `10-packages.sh` block and the file were amended.
+
+### Blocker 3 — resolved: the hidden pointer (T13)
+- Found on the Pi screen: the mouse could not show the pointer (D6's `[ASSUMED]` was wrong). The user chose to show it.
+  D-25 written; `labwc_rc.py`, its test and the rc.xml step removed; `pi:test` back to `test-lib.sh` only. R-101's `rc.xml` was emptied by hand.
