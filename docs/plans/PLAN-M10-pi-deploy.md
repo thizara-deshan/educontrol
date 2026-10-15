@@ -870,7 +870,7 @@ fi
 ---
 
 ### T8 — Step 20: service user, directories, env files, journald, hostname
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/steps/20-system.sh`, `deploy/pi/journald/eduscope.conf`
 
