@@ -1388,7 +1388,7 @@ if __name__ == "__main__":
 ---
 
 ### T13 — Step 40 (`--kiosk`): autologin, no OS blanking, autostart (pointer rule dropped, D-25)
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/steps/40-kiosk.sh`
 
@@ -1714,3 +1714,5 @@ command (its command line contains "core-api") and would kill it.
 ### Blocker 3 — resolved: the hidden pointer (T13)
 - Found on the Pi screen: the mouse could not show the pointer (D6's `[ASSUMED]` was wrong). The user chose to show it.
   D-25 written; `labwc_rc.py`, its test and the rc.xml step removed; `pi:test` back to `test-lib.sh` only. R-101's `rc.xml` was emptied by hand.
+- **Open after the fix (2026-10-15):** after the reboot the pointer is still not visible on R-101 with the rule removed. The user accepted
+  this for now ("thats fine"); cause not investigated. Padlock/Lock-button/Settings-PIN checks of T13 step 4 were not reported; T15 item 7 covers them.

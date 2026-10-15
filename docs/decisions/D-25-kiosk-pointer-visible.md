@@ -20,3 +20,8 @@ attached, the pointer stayed hidden and the operator could not click with it.
 ## Consequences
 
 - A touch-only kiosk shows a pointer after the first mouse movement or at boot; hiding it is not part of M10.
+
+## Update (same day)
+
+After removing the rule and rebooting, the pointer still did not show on R-101 (cause not found). The owner accepted this
+for now. Re-open under a new record if a visible pointer becomes a requirement.
