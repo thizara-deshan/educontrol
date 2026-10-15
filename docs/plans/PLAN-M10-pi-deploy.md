@@ -1691,3 +1691,20 @@ command (its command line contains "core-api") and would kill it.
 - **Status:** T1 done and committed. Stopped before T2; waiting for a decision.
 - **Resolved:** the user chose option 2. D-24 written; T3/T4/T7/T8/T14/T15 text in this plan amended to match
   (fixed PINs 1234 / 123456, no random PINs, lib.sh test count 19 → 15).
+
+### Blocker 2 — T7: `npm install -g pnpm` fails with EEXIST on a dangling `/usr/bin/pnpm`
+- **Task:** T7, `deploy/pi/steps/10-packages.sh` (pnpm block), Verify step 2 (first human run).
+- **Observed:** Node 24 from NodeSource installed fine (`v24.22.0`). Then
+  `npm error EEXIST: file already exists, path /usr/bin/pnpm`. Both runs fail the same way.
+- **Cause (checked):** `/usr/bin/pnpm -> ../share/nodejs/corepack/dist/pnpm.js` and `/usr/bin/pnpx -> …/pnpx.js` are
+  **dangling symlinks** left behind after purging Debian's `node-corepack` (`dpkg -S` owns neither; target is gone).
+  The plan did not foresee them. `npm -g` refuses to overwrite them, and `pnpm --version` fails, so install.sh
+  retries npm on every run.
+- **Options:**
+  1. In `10-packages.sh`, before `npm install -g pnpm`, delete dangling `/usr/bin/pnpm` and `/usr/bin/pnpx`
+     (`[[ -L $f && ! -e $f ]] && rm -f "$f"`), counted as a change. Safe: only broken links are touched.
+  2. Pass `npm install -g --force` (overwrites any file at that path, also a real one; less careful).
+  3. Human removes the two links by hand once (`! sudo rm /usr/bin/pnpm /usr/bin/pnpx`), no plan change; a fresh
+     card would not have them, but the same purge on another Pi would leave them again.
+- **Recommended:** option 1.
+- **Status:** stopped. T7 files are created in the working tree but not committed or ticked. Waiting for a decision.
