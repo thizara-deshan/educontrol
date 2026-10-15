@@ -1705,3 +1705,18 @@ command (its command line contains "core-api") and would kill it.
 - A health line in `install.sh`'s summary showing the Pi's IP for phones that can't resolve `.local`.
 
 ## Blockers
+
+### Blocker 1 — requested fixed PINs contradict Decision D4 (found before T3)
+- **Task:** T3 (`ensure_env_file`, `test-lib.sh`), T4 (`core.env.example`), T8/T15 (PIN output); also README T14.
+- **Problem:** the user asked mid-run: "make pins 1234 and technician pin 123456". Plan D4 says the first PINs are
+  random, generated at creation, and "no PIN is hardcoded anywhere" (CLAUDE.md also forbids hardcoded PINs in hw
+  code; this is deploy code). Implementing it changes a plan decision, which needs a decision record, and changes
+  verbatim blocks and tests in T3/T4. Room PIN 1234 and technician PIN 123456 are trivially guessable on a LAN.
+- **Options:**
+  1. Keep D4 (random PINs); the human changes them to 1234 / 123456 in Settings → Devices after install.
+  2. Write a decision record D-24 "fixed first-boot PINs 1234 / 123456", then change `core.env.example`
+     (`INITIAL_ROOM_PIN=1234`, `INITIAL_TECH_PIN=123456`), drop `@ROOM_PIN@`/`@TECH_PIN@` and the random-digit logic
+     and its tests in `lib.sh`/`test-lib.sh`, and adjust the T4 placeholder test and T8/T15/README text.
+  3. Make them an install-time override (e.g. `EDUSCOPE_ROOM_PIN` / `EDUSCOPE_TECH_PIN` env vars to install.sh),
+     random by default.
+- **Status:** T1 done and committed. Stopped before T2; waiting for a decision.
