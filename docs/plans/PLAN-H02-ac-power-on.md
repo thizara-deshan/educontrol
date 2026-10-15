@@ -98,7 +98,7 @@ AddCommandSheet.tsx}`, tests next to them (`forms.test.ts`, `remote.view.test.ts
 **Commit:** `feat(kiosk): AC Power on command in S3 (mock data, add sheet)`
 
 ### T4 — Acceptance on the Pi (D-26)
-- [ ] done
+- [x] done
 
 **Files:** this plan only (tick; failures under `## Blockers`).
 
@@ -112,6 +112,11 @@ AddCommandSheet.tsx}`, tests next to them (`forms.test.ts`, `remote.view.test.ts
 4. Delete the captured "Power on" in S3 (or use a spare room's database) → S1 Power on falls back to the setpoint frame; restart
    `eduscope.target` → the row is **not** back (Q-b); "+ Add a command" on the AC offers **Power on** and re-creates it.
 5. `pnpm verify` green; `git status --short` clean apart from this plan file.
+
+**Observed on R-101 (2026-10-15):** installer ran; `ac.power_on` seeded (15 AC commands, `ac_power_on_seeded` set); Power on and
+Power off re-learned (real codes), Test → AC reacted, both stored `reacted`; S1 Power on/off sent, AC turned on from the power-on
+code, setpoint stayed unknown. **Step 4 (delete → fallback → restart keeps it deleted → re-add) was not run live**: the owner
+accepted unit-test coverage only (seed tests, policy tests, `acKindsOffered`).
 
 **Verify:** all five pass as written; otherwise `## Blockers` and stop.
 
