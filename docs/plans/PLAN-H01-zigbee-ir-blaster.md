@@ -1816,7 +1816,7 @@ PATCH
 **Commit:** `git commit -m "feat(deploy): zigbee2mqtt unit on the system Node"`
 
 ### T11 — `HW_DRIVERS=ir=real` on the Pi
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/env/hw.env.example`, `services/hw/tests/test_deploy_env.py`
 
