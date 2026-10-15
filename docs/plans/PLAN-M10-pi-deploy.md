@@ -229,7 +229,7 @@ a polkit rule for `eduscope` (needs polkitd and a JavaScript rule, harder to tes
 ---
 
 ### T3 — Install helpers (`lib.sh`) with tests, wired into `pnpm verify`
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/lib.sh`, `deploy/pi/test/test-lib.sh`, `deploy/pi/.shellcheckrc`, `package.json`
 

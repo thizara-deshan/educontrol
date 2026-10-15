@@ -1,0 +1,5 @@
+# shellcheck config for deploy/pi (PLAN-M10). install.sh sources lib.sh and steps/*.sh, so
+# variables are set in one file and used in another.
+external-sources=true
+source-path=SCRIPTDIR
+disable=SC2034,SC2154
