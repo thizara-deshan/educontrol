@@ -109,7 +109,17 @@ class Settings(BaseSettings):
     # Events buffered per SSE subscriber; a subscriber that falls this far behind is dropped.
     subscriber_queue: int = Field(default=256, ge=1)
 
-    # Friendly names [ASSUMED] (ARCHITECTURE §7.1)
+    # zigbee2mqtt broker (INTAKE-01 §2C: mosquitto on this Pi, 127.0.0.1:1883, anonymous).
+    mqtt_host: str = "127.0.0.1"
+    mqtt_port: int = Field(default=1883, ge=1, le=65535)
+    z2m_base_topic: str = "zigbee2mqtt"
+    # Reconnect backoff doubles from min to max seconds (INTAKE-01 §5B: 1 → 30 s).
+    mqtt_reconnect_min_s: float = Field(default=1.0, gt=0)
+    mqtt_reconnect_max_s: float = Field(default=30.0, gt=0)
+    # A QoS 1 publish the broker has not accepted after this long fails (core-api waits 3 s).
+    mqtt_publish_timeout_s: float = Field(default=2.0, gt=0)
+
+    # Friendly names [ASSUMED] (ARCHITECTURE §7.1); ir_node confirmed on hardware (INTAKE-01 §2C)
     lights_node: str = "r101_lights"
     proj_plug_node: str = "r101_proj_plug"
     ir_node: str = "r101_ir"

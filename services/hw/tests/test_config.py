@@ -18,6 +18,10 @@ def test_defaults_are_fake_on_loopback() -> None:
         "r101_door",
     ]
     assert settings.coordinator.model == "ZG-808Z"
+    assert (settings.mqtt_host, settings.mqtt_port) == ("127.0.0.1", 1883)
+    assert settings.z2m_base_topic == "zigbee2mqtt"
+    assert settings.ir_node == "r101_ir"
+    assert (settings.mqtt_reconnect_min_s, settings.mqtt_reconnect_max_s) == (1.0, 30.0)
 
 
 def test_reads_hw_prefixed_env(monkeypatch: pytest.MonkeyPatch) -> None:

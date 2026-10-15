@@ -120,7 +120,7 @@ build (30) and kiosk (40) and before the services (90) without touching `install
 ## Tasks
 
 ### T1 — Settings for the MQTT broker
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/config.py`, `services/hw/tests/helpers.py`, `services/hw/tests/test_config.py`
 
