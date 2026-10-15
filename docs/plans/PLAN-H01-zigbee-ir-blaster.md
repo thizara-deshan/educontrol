@@ -819,7 +819,7 @@ transport; it retries against port 1 in the background and is cancelled on shutd
 **Commit:** `git commit -m "feat(hw): start the MQTT transport with real zigbee drivers"`
 
 ### T5 — Real ZS06 driver (`ir/driver_real.py`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/ir/driver_real.py`, `services/hw/tests/fake_mqtt.py`,
 `services/hw/tests/test_ir_real.py`, `services/hw/tests/test_ir.py`, `services/hw/app/registry.py`,

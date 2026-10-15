@@ -17,6 +17,7 @@ from app.modules.ir.schemas import (
     HwIrSnapshot,
 )
 from app.modules.ir.service import IrRefused, IrService
+from tests.fake_mqtt import FakeMqtt
 from tests.helpers import http_client, make_settings, next_event
 
 SEND = HwIrSendRequest(transport="ir_zs06", code_format="tuya", code="C/8hRgHrBkYBgAMH")
@@ -113,17 +114,19 @@ async def test_a_refused_learn_reports_its_code_and_times_out() -> None:
     assert (error.data.code, error.data.message) == ("invalid", "ir: ir_mcu is not available yet")
 
 
-async def test_real_driver_errors_become_transport_and_timeout() -> None:
+async def test_real_driver_failures_become_transport_and_timeout() -> None:
     bus = EventBus(8)
     sub = bus.subscribe()
-    service = IrService(RealIrDriver(make_settings()), bus)
+    mqtt = FakeMqtt()
+    service = IrService(RealIrDriver(make_settings(), mqtt), bus)
     await service.start()
-    assert await service.send(SEND) == ack_error("transport", "ir: hardware intake pending")
+    mqtt.deliver("zigbee2mqtt/bridge/state", {"state": "online"})
+    mqtt.deliver("zigbee2mqtt/r101_ir/availability", {"state": "online"})
+    mqtt.fail_publish = TimeoutError("no PUBACK")
+    assert await service.send(SEND) == ack_error("transport", "ir: TimeoutError: no PUBACK")
     assert await service.learn(LEARN) == HwIrLearnTimeout(status="timeout")
     error = await next_event(sub, HwErrorEvent)
-    assert error.data.module == "ir"
-    assert error.data.code == "transport"
-    assert service.snapshot() == HwIrSnapshot(blaster=None)
+    assert (error.data.code, error.data.message) == ("transport", "ir: no PUBACK")
 
 
 async def test_routes() -> None:

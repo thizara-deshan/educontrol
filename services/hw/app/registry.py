@@ -189,7 +189,7 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
         if power_fake_driver is not None:
             # The fake projector "sees" every code the fake blaster sends.
             ir_fake_driver.add_listener(power_fake_driver.ir_received)
-    ir = IrService(ir_fake_driver or RealIrDriver(settings), bus)
+    ir = IrService(ir_fake_driver or RealIrDriver(settings, mqtt), bus)
 
     hdmi = HdmiService(
         FakeHdmiDriver(settings) if kinds["hdmi"] == "fake" else RealHdmiDriver(settings), bus

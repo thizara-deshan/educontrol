@@ -2,7 +2,7 @@ import pytest
 from fastapi.routing import APIRoute
 
 from app.events import EventBus
-from app.modules.ir.schemas import HwIrSendRequest
+from app.modules.ir.schemas import HwIrBlasterData, HwIrSendRequest
 from app.modules.projector_power.schemas import HwProjectorPowerReadingEvent
 from app.registry import MODULES, build_registry, driver_kinds, parse_driver_overrides
 from tests.helpers import drain, make_settings, next_event
@@ -78,6 +78,14 @@ def test_mqtt_runs_only_with_a_real_zigbee_driver() -> None:
     assert build_registry(non_zigbee, EventBus(8)).mqtt is None
     assert build_registry(make_settings(drivers="ir=real"), EventBus(8)).mqtt is not None
     assert build_registry(make_settings(mode="real"), EventBus(8)).mqtt is not None
+
+
+async def test_real_ir_starts_offline_without_a_broker() -> None:
+    registry = build_registry(make_settings(drivers="ir=real"), EventBus(64))
+    await registry.start()
+    assert registry.health().modules.ir == "real"
+    assert registry.snapshot().ir.blaster == HwIrBlasterData(online=False, lqi=None)
+    await registry.stop()
 
 
 async def test_fake_ir_send_drives_the_fake_projector() -> None:
