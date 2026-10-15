@@ -1442,7 +1442,7 @@ MQTT down → `transport`; `ir.blaster` follows availability, bridge state, brok
 **Commit:** `git commit -m "feat(hw): real ZS06 IR driver through zigbee2mqtt"`
 
 ### T6 — Hardware tests for the ZS06 (`pytest -m hardware`)
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/tests/test_ir_hardware.py`
 
