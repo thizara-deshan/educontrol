@@ -1645,7 +1645,7 @@ PATCH
 **Commit:** `git commit -m "feat(deploy): udev link /dev/zigbee-coord for the coordinator"`
 
 ### T9 — Install step 50: zigbee2mqtt 2.14.2 in /opt/zigbee2mqtt + configuration template
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/zigbee/configuration.yaml`, `deploy/pi/steps/50-zigbee.sh`
 
@@ -2043,3 +2043,4 @@ AC7's 30 s budget relies on zigbee2mqtt reconnecting to mosquitto by itself (sys
   (b) reword the header comment so the file has exactly 3 matches (e.g. "replaces each placeholder"); (c) change the
   Verify to `grep -c '^  [a-z_]*: GENERATE'` → `3`.
 - **Status:** T9 not committed, not ticked. Stopped.
+- **Resolved (human):** option (a) — 4 matches is correct; the plan's `3` was a miscount. Continue with T9.
