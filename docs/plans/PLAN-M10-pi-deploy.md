@@ -24,7 +24,7 @@ INTAKE-01 (platform observations, CR-D) and H01 (it depends on M10's system Node
 - Executable files: after creating `deploy/pi/install.sh` (T7) and `deploy/pi/kiosk/launch.sh` (T11) run `chmod +x` on
   them; `git ls-files -s <file>` must show mode `100755` after `git add`.
 - **What was verified while writing this plan** (in a scratch worktree on this Pi): every shell file passes
-  `pnpm pi:lint` (shellcheck 0.11.0) and `bash -n`; `deploy/pi/test/test-lib.sh` (19 checks) and the `labwc_rc.py`
+  `pnpm pi:lint` (shellcheck 0.11.0) and `bash -n`; `deploy/pi/test/test-lib.sh` (15 checks, after D-24) and the `labwc_rc.py`
   unittests (7) pass; the T4 vitest (3) and pytest (4) pass with typecheck, eslint and ruff clean; all five units pass
   `systemd-analyze verify`; `install.sh` refuses unknown options and non-root runs; `pnpm build` + `node
   apps/core-api/dist/main.js` (Node 24, `KIOSK_DIST`, `LOCALHOST_IS_KIOSK=true`) serves the SPA with history fallback, and
@@ -58,8 +58,9 @@ INTAKE-01 (platform observations, CR-D) and H01 (it depends on M10's system Node
   groups. Elsewhere create a system user. The checkout stays where it was cloned; builds run as its owner; install.sh
   checks the service user can read the build and run the venv.
 - **D4 — Env files** `/etc/eduscope/{core,hw}.env`: root:root 600 (systemd reads them as root), created once from
-  `deploy/pi/env/*.example`, never rewritten. The cookie secret (64 hex) **and the first PINs** (4 / 6 random digits) are
-  generated at creation — no PIN is hardcoded anywhere — and printed once at the end of the run. `KIOSK_DIST` is set in
+  `deploy/pi/env/*.example`, never rewritten. The cookie secret (64 hex) is
+  generated at creation. **D-24 (supersedes the random-PIN part of D4):** the first PINs are fixed, room `1234` and
+  technician `123456`, written in `core.env.example`; change them in the app after the demo. `KIOSK_DIST` is set in
   the core unit (it contains the checkout path, which the unit template already knows).
 - **D5 — Kiosk browser.** Flags from ARCHITECTURE §9 plus `--no-first-run`, `--password-store=basic` (no keyring prompt at
   autologin) and a private `--user-data-dir`. The launcher waits for `GET /api/health` before the first start (Chromium's
@@ -234,7 +235,7 @@ a polkit rule for `eduscope` (needs polkitd and a JavaScript rule, harder to tes
 
 **Context:** every install step must be idempotent and must say whether it changed anything (AC1, Decision D8). All
 helpers return 0 (install.sh runs with `set -euo pipefail`) and report through `EDUSCOPE_CHANGED` (last call) and
-`EDUSCOPE_CHANGES` (whole run). `ensure_env_file` implements Decision D4.
+`EDUSCOPE_CHANGES` (whole run). `ensure_env_file` implements Decision D4 (cookie secret only, D-24).
 
 **Do:**
 1. Create `deploy/pi/lib.sh`:
@@ -248,7 +249,6 @@ helpers return 0 (install.sh runs with `set -euo pipefail`) and report through `
 
 EDUSCOPE_CHANGED=0
 EDUSCOPE_CHANGES=0
-EDUSCOPE_NEW_PINS=""
 
 log() { printf '==> %s\n' "$*"; }
 die() {
@@ -300,32 +300,17 @@ ensure_line() {
 # random_hex BYTES — prints 2×BYTES lowercase hex characters from /dev/urandom.
 random_hex() { od -An -N"$1" -tx1 /dev/urandom | tr -d ' \n'; }
 
-# random_digits N — prints N random decimal digits (leading zeros kept, no modulo bias).
-random_digits() {
-  local out="" byte
-  while ((${#out} < $1)); do
-    byte=$(od -An -N1 -tu1 /dev/urandom | tr -d ' ')
-    if ((byte < 250)); then out+=$((byte % 10)); fi
-  done
-  printf '%s' "$out"
-}
-
 # ensure_env_file EXAMPLE DEST OWNER GROUP — creates DEST (mode 600) from EXAMPLE with a fresh
-# @COOKIE_SECRET@ (64 hex chars), @ROOM_PIN@ (4 digits) and @TECH_PIN@ (6 digits). An existing DEST is
-# never read or changed. When the new file has INITIAL_ROOM_PIN, the PINs go to EDUSCOPE_NEW_PINS.
+# @COOKIE_SECRET@ (64 hex chars). An existing DEST is never read or changed. (The first PINs are fixed in
+# core.env.example, D-24.)
 ensure_env_file() {
-  local example=$1 dest=$2 owner=$3 group=$4 tmp room tech
+  local example=$1 dest=$2 owner=$3 group=$4 tmp
   EDUSCOPE_CHANGED=0
   if [[ -e $dest ]]; then return 0; fi
-  room=$(random_digits 4)
-  tech=$(random_digits 6)
   tmp=$(mktemp)
-  render "$example" "COOKIE_SECRET=$(random_hex 32)" "ROOM_PIN=$room" "TECH_PIN=$tech" >"$tmp"
+  render "$example" "COOKIE_SECRET=$(random_hex 32)" >"$tmp"
   install -D -m 600 -o "$owner" -g "$group" "$tmp" "$dest"
   rm -f "$tmp"
-  if grep -q '^INITIAL_ROOM_PIN=' "$dest"; then
-    EDUSCOPE_NEW_PINS="room PIN $room, technician PIN $tech"
-  fi
   changed "created $dest"
 }
 
@@ -412,24 +397,15 @@ check "ensure_line appends once" "$EDUSCOPE_CHANGED $(grep -c 'line one' "$TMP/a
 
 # random values
 check "random_hex 32 gives 64 hex chars" "$(random_hex 32 | grep -cxE '[0-9a-f]{64}')" "1"
-check "random_digits 6 gives 6 digits" "$(random_digits 6 | grep -cxE '[0-9]{6}')" "1"
 
 # ensure_env_file
-printf 'COOKIE_SECRET=@COOKIE_SECRET@\nINITIAL_ROOM_PIN=@ROOM_PIN@\nINITIAL_TECH_PIN=@TECH_PIN@\n' >"$TMP/core.example"
+printf 'COOKIE_SECRET=@COOKIE_SECRET@\nINITIAL_ROOM_PIN=1234\n' >"$TMP/core.example"
 ensure_env_file "$TMP/core.example" "$TMP/etc/core.env" "$ME" "$MYGROUP" >/dev/null
 check "ensure_env_file creates mode 600" "$EDUSCOPE_CHANGED $(stat -c %a "$TMP/etc/core.env")" "1 600"
 check "ensure_env_file generates the secret" "$(grep -cxE 'COOKIE_SECRET=[0-9a-f]{64}' "$TMP/etc/core.env")" "1"
-check "ensure_env_file generates PINs" "$(grep -cxE 'INITIAL_(ROOM_PIN=[0-9]{4}|TECH_PIN=[0-9]{6})' "$TMP/etc/core.env")" "2"
-ROOM=$(sed -n 's/^INITIAL_ROOM_PIN=//p' "$TMP/etc/core.env")
-TECH=$(sed -n 's/^INITIAL_TECH_PIN=//p' "$TMP/etc/core.env")
-check "ensure_env_file reports the PINs" "$EDUSCOPE_NEW_PINS" "room PIN $ROOM, technician PIN $TECH"
 BEFORE=$(sha256sum "$TMP/etc/core.env")
-EDUSCOPE_NEW_PINS=""
 ensure_env_file "$TMP/core.example" "$TMP/etc/core.env" "$ME" "$MYGROUP" >/dev/null
-check "ensure_env_file never rewrites an existing file" "$EDUSCOPE_CHANGED $(sha256sum "$TMP/etc/core.env") [$EDUSCOPE_NEW_PINS]" "0 $BEFORE []"
-printf 'HW_MODE=fake\n' >"$TMP/hw.example"
-ensure_env_file "$TMP/hw.example" "$TMP/etc/hw.env" "$ME" "$MYGROUP" >/dev/null
-check "ensure_env_file without PINs reports none" "$(cat "$TMP/etc/hw.env") [$EDUSCOPE_NEW_PINS]" "HW_MODE=fake []"
+check "ensure_env_file never rewrites an existing file" "$EDUSCOPE_CHANGED $(sha256sum "$TMP/etc/core.env")" "0 $BEFORE"
 
 # tree_hash
 mkdir -p "$TMP/dist/assets"
@@ -451,7 +427,7 @@ printf 'all lib.sh tests passed\n'
 
 **Verify:**
 - `pnpm pi:lint` → exits 0, prints nothing after the pnpm header (the first run downloads shellcheck-py into uv's cache).
-- `pnpm pi:test` → 19 lines starting `ok`, then `all lib.sh tests passed`.
+- `pnpm pi:test` → 15 lines starting `ok`, then `all lib.sh tests passed`.
 - `pnpm verify` green.
 
 **Commit:** `git commit -m "chore: deploy/pi install helpers with tests, shellcheck in verify"`
@@ -465,8 +441,7 @@ printf 'all lib.sh tests passed\n'
 `apps/core-api/test/deploy/core-env-example.test.ts`, `services/hw/tests/test_deploy_env.py`
 
 **Context:** ARCHITECTURE §9; keys and formats from `apps/core-api/src/config.ts` and `services/hw/app/config.py`.
-`.gitignore` already ignores `deploy/pi/env/*.env`; the `.example` files are committed. Placeholders `@COOKIE_SECRET@`,
-`@ROOM_PIN@`, `@TECH_PIN@` are filled by `ensure_env_file` (T3). `KIOSK_DIST` is not here (Decision D4: the core unit sets it).
+`.gitignore` already ignores `deploy/pi/env/*.env`; the `.example` files are committed. Placeholder `@COOKIE_SECRET@` is filled by `ensure_env_file` (T3); the PINs are fixed (D-24). `KIOSK_DIST` is not here (Decision D4: the core unit sets it).
 `RESTART_COMMAND` follows D-23. `HW_MODE=fake` with an empty `HW_DRIVERS` (D-19): H01 switches `ir` to real.
 
 **Do:**
@@ -483,9 +458,9 @@ ROOM_ID=R-101
 ROOM_HOSTNAME=r-101.local
 # D-09: the Chromium kiosk on the Pi (loopback socket) is the room screen.
 LOCALHOST_IS_KIOSK=true
-# Used on the first boot only (empty database). Change PINs in Settings → Devices afterwards.
-INITIAL_ROOM_PIN=@ROOM_PIN@
-INITIAL_TECH_PIN=@TECH_PIN@
+# D-24: fixed demo PINs, used on the first boot only (empty database). Change them in Settings → Devices.
+INITIAL_ROOM_PIN=1234
+INITIAL_TECH_PIN=123456
 # D-23: S3e "Restart controller" touches this file; eduscope-restart.path restarts eduscope.target.
 RESTART_COMMAND=/usr/bin/touch /var/lib/eduscope/restart.request
 ```
@@ -522,17 +497,15 @@ function parseEnvFile(text: string): Record<string, string> {
 
 function renderedExample(): Record<string, string> {
   const text = readFileSync(EXAMPLE, "utf8")
-    .replace("@COOKIE_SECRET@", "a".repeat(64))
-    .replace("@ROOM_PIN@", "0042")
-    .replace("@TECH_PIN@", "004200");
+    .replace("@COOKIE_SECRET@", "a".repeat(64));
   // The unit file sets KIOSK_DIST (it holds the checkout path); install.sh fills the rest.
   return { ...parseEnvFile(text), KIOSK_DIST: "/home/eduscope/edcontrol/apps/kiosk/dist" };
 }
 
 describe("deploy/pi/env/core.env.example", () => {
-  it("has only the three install-time placeholders", () => {
+  it("has only the cookie-secret placeholder", () => {
     const placeholders = readFileSync(EXAMPLE, "utf8").match(/@[A-Z_]+@/g);
-    expect(placeholders).toEqual(["@COOKIE_SECRET@", "@ROOM_PIN@", "@TECH_PIN@"]);
+    expect(placeholders).toEqual(["@COOKIE_SECRET@"]);
   });
   it("is a valid production config once rendered", () => {
     const config = loadConfig(renderedExample());
@@ -544,8 +517,8 @@ describe("deploy/pi/env/core.env.example", () => {
       ROOM_ID: "R-101",
       ROOM_HOSTNAME: "r-101.local",
       LOCALHOST_IS_KIOSK: true,
-      INITIAL_ROOM_PIN: "0042",
-      INITIAL_TECH_PIN: "004200",
+      INITIAL_ROOM_PIN: "1234",
+      INITIAL_TECH_PIN: "123456",
       SEED_FAKE_IR_CODES: false,
     });
   });
@@ -807,9 +780,6 @@ if ((EDUSCOPE_CHANGES == 0)); then
 else
   log "$EDUSCOPE_CHANGES change(s) applied."
 fi
-if [[ -n $EDUSCOPE_NEW_PINS ]]; then
-  log "First-boot PINs: $EDUSCOPE_NEW_PINS (also in $CONF_DIR/core.env). Change them in Settings → Devices."
-fi
 ```
 2. Create `deploy/pi/steps/10-packages.sh`:
 ```bash
@@ -977,13 +947,12 @@ fi
 **Verify:**
 1. `pnpm pi:lint` exits 0.
 2. **[ON PI · HUMAN]** `! sudo deploy/pi/install.sh` → the log shows `created /etc/eduscope/core.env`,
-   `created /etc/eduscope/hw.env`, `hostname set to r-101`, and at the end
-   `First-boot PINs: room PIN NNNN, technician PIN NNNNNN …`. **The human writes the PINs down** (needed in T15).
+   `created /etc/eduscope/hw.env`, `hostname set to r-101`, (no PIN line: the first PINs are fixed, room `1234`, technician `123456`, D-24).
 3. As the executor: `hostname` → `r-101`; `stat -c '%a %U %G' /var/lib/eduscope` → `750 eduscope eduscope`;
    `id -nG eduscope` contains `dialout`, `gpio`, `audio`; `ls -l /etc/eduscope` → both files `-rw------- root root`;
    `cat /etc/systemd/journald.conf.d/eduscope.conf` shows `SystemMaxUse=200M`; `avahi-resolve -n r-101.local` (if the
    `avahi-utils` package is present) or `ping -c1 r-101.local` resolves to this Pi.
-4. **[ON PI · HUMAN]** `! sudo deploy/pi/install.sh` again → `No changes.` and **no** `First-boot PINs` line.
+4. **[ON PI · HUMAN]** `! sudo deploy/pi/install.sh` again → `No changes.`
 5. `pnpm verify` green.
 
 **Commit:** `git commit -m "feat(deploy): service user, env files, journald and hostname step"`
@@ -1404,7 +1373,7 @@ if __name__ == "__main__":
 
 **Verify:**
 - `python3 -m unittest discover -s deploy/pi/kiosk -v` → 7 tests, `OK`.
-- `pnpm pi:test` → the 19 lib checks, `all lib.sh tests passed`, then `Ran 7 tests … OK`.
+- `pnpm pi:test` → the 15 lib checks, `all lib.sh tests passed`, then `Ran 7 tests … OK`.
 - `pnpm verify` green.
 
 **Commit:** `git commit -m "feat(deploy): labwc window rule that hides the pointer on the kiosk"`
@@ -1527,7 +1496,7 @@ The installer:
 - uses the `eduscope` account for the services (it creates a system user if there is none) and adds
   it to the `dialout`, `gpio` and `audio` groups;
 - creates `/var/lib/eduscope` (database) and `/etc/eduscope/{core,hw}.env` (mode 600, **only if
-  missing**, with a random cookie secret and random first PINs, printed once at the end);
+  missing**, with a random cookie secret and the fixed demo PINs room `1234` / technician `123456`, D-24);
 - builds the code as the owner of the checkout (`pnpm install --frozen-lockfile`, `pnpm build`,
   `uv sync --frozen`);
 - installs and enables `eduscope.target`, `eduscope-hw.service`, `eduscope-core.service` and
@@ -1538,8 +1507,8 @@ The installer:
 The checkout must stay where it is: the services run the code from it. The `eduscope` user must be
 able to read it (true when the checkout is in `/home/eduscope`).
 
-Write down the first-boot PINs the installer prints. They are also in `/etc/eduscope/core.env`
-(`sudo cat /etc/eduscope/core.env`) until you change them.
+The first-boot PINs are the fixed demo PINs: room `1234`, technician `123456` (D-24). **Change them in
+the app after the demo** (section 4).
 
 ## 2 Update
 
@@ -1641,7 +1610,7 @@ sudo systemctl start eduscope.target
 
 **Context:** every M10 acceptance criterion with its exact check. Steps marked **HUMAN** need root or a person at the
 Pi's screen / a phone; ask the human and write their observed result next to the item in your report. "Phone" = a phone on
-the room Wi-Fi; "laptop" = any other machine on the same network. PINs = the ones printed in T8.
+the room Wi-Fi; "laptop" = any other machine on the same network. PINs = room 1234, technician 123456 (D-24).
 
 Deviations from the milestone text, by decision: AC1 says "fresh Bookworm Pi" — the platform is Debian 13 trixie (D-22),
 and R-101 is not fresh: AC1 is checked as "a re-run on R-101 changes nothing"; a fresh-card install is optional (item 1b).
@@ -1673,7 +1642,7 @@ command (its command line contains "core-api") and would kill it.
    `! sudo kill -9 $(systemctl show -p MainPID --value eduscope-core); sleep 5; systemctl is-active eduscope-core; systemctl show -p NRestarts eduscope-core`
    → `active` and `NRestarts=` one higher than before. The phone shows "Reconnecting…" then "Back online".
 7. **AC7 — kiosk.** **HUMAN (at the Pi's screen)** after the AC2 reboot: S1 full screen, no tabs/address bar, no pointer;
-   no padlocks, no Lock button; Settings asks for the technician PIN (6 digits). Leave the screen untouched: after 5 min
+   no padlocks, no Lock button; Settings asks for the technician PIN (123456). Leave the screen untouched: after 5 min
    it dims, after 15 min it goes black (the app's overlays, H23); the first tap only wakes it (R15). At ~20 min, on the Pi:
    `pgrep -a swayidle` → nothing, and
    `WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/$(id -u) wlr-randr | grep -E '^[A-Z]|Enabled'` → the HDMI output
@@ -1720,3 +1689,5 @@ command (its command line contains "core-api") and would kill it.
   3. Make them an install-time override (e.g. `EDUSCOPE_ROOM_PIN` / `EDUSCOPE_TECH_PIN` env vars to install.sh),
      random by default.
 - **Status:** T1 done and committed. Stopped before T2; waiting for a decision.
+- **Resolved:** the user chose option 2. D-24 written; T3/T4/T7/T8/T14/T15 text in this plan amended to match
+  (fixed PINs 1234 / 123456, no random PINs, lib.sh test count 19 → 15).
