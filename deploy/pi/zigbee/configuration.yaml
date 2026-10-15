@@ -1,0 +1,26 @@
+# zigbee2mqtt for one Eduscope room (H01, INTAKE-01 §2C/§5C). deploy/pi/install.sh copies this file to
+# /opt/zigbee2mqtt/data/configuration.yaml ONLY when that file does not exist yet; zigbee2mqtt then
+# replaces each GENERATE with new network keys. The live file holds the network key: never commit
+# it, back up /opt/zigbee2mqtt/data/ instead (deploy/pi/README.md §10).
+version: 5
+homeassistant:
+  enabled: false
+frontend:
+  enabled: true
+  host: 127.0.0.1
+  port: 8080
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://127.0.0.1:1883
+serial:
+  port: /dev/zigbee-coord
+  adapter: zstack
+  baudrate: 115200
+availability:
+  enabled: true
+advanced:
+  channel: 25
+  log_level: info
+  network_key: GENERATE
+  pan_id: GENERATE
+  ext_pan_id: GENERATE

@@ -2034,4 +2034,12 @@ AC7's 30 s budget relies on zigbee2mqtt reconnecting to mosquitto by itself (sys
 
 ## Blockers
 
-(executor writes here; leave empty)
+### T9 — Verify count mismatch (`grep -c GENERATE`)
+- **Problem:** T9 Verify step 4 expects `grep -c GENERATE deploy/pi/zigbee/configuration.yaml` → `3`. The file, created verbatim
+  from the plan, gives `4`: the three key lines (`network_key`, `pan_id`, `ext_pan_id`) plus the header comment
+  ("replaces each GENERATE with new network keys"). Everything else in T9 passed: `pnpm verify` green, the live
+  `configuration.yaml` checksum is unchanged. The `[ON PI · HUMAN]` installer run of T9 has not been done yet.
+- **Options:** (a) accept 4 as correct (the template holds no key; the plan's number is a miscount) and continue;
+  (b) reword the header comment so the file has exactly 3 matches (e.g. "replaces each placeholder"); (c) change the
+  Verify to `grep -c '^  [a-z_]*: GENERATE'` → `3`.
+- **Status:** T9 not committed, not ticked. Stopped.
