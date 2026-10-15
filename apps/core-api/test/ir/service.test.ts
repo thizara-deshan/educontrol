@@ -176,6 +176,6 @@ describe("IR devices and commands", () => {
     const { store, ir } = await setup();
     ir.deleteCommand("ac.setpoint_30");
     expect(store.get().environment.ac.available_setpoints.at(-1)).toBe(29);
-    expect(must(ir.list()[0]).commands).toHaveLength(13);
+    expect(must(ir.list()[0]).commands).toHaveLength(14);
   });
 });

@@ -14,11 +14,11 @@ async function seeded(fakeCodes = false) {
 }
 
 describe("IR records", () => {
-  it("lists AC (14) and Projector (2) by name, without codes", async () => {
+  it("lists AC (15) and Projector (2) by name, without codes", async () => {
     const db = await seeded(true);
     const list = listIrDevices(db);
     expect(list.map((d) => [d.name, d.brand, d.kind, d.transport, d.commands.length])).toEqual([
-      ["Air conditioning", "Panasonic", "ac", "ir_zs06", 14],
+      ["Air conditioning", "Panasonic", "ac", "ir_zs06", 15],
       ["Projector", "Epson", "projector", "ir_zs06", 2],
     ]);
     const on = must(list[1]?.commands[0]);
@@ -27,7 +27,7 @@ describe("IR records", () => {
       captured: true, captured_at: T0, test: "untested", tested_at: null,
     });
     expect(JSON.stringify(list)).not.toContain("C/8hRgHrBkYBgAMH");
-    expect(list[0]?.commands[1]?.setpoint).toEqual({ temp_c: 18, mode: "cool", fan: "auto" });
+    expect(list[0]?.commands[2]?.setpoint).toEqual({ temp_c: 18, mode: "cool", fan: "auto" });
   });
 
   it("a non-IR device is not an IR device", async () => {
@@ -62,6 +62,6 @@ describe("IR records", () => {
     const db = await seeded();
     expect(deleteIrCommand(db, "ac.setpoint_30")).toBe(true);
     expect(deleteIrCommand(db, "ac.setpoint_30")).toBe(false);
-    expect(must(findIrDevice(db, "ac")).commands).toHaveLength(13);
+    expect(must(findIrDevice(db, "ac")).commands).toHaveLength(14);
   });
 });

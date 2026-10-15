@@ -39,10 +39,11 @@ function irCommand(id: string, deviceId: string, name: string, role: string, sor
   };
 }
 
-/** Projector 2 + AC 14 (power off + 13 setpoints), all without a code until M09 learns them. */
+/** Projector 2 + AC 15 (power on + power off + 13 setpoints, D-26), all without a code until M09 learns them. */
 export const SEED_IR_COMMANDS: readonly IrCommandRow[] = [
   irCommand("projector.power_on", "projector", "Power on", "power_on", 1),
   irCommand("projector.power_off", "projector", "Power off", "power_off", 2),
+  irCommand("ac.power_on", "ac", "Power on", "power_on", 0),
   irCommand("ac.power_off", "ac", "Power off", "power_off", 1),
   ...SEED_AC_SETPOINTS.map((temp, i) => irCommand(`ac.setpoint_${temp}`, "ac", `${temp}°`, "setpoint", i + 2, temp)),
 ];
@@ -79,4 +80,17 @@ export async function seed(db: Db, config: Pick<Config, "INITIAL_ROOM_PIN" | "IN
     writeSetting(db, "technician_pin_hash", await hashPin(config.INITIAL_TECH_PIN), now);
   }
   if (readSetting(db, "interlock_bypass", z.boolean()) === null) writeSetting(db, "interlock_bypass", false, now);
+
+  // D-26: a database seeded before the AC "Power on" command gets it once; a later delete in S3 sticks.
+  if (readSetting(db, "ac_power_on_seeded", z.boolean()) === null) {
+    const hasAc = db.select({ id: devices.id }).from(devices).where(eq(devices.id, "ac")).get() !== undefined;
+    const hasPowerOn =
+      db.select({ id: irCommands.id }).from(irCommands).where(and(eq(irCommands.device_id, "ac"), eq(irCommands.role, "power_on"))).get() !== undefined;
+    const row = SEED_IR_COMMANDS.find((command) => command.id === "ac.power_on");
+    if (hasAc && !hasPowerOn && row !== undefined) {
+      db.insert(irCommands).values(row).run();
+      if (config.SEED_FAKE_IR_CODES) db.update(irCommands).set({ code: fakeCode(row.id), captured_at: now }).where(eq(irCommands.id, row.id)).run();
+    }
+    writeSetting(db, "ac_power_on_seeded", true, now);
+  }
 }

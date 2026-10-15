@@ -10,11 +10,11 @@ async function technician(overrides: Record<string, string> = {}) {
 }
 
 describe("IR routes (S3)", () => {
-  it("lists AC (14) and Projector (2) from the DB, without codes", async () => {
+  it("lists AC (15) and Projector (2) from the DB, without codes", async () => {
     const { app, cookie } = await technician();
     const response = await call(app, "GET", "/api/ir/devices", { cookie });
     const list: IrDevice[] = response.json();
-    expect(list.map((d) => [d.name, d.commands.length])).toEqual([["Air conditioning", 14], ["Projector", 2]]);
+    expect(list.map((d) => [d.name, d.commands.length])).toEqual([["Air conditioning", 15], ["Projector", 2]]);
     expect(response.body).not.toContain("C/8hRgHrBkYBgAMH");
     await app.close();
   });

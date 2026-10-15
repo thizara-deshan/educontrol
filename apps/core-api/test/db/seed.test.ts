@@ -3,7 +3,7 @@ import { z } from "zod";
 import { describe, expect, it } from "vitest";
 import { verifyPin } from "../../src/auth/pin-hash.ts";
 import { openDb } from "../../src/db/client.ts";
-import { devices, irCommands } from "../../src/db/schema.ts";
+import { devices, irCommands, settings } from "../../src/db/schema.ts";
 import { FAKE_PROJECTOR_CODES, seed } from "../../src/db/seed.ts";
 import { readSetting } from "../../src/db/settings.ts";
 import { testConfig } from "../helpers.ts";
@@ -11,13 +11,13 @@ import { testConfig } from "../helpers.ts";
 const NOW = "2026-10-05T10:42:00.000Z";
 
 describe("seed", () => {
-  it("creates the R-101 devices, 16 IR commands without codes and both PIN hashes", async () => {
+  it("creates the R-101 devices, 17 IR commands without codes and both PIN hashes", async () => {
     const { db } = openDb(":memory:");
     await seed(db, testConfig(), NOW);
     expect(db.select().from(devices).all().map((d) => d.id)).toHaveLength(12);
     const commands = db.select().from(irCommands).all();
     expect(commands.filter((c) => c.device_id === "projector")).toHaveLength(2);
-    expect(commands.filter((c) => c.device_id === "ac")).toHaveLength(14);
+    expect(commands.filter((c) => c.device_id === "ac")).toHaveLength(15);
     expect(commands.every((c) => c.code === null)).toBe(true);
     const roomHash = readSetting(db, "room_pin_hash", z.string());
     expect(roomHash).toMatch(/^scrypt\$16384\$8\$1\$/);
@@ -32,7 +32,7 @@ describe("seed", () => {
     const hash = readSetting(db, "room_pin_hash", z.string());
     await seed(db, testConfig({ INITIAL_ROOM_PIN: "9999" }), NOW);
     expect(db.select().from(devices).all()).toHaveLength(12);
-    expect(db.select().from(irCommands).all()).toHaveLength(16);
+    expect(db.select().from(irCommands).all()).toHaveLength(17);
     expect(readSetting(db, "room_pin_hash", z.string())).toBe(hash);
   });
 
@@ -44,6 +44,29 @@ describe("seed", () => {
     await seed(db, testConfig(), NOW);
     expect(db.select().from(devices).all().map((d) => d.id)).not.toContain("door");
     expect(db.select().from(irCommands).all().map((c) => c.id)).not.toContain("ac.setpoint_30");
+  });
+
+  it("an AC seeded before D-26 gets Power on once, and a later delete sticks", async () => {
+    const { db } = openDb(":memory:");
+    await seed(db, testConfig(), NOW);
+    db.delete(irCommands).where(eq(irCommands.id, "ac.power_on")).run();
+    db.delete(settings).where(eq(settings.key, "ac_power_on_seeded")).run();
+    await seed(db, testConfig(), NOW);
+    const powerOn = db.select().from(irCommands).where(eq(irCommands.id, "ac.power_on")).all();
+    expect(powerOn).toHaveLength(1);
+    expect(powerOn[0]).toMatchObject({ device_id: "ac", role: "power_on", sort: 0, code: null });
+    expect(readSetting(db, "ac_power_on_seeded", z.boolean())).toBe(true);
+    db.delete(irCommands).where(eq(irCommands.id, "ac.power_on")).run();
+    await seed(db, testConfig(), NOW);
+    expect(db.select().from(irCommands).where(eq(irCommands.id, "ac.power_on")).all()).toHaveLength(0);
+  });
+
+  it("a fresh database has AC Power on first and is marked", async () => {
+    const { db } = openDb(":memory:");
+    await seed(db, testConfig(), NOW);
+    const ac = db.select().from(irCommands).where(eq(irCommands.device_id, "ac")).all().sort((a, b) => a.sort - b.sort);
+    expect(ac[0]?.id).toBe("ac.power_on");
+    expect(readSetting(db, "ac_power_on_seeded", z.boolean())).toBe(true);
   });
 
   it("SEED_FAKE_IR_CODES fills only missing codes, with the fake projector codes", async () => {

@@ -26,7 +26,7 @@ behaviour, not patches; the executor writes the code to match the surrounding st
 ## Tasks
 
 ### T1 — core-api: seed the AC "Power on" row (new and existing databases)
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/db/seed.ts`, `apps/core-api/src/db/settings.ts` (add the setting key), their tests
 (`seed` tests next to it; find with `grep -rl "SEED_IR_COMMANDS" apps/core-api/src`).

@@ -4,7 +4,7 @@ import type { Db } from "./client.ts";
 import { settings } from "./schema.ts";
 
 /** Keys of the `settings` table (ARCHITECTURE §6.2). */
-export type SettingKey = "room_pin_hash" | "technician_pin_hash" | "kwh_baseline" | "interlock_bypass";
+export type SettingKey = "room_pin_hash" | "technician_pin_hash" | "kwh_baseline" | "interlock_bypass" | "ac_power_on_seeded";
 
 /** The stored JSON value parsed with `schema`; null when missing or not matching. */
 export function readSetting<S extends z.ZodType>(db: Db, key: SettingKey, schema: S): z.infer<S> | null {
