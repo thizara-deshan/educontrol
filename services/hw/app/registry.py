@@ -44,8 +44,17 @@ from app.modules.zigbee_status import router as zigbee_router
 from app.modules.zigbee_status.driver_real import RealZigbeeStatusDriver
 from app.modules.zigbee_status.service import ZigbeeStatusService
 from app.snapshot import HwSnapshot, HwSnapshotEvent
+from app.transports.mqtt import MqttTransport
 
 MODULES: tuple[HwModule, ...] = get_args(HwModule)
+# Modules whose real driver talks to zigbee2mqtt; any of them real ⇒ the MQTT transport runs.
+ZIGBEE_MODULES: tuple[HwModule, ...] = (
+    "lights",
+    "projector_power",
+    "ir",
+    "sensors",
+    "zigbee_status",
+)
 
 
 def parse_driver_overrides(raw: str) -> dict[HwModule, HwDriverKind]:
@@ -83,6 +92,7 @@ class Registry:
     sensors: SensorsService
     zigbee_status: ZigbeeStatusService
     fake_routers: list[APIRouter] = field(default_factory=list)
+    mqtt: MqttTransport | None = None
 
     def routers(self) -> list[APIRouter]:
         return [
@@ -106,8 +116,13 @@ class Registry:
         await self.audio.start()
         await self.sensors.start()
         await self.zigbee_status.start()
+        # After the services: their drivers subscribe their topics in start().
+        if self.mqtt is not None:
+            await self.mqtt.start()
 
     async def stop(self) -> None:
+        if self.mqtt is not None:
+            await self.mqtt.stop()
         await self.zigbee_status.stop()
         await self.sensors.stop()
         await self.audio.stop()
@@ -149,6 +164,9 @@ class Registry:
 def build_registry(settings: Settings, bus: EventBus) -> Registry:
     kinds = driver_kinds(settings)
     fake_routers: list[APIRouter] = []
+    # Building the transport does no I/O; it only connects when the registry starts it.
+    mqtt = MqttTransport(settings)
+    zigbee_real = any(kinds[module] == "real" for module in ZIGBEE_MODULES)
 
     lights_fake_driver: lights_fake.FakeLightsDriver | None = None
     if kinds["lights"] == "fake":
@@ -212,4 +230,5 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
         sensors=sensors,
         zigbee_status=zigbee_status,
         fake_routers=fake_routers,
+        mqtt=mqtt if zigbee_real else None,
     )

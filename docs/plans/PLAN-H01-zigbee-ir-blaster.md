@@ -717,7 +717,7 @@ PATCH
 **Commit:** `git commit -m "feat(hw): IR learn refusals keep their error code"`
 
 ### T4 — Registry runs the transport when a zigbee driver is real
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/registry.py`, `services/hw/tests/test_registry.py`
 

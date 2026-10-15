@@ -72,6 +72,14 @@ def test_health_reports_each_module_driver() -> None:
     assert health.modules.ir == "fake"
 
 
+def test_mqtt_runs_only_with_a_real_zigbee_driver() -> None:
+    assert build_registry(make_settings(), EventBus(8)).mqtt is None
+    non_zigbee = make_settings(drivers="hdmi=real,projection_screen=real,audio=real")
+    assert build_registry(non_zigbee, EventBus(8)).mqtt is None
+    assert build_registry(make_settings(drivers="ir=real"), EventBus(8)).mqtt is not None
+    assert build_registry(make_settings(mode="real"), EventBus(8)).mqtt is not None
+
+
 async def test_fake_ir_send_drives_the_fake_projector() -> None:
     bus = EventBus(256)
     sub = bus.subscribe()
