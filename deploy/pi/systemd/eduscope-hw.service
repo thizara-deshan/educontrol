@@ -1,0 +1,32 @@
+# hw-service: FastAPI on 127.0.0.1:8081 only (ARCHITECTURE §2, §7, §9). Template: install.sh replaces
+# @REPO@ with the checkout path. Runs the venv's uvicorn directly (D-22): `uv run` would try to sync
+# the venv, which ProtectSystem=strict makes read-only.
+[Unit]
+Description=Eduscope hw-service (127.0.0.1:8081)
+PartOf=eduscope.target
+After=network.target
+
+[Service]
+Type=simple
+User=eduscope
+Group=eduscope
+SupplementaryGroups=dialout gpio audio
+WorkingDirectory=@REPO@/services/hw
+EnvironmentFile=/etc/eduscope/hw.env
+Environment=PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ExecStart=@REPO@/services/hw/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8081
+Restart=always
+RestartSec=2
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+ProtectSystem=strict
+ReadWritePaths=/var/lib/eduscope
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=eduscope.target

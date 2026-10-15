@@ -1,0 +1,9 @@
+# Eduscope Central for one room (ARCHITECTURE §2, §9). `systemctl restart eduscope.target` restarts
+# both services (they are PartOf= this target). Installed by deploy/pi/install.sh.
+[Unit]
+Description=Eduscope Central (hw-service + core-api)
+Wants=eduscope-hw.service eduscope-core.service
+After=network.target
+
+[Install]
+WantedBy=multi-user.target

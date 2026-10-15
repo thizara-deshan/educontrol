@@ -568,7 +568,7 @@ def test_hw_env_example_sets(line: str) -> None:
 ---
 
 ### T5 — systemd units: `eduscope.target`, `eduscope-hw.service`, `eduscope-core.service`
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/systemd/eduscope.target`, `deploy/pi/systemd/eduscope-hw.service`,
 `deploy/pi/systemd/eduscope-core.service`
