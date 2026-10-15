@@ -1180,7 +1180,7 @@ done
 ---
 
 ### T12 — labwc rule that hides the pointer (`labwc_rc.py`)
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/kiosk/labwc_rc.py`, `deploy/pi/kiosk/test_labwc_rc.py`, `package.json`
 

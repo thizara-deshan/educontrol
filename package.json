@@ -19,7 +19,7 @@
     "hw:lint": "uv run --directory services/hw ruff check . && uv run --directory services/hw ruff format --check .",
     "hw:test": "uv run --directory services/hw pytest -m \"not hardware\"",
     "pi:lint": "uvx --from shellcheck-py==0.11.0.1 shellcheck deploy/pi/*.sh deploy/pi/*/*.sh",
-    "pi:test": "bash deploy/pi/test/test-lib.sh",
+    "pi:test": "bash deploy/pi/test/test-lib.sh && python3 -m unittest discover -s deploy/pi/kiosk",
     "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm hw:check && pnpm pi:lint && pnpm pi:test"
   },
   "devDependencies": {
