@@ -1028,7 +1028,7 @@ fi
 ---
 
 ### T10 — Step 90: install, enable and (re)start the services
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/steps/90-services.sh`
 
