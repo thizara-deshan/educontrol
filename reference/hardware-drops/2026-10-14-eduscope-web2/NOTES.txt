@@ -1,0 +1,3 @@
+From the hardware engineer. Their existing Flask panel (runs on a Radxa at 172.16.65.15).
+Relevant to us: ESP32 serial protocol (IR learn/send, digipots, opto button, LED inputs) and
+the pub_audio.py mixer HTTP API. Not included: pub_audio.py, ESP32 firmware, anything Zigbee.
