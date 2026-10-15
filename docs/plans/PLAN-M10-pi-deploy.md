@@ -1605,7 +1605,7 @@ sudo systemctl start eduscope.target
 ---
 
 ### T15 — Acceptance walk-through (M10 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan file only (tick the boxes; write any failure under `## Blockers` and stop).
 
@@ -1716,3 +1716,11 @@ command (its command line contains "core-api") and would kill it.
   D-25 written; `labwc_rc.py`, its test and the rc.xml step removed; `pi:test` back to `test-lib.sh` only. R-101's `rc.xml` was emptied by hand.
 - **Open after the fix (2026-10-15):** after the reboot the pointer is still not visible on R-101 with the rule removed. The user accepted
   this for now ("thats fine"); cause not investigated. Padlock/Lock-button/Settings-PIN checks of T13 step 4 were not reported; T15 item 7 covers them.
+
+### T15 acceptance notes (2026-10-15)
+- **Not run, by the user's decision:** AC7's 20-minute idle test (app dim at 5 min, blank at 15 min, OS display stays on). Only a
+  first look at boot+2 min was done: no `swayidle`, HDMI-A-2 `Enabled: yes`.
+- **Open:** the kiosk shows no mouse pointer even after removing the hide rule (D-25); accepted, cause not investigated.
+- **AC1b** (fresh SD card) skipped, optional. AC1a: second `--kiosk` run ended `No changes.`; the `exit 0`/`find` output was not pasted.
+- **AC8:** the first Restart-controller tap did not register; the second one ran `eduscope-restart.service` and restarted both services.
+- Network: phone/laptop reach the Pi by IP (`172.20.10.10`); `r-101.local` does not resolve on the laptop (not an install fault).
