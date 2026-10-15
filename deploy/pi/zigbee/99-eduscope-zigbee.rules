@@ -1,0 +1,4 @@
+# Eduscope (H01, INTAKE-01 §5C): /dev/zigbee-coord → the ZG-808Z coordinator (CH340 1a86:7523).
+# The CH340 has no USB serial number, so this matches vendor:product only. [ASSUMED] the
+# coordinator is the only CH340 adapter on this Pi; a second one would take the same link.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", SYMLINK+="zigbee-coord"

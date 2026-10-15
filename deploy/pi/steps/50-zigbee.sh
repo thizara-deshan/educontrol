@@ -23,3 +23,10 @@ if ((mosquitto_restart)) || ! systemctl is-active -q mosquitto; then
   systemctl restart mosquitto
   log "restarted mosquitto"
 fi
+
+# /dev/zigbee-coord for the coordinator (new installs use it; R-101's live config keeps its by-id path).
+install_if_changed "$HERE/zigbee/99-eduscope-zigbee.rules" /etc/udev/rules.d/99-eduscope-zigbee.rules 644 root root
+if ((EDUSCOPE_CHANGED)); then
+  udevadm control --reload
+  udevadm trigger --subsystem-match=tty --action=add
+fi

@@ -1601,7 +1601,7 @@ fi
 **Commit:** `git commit -m "feat(deploy): install mosquitto on 127.0.0.1:1883"`
 
 ### T8 — Install step 50: udev link `/dev/zigbee-coord`
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/zigbee/99-eduscope-zigbee.rules`, `deploy/pi/steps/50-zigbee.sh`
 
