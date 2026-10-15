@@ -1096,7 +1096,7 @@ log "core-api is up: http://$ROOM_HOSTNAME.local"
 ---
 
 ### T11 — Kiosk launcher `launch.sh` + labwc autostart line
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/kiosk/launch.sh`, `deploy/pi/kiosk/labwc-autostart`
 
