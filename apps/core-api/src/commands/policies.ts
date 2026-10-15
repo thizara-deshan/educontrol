@@ -174,8 +174,14 @@ export function planCommand(body: CommandBody, model: RoomModel, ir: IrCodeLooku
           after: (m, at, by) => withAc(m, { power: "off" }, at, by),
         });
       }
+      // D-26: the captured Power on code first. The AC resumes its own last setpoint, so core-api leaves setpoint_c as it was.
+      if (ir.find("ac", { role: "power_on" }).ok) {
+        return irPlan(model, ir, timeouts, "ac", { role: "power_on" }, "ac", {
+          after: (m, at, by) => withAc(m, { power: "on" }, at, by),
+        });
+      }
       const setpoint = powerOnSetpoint(state.environment.ac);
-      if (setpoint === null) return refuse("Air conditioning has no captured setpoint frame");
+      if (setpoint === null) return refuse("Air conditioning has no captured power-on or setpoint frame");
       return irPlan(model, ir, timeouts, "ac", { setpoint_c: setpoint }, "ac", {
         after: (m, at, by) => withAc(m, { power: "on", setpoint_c: setpoint }, at, by),
       });

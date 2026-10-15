@@ -49,7 +49,7 @@ Delete `ac.power_on`, run `seed()` → not re-created (Q-b). Update any existing
 **Commit:** `feat(core-api): seed the AC Power on command once`
 
 ### T2 — core-api: S1 AC Power on sends the captured power-on code
-- [ ] done
+- [x] done
 
 **Files:** `apps/core-api/src/commands/policies.ts` (case `"ac.power"`), `apps/core-api/src/domain/ac.ts`
 (only if a pure helper is useful), tests beside `policies` (find with `grep -rl "ac.power" apps/core-api/src --include=*.test.ts`).

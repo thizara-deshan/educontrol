@@ -5,7 +5,7 @@ import { FAILURE_TEXT, planCommand, requiredAccess } from "../../src/commands/po
 import { derive } from "../../src/domain/derive.ts";
 import { applyHwDown, applyHwEvent } from "../../src/domain/hw-events.ts";
 import type { RoomModel } from "../../src/domain/model.ts";
-import { bootModel, hwEvent, must, RULES, snapshotEvent, T0 } from "../helpers.ts";
+import { bootModel, fakeHw, hwEvent, must, RULES, snapshotEvent, T0 } from "../helpers.ts";
 
 const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, irLearnMs: 25_000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000 };
 
@@ -55,9 +55,47 @@ describe("command policies (§6.5)", () => {
     expect(refusal({ kind: "ac.power", on: false }, live(hwEvent("ir.blaster", { online: false, lqi: null })))?.message).toBe("IR blaster offline");
   });
 
-  it("AC power on without any captured setpoint frame", () => {
+  it("AC power on without a captured power-on or setpoint frame", () => {
     const model = derive(applyHwEvent(bootModel({ acSetpoints: [] }), snapshotEvent()), new Date(T0), RULES);
-    expect(refusal({ kind: "ac.power", on: true }, model)?.message).toBe("Air conditioning has no captured setpoint frame");
+    expect(refusal({ kind: "ac.power", on: true }, model)?.message).toBe("Air conditioning has no captured power-on or setpoint frame");
+  });
+
+  describe("AC power on (D-26)", () => {
+    const WITH_POWER_ON = ir({ "ac.power_on": "AC-ON", "ac.power_off": "AC-OFF", "ac.setpoint_24": "AC-24", "ac.setpoint_26": "AC-26" });
+    const sentCode = async (codes: IrCodeLookup): Promise<{ code: unknown; ac: ReturnType<typeof acAfter> }> => {
+      const plan = planCommand({ kind: "ac.power", on: true }, live(), codes, TIMEOUTS);
+      if (!plan.ok) throw new Error(plan.message);
+      const hw = fakeHw();
+      await plan.plan.calls[0]?.(hw);
+      const body = hw.calls[0]?.body;
+      return { code: typeof body === "object" && body !== null && "code" in body ? body.code : null, ac: acAfter(plan.plan, live()) };
+    };
+    const acAfter = (plan: { after?: (m: RoomModel, at: string, by: "phone") => RoomModel }, model: RoomModel) =>
+      must(plan.after?.(model, T0, "phone")).state.environment.ac;
+
+    it("sends the captured Power on code and leaves the setpoint as it was", async () => {
+      const { code, ac } = await sentCode(WITH_POWER_ON);
+      expect(code).toBe("AC-ON");
+      expect(ac.power).toMatchObject({ value: "on", confidence: "assumed", changed_by: "phone" });
+      expect(ac.setpoint_c).toEqual(live().state.environment.ac.setpoint_c);
+    });
+
+    it("falls back to the setpoint frame, which also sets the setpoint", async () => {
+      const { code, ac } = await sentCode(CODES);
+      expect(code).toMatch(/^AC-2[46]$/);
+      expect(ac.power).toMatchObject({ value: "on", confidence: "assumed" });
+      expect(ac.setpoint_c).toMatchObject({ confidence: "assumed" });
+    });
+
+    it("Power on code alone is enough, and − / + stay refused while the setpoint is unknown", () => {
+      const onlyPowerOn = ir({ "ac.power_on": "AC-ON" });
+      expect(refusal({ kind: "ac.power", on: true }, live(), onlyPowerOn)).toBeNull();
+      expect(refusal({ kind: "ac.step", direction: "up" })?.message).toBe("Turn the air conditioning on first");
+    });
+
+    it("Power off is unchanged", () => {
+      expect(refusal({ kind: "ac.power", on: false }, live(), WITH_POWER_ON)).toBeNull();
+    });
   });
 
   it("plans carry the output key, the transport timeout and the H6a text", () => {
