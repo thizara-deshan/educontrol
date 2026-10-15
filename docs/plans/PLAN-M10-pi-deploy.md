@@ -967,7 +967,7 @@ fi
 ---
 
 ### T9 — Step 30: build as the checkout owner
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/steps/30-build.sh`
 
