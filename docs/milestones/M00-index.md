@@ -15,6 +15,7 @@ Inputs: `docs/SPEC.md`, `docs/ARCHITECTURE.md`, `CLAUDE.md` · Status: v1, 2026-
 | [M08](M08-core-api-live.md) | core-api: live state & control | M06, M07 | Arch | 1 day | todo |
 | [M09](M09-core-api-settings.md) | core-api: settings & scheduler | M08 | Arch | ½ day | todo |
 | [M10](M10-pi-deploy.md) | Pi deploy | M09 | Pi | ½ day | todo |
+| [H01](H01-zigbee-ir-blaster.md) | Zigbee IR blaster (ZS06) live — INTAKE-01 | M10 | Pi | 1 day | todo |
 | Hxx | *(reserved — created by hardware intake, prompt 07)* | M10 | Pi | — | — |
 | [M99](M99-hardening.md) | Hardening & final acceptance | M10, all Hxx done | Pi | ½ day | todo |
 
