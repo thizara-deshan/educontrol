@@ -1,7 +1,7 @@
 # D-26 — The air conditioning gets a "Power on" command
 
-Date: 2026-10-15 · Milestone: H01 (raised during acceptance) · Status: **proposed — needs the owner's approval before
-PLAN-H02 runs** · Supersedes: SPEC S1.E35 ("Send AC frame for the current setpoint"), the AC row of the S1 failure table
+Date: 2026-10-15 · Milestone: H01 (raised during acceptance) · Status: **accepted by the owner 2026-10-15** (Q-a: setpoint stays
+unknown; Q-b: insert once) · Supersedes: SPEC S1.E35 ("Send AC frame for the current setpoint"), the AC row of the S1 failure table
 ("AC Power on → IR frame for current setpoint"), Q23's command set "power off + 13 setpoints (14 commands)" and
 `apps/core-api/src/domain/ac.ts` `powerOnSetpoint` as the only power-on path.
 
@@ -43,8 +43,8 @@ needed. What is missing: a seeded AC row, the S1 policy using it, and a way for 
 - SPEC is not edited (CLAUDE.md); this record wins over the lines listed under *Supersedes*.
 - H01 is unaffected: its acceptance (T13) uses setpoint frames, as the plan says.
 
-## Open questions for the owner (answers change PLAN-H02 only slightly)
+## Answered questions (owner, 2026-10-15)
 
 - Q-a: Is "setpoint stays unknown after a dedicated power-on" acceptable (decision 3), or should S1 assume the last
-  setpoint core-api sent before? Recommended: unknown (it is what is true).
-- Q-b: One-time insert (decision 4) versus ensuring the row on every start. Recommended: one-time.
+  setpoint core-api sent before? **Answer: unknown.**
+- Q-b: One-time insert (decision 4) versus ensuring the row on every start. **Answer: one-time.**
