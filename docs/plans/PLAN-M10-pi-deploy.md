@@ -176,7 +176,7 @@ Observed on the R-101 Pi on 2026-10-15:
 ---
 
 ### T2 — Decision record D-23: restart through a path unit
-- [ ] done
+- [x] done
 
 **Files:** `docs/decisions/D-23-restart-path-unit.md`
 
