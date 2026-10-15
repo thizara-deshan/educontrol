@@ -435,7 +435,7 @@ printf 'all lib.sh tests passed\n'
 ---
 
 ### T4 — Env templates `core.env.example` / `hw.env.example` (+ schema cross-checks)
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/env/core.env.example`, `deploy/pi/env/hw.env.example`,
 `apps/core-api/test/deploy/core-env-example.test.ts`, `services/hw/tests/test_deploy_env.py`
