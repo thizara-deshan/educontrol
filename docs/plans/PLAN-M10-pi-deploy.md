@@ -1462,7 +1462,7 @@ fi
 ---
 
 ### T14 — `deploy/pi/README.md`
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/README.md`
 
