@@ -597,6 +597,23 @@ PATCH
   **≥ 105 min** (door closed, cover shut, nobody in the room) after step 1: it is also H03's 105-min check. The
   climate result is written in PLAN-H03 T5 and the motion/door result here (step 7 command with `timeout 6300`), then
   both T5s are ticked, each with its own commit.
+- Step 1: owner ran install.sh; hw-service up 12:20:20 (+0530), running the T1 driver.
+- AC1: `/v1/health` → `"ir":"real"`, `"sensors":"real"`; state `0 of 3`, all tiles "No reading yet" until the first
+  reports (D4).
+- AC2: 10 door reports 12:21:05–12:21:31, alternating `contact` true/false; core-api followed (`open` at 12:21:31,
+  `r101_door` last seen updated). Owner: S1 DOOR showed "Open" / "Closed". The magnet then sat at the edge of its
+  range (closed/open flapping 12:31:19–23); owner re-mounted it, closed and stable from 12:31:25.
+- AC3: motion `occupancy:true` 12:21:19 → `false` 12:23:30 (131 s); core-api `clear`. Owner: S1 OCCUPANCY
+  "Detected" (green) → "Clear", S2 "Motion" the same.
+- AC4: S1.E41 "3 of 3 reporting" from 12:21 (climate reported after the restart); owner confirmed `SNZB-03P` /
+  `SNZB-04PR2` on the tiles.
+- AC5: `restart zigbee2mqtt` (up 12:32:20) → door reports from 12:32:33 reached S1. `restart mosquitto` (up 12:33:03)
+  → hw-service "Connection reset by peer" 12:33:02.93, reconnected 12:33:03.98 (1 s backoff); door report 12:33:45
+  reached core-api. eduscope-hw `NRestarts=0`, active since 12:20:20 throughout.
+- Seen in payloads, ignored as D1: motion `illumination` (`"dim"`/`"bright"`), door `voltage` (3200) and `update`
+  (`installed_version` 4097). Door `tamper` stayed `true` in every report, also after the owner clicked the cover
+  shut (cover-tamper switch, not used by H04).
+- Step 7 (combined ≥ 105-min quiet session with H03) and step 8: **deferred by the owner** (12:35). T5 stays open.
 
 **Verify:** every step passes as written; otherwise `## Blockers` and stop.
 **Commit:** `git commit -m "docs: H04 acceptance walk-through"`
