@@ -591,7 +591,12 @@ PATCH
 8. **AC7** `[ON PI]` `uv run --directory services/hw pytest -m hardware` → 5 passed; `pnpm verify` green;
    `git status --short` clean apart from this plan.
 
-**Observed on R-101:** (executor fills in)
+**Observed on R-101 (2026-10-16):**
+- **Owner decision 2026-10-16:** T5 may start before PLAN-H03 T5 is ticked (H03's 105-min not-stale check is not
+  running, so the step-1 restart voids nothing). Steps 1–6 run now. Step 7 becomes one combined quiet-room session of
+  **≥ 105 min** (door closed, cover shut, nobody in the room) after step 1: it is also H03's 105-min check. The
+  climate result is written in PLAN-H03 T5 and the motion/door result here (step 7 command with `timeout 6300`), then
+  both T5s are ticked, each with its own commit.
 
 **Verify:** every step passes as written; otherwise `## Blockers` and stop.
 **Commit:** `git commit -m "docs: H04 acceptance walk-through"`
