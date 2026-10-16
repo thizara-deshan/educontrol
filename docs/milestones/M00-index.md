@@ -17,6 +17,7 @@ Inputs: `docs/SPEC.md`, `docs/ARCHITECTURE.md`, `CLAUDE.md` · Status: v1, 2026-
 | [M10](M10-pi-deploy.md) | Pi deploy | M09 | Pi | ½ day | todo |
 | [H01](H01-zigbee-ir-blaster.md) | Zigbee IR blaster (ZS06) live — INTAKE-01 | M10 | Pi | 1 day | todo |
 | [H03](H03-zigbee-climate-sensor.md) | Zigbee climate sensor (SNZB-02P) live | H01 | Pi | ½ day | todo |
+| [H04](H04-zigbee-motion-door.md) | Zigbee motion (SNZB-03P) and door (SNZB-04PR2) live | H03 | Pi | ½ day | planned |
 | Hxx | *(reserved — created by hardware intake, prompt 07)* | M10 | Pi | — | — |
 | [M99](M99-hardening.md) | Hardening & final acceptance | M10, all Hxx done | Pi | ½ day | todo |
 
