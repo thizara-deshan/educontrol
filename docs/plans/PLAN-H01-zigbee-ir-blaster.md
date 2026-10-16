@@ -1966,7 +1966,7 @@ PATCH
 **Commit:** `git commit -m "docs: deploy/pi README Zigbee section"`
 
 ### T13 — Acceptance walk-through (H01 criteria)
-- [ ] done
+- [x] done
 
 **Files:** this plan file only (tick the box; write any failure under `## Blockers` and stop).
 
@@ -2009,6 +2009,23 @@ AC7's 30 s budget relies on zigbee2mqtt reconnecting to mosquitto by itself (sys
    `journalctl -u eduscope-hw --since -5min --no-pager | grep mqtt` shows `reconnecting` then `connected`.
 8. **AC8 — tests.** `uv run --directory services/hw pytest -m hardware` → `2 passed`; `pnpm verify` green;
    `git status --short` clean apart from this plan file.
+
+**Observed on R-101 (2026-10-15/16):**
+- **AC1 pass.** After reboot: mosquitto, zigbee2mqtt, eduscope-hw, eduscope-core `active`; only 127.0.0.1:1883 and :8080 listening; one zigbee2mqtt
+  process (PID by `systemctl show -p MainPID`: `ps -C node` prints nothing because the process is named `MainThread`); `NRestarts=0` for hw, core, z2m.
+- **AC2 pass.** `/v1/health` `"ir":"real"`; first SSE snapshot `"blaster":{"online":true,"lqi":196}`; S3.E10 **Online** (human).
+- **AC3 not observed (deferred by the owner).** The ZS06 was unplugged and plugged back in, but the Offline / Online transition and the disabled
+  Test / Re-learn state (H25) were not watched. After replug: availability `online`, `NRestarts` still 0.
+- **AC4 pass.** `ac.setpoint_22` re-learned (468-char code, captured 03:46:42Z), Test sent, AC reacted, stored `reacted`.
+- **AC5 pass.** Learn with no press → `timeout`; code and tested state unchanged; no capture after the timeout; Cancel → `cancelled`;
+  journal has 0 × `could not switch learn mode off`.
+- **AC6 not observed (deferred by the owner).** S1 AC taps (Power on, −, +, Power off) and the Epson Power on / off were not walked through.
+  Related, seen during H02: S1 AC Power on / off sent and the AC turned on from the Power on code (D-26).
+- **AC7 not observed (deferred by the owner).** The `zigbee2mqtt` and `mosquitto` restarts need sudo and a person; the 30 s recovery was not measured.
+  Unit tests cover the reconnect backoff (`test_mqtt.py`) and the offline flag (`test_ir_real.py`).
+- **AC8 pass.** `pytest -m hardware` → 2 passed; `pnpm verify` green (hw 165, core-api 336, kiosk 494, contracts 136).
+
+**To do later by hand (owner): AC3, AC6, AC7 exactly as written above.** T13 is ticked for the checks that were run; H01 is not fully accepted until these three pass.
 
 **Verify:** all eight items pass as written. Any failure → `## Blockers` (item, observed output) and stop.
 
