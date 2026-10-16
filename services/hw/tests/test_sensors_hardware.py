@@ -1,7 +1,8 @@
-"""[ON PI] RealSensorsDriver against the real broker, zigbee2mqtt and the paired SNZB-02P.
+"""[ON PI] RealSensorsDriver against the real broker, zigbee2mqtt and the paired sensors.
 
-Run on the R-101 Pi only: `uv run --directory services/hw pytest -m hardware`. The sensor reports
-only on change, so this checks the link (broker connected, `r101_temp` online), not a reading.
+Run on the R-101 Pi only: `uv run --directory services/hw pytest -m hardware`. The sensors report
+only on change, so this checks the link (broker connected, node online), not a reading:
+`r101_temp` (SNZB-02P, H03), `r101_motion` (SNZB-03P) and `r101_door` (SNZB-04PR2, H04).
 """
 
 import asyncio
@@ -19,8 +20,9 @@ pytestmark = pytest.mark.hardware
 ONLINE = {"state": "online"}  # zigbee2mqtt 2.x availability payload
 
 
-async def test_climate_sensor_is_online_within_5_s() -> None:
-    settings = Settings(_env_file=None)  # 127.0.0.1:1883, zigbee2mqtt, r101_temp
+@pytest.mark.parametrize("node", ["temp_node", "motion_node", "door_node"])
+async def test_sensor_is_online_within_5_s(node: str) -> None:
+    settings = Settings(_env_file=None)  # 127.0.0.1:1883, zigbee2mqtt, r101_temp/motion/door
     mqtt = MqttTransport(settings)
     service = SensorsService(RealSensorsDriver(settings, mqtt), EventBus(64))
     online = asyncio.Event()
@@ -30,7 +32,12 @@ async def test_climate_sensor_is_online_within_5_s() -> None:
             online.set()
 
     # Retained by zigbee2mqtt, so it arrives right after the subscribe.
-    availability = f"{settings.z2m_base_topic}/{settings.temp_node}/availability"
+    friendly_name = {
+        "temp_node": settings.temp_node,
+        "motion_node": settings.motion_node,
+        "door_node": settings.door_node,
+    }[node]
+    availability = f"{settings.z2m_base_topic}/{friendly_name}/availability"
     mqtt.subscribe(availability, on_availability)
     await service.start()
     await mqtt.start()

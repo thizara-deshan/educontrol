@@ -464,7 +464,7 @@ PATCH
 **Commit:** `git commit -m "chore(hw): confirmed r101_motion and r101_door ieee and node names (H04)"`
 
 ### T3 — hw: motion and door hardware test `[ON PI]`
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/tests/test_sensors_hardware.py`
 **Context:** H04 Scope (hardware test). Both sensors report only on change, so the test checks the link, not a
