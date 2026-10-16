@@ -379,7 +379,7 @@ clean; `uv run --directory services/hw pytest -m "not hardware"` → 184 passed;
 **Commit:** `git commit -m "feat(hw): real SNZB-02P climate sensor driver through zigbee2mqtt"`
 
 ### T2 — hw: confirmed `r101_temp` in config
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/config.py`
 **Context:** H03 Scope (ieee `0xb0e8e8fffe985dcd`; model and friendly name confirmed). Only the fake `zigbee_status`

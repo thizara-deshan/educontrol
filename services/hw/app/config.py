@@ -37,7 +37,8 @@ class CoordinatorConfig(BaseModel):
     antenna: str
 
 
-# R-101 as in screenshot 02 and fixtures/hw/response.snapshot.json. [ASSUMED] until intake.
+# R-101 as in screenshot 02 and fixtures/hw/response.snapshot.json. [ASSUMED] until intake, except
+# r101_temp's ieee and model (paired on the R-101 Pi 2026-10-16, H03); its lqi/battery stay fake.
 DEFAULT_NODES = [
     ZigbeeNodeConfig(
         ieee="0xa4c1380f2b9e0001",
@@ -58,7 +59,7 @@ DEFAULT_NODES = [
         battery_pct=None,
     ),
     ZigbeeNodeConfig(
-        ieee="0x00124b0029b70003",
+        ieee="0xb0e8e8fffe985dcd",
         friendly_name="r101_temp",
         model="SNZB-02P",
         role="end_device",
@@ -119,7 +120,8 @@ class Settings(BaseSettings):
     # A QoS 1 publish the broker has not accepted after this long fails (core-api waits 3 s).
     mqtt_publish_timeout_s: float = Field(default=2.0, gt=0)
 
-    # Friendly names [ASSUMED] (ARCHITECTURE §7.1); ir_node confirmed on hardware (INTAKE-01 §2C)
+    # Friendly names [ASSUMED] (ARCHITECTURE §7.1); confirmed on hardware: ir_node (INTAKE-01 §2C),
+    # temp_node (H03).
     lights_node: str = "r101_lights"
     proj_plug_node: str = "r101_proj_plug"
     ir_node: str = "r101_ir"
