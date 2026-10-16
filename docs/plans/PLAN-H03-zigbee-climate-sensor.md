@@ -426,7 +426,7 @@ PATCH
 **Commit:** `git commit -m "chore(hw): confirmed r101_temp ieee and node name (H03)"`
 
 ### T3 — hw: SNZB-02P hardware test `[ON PI]`
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/tests/test_sensors_hardware.py`
 **Context:** H03 Scope (hardware test). The sensor reports only on change, so the test checks the link, not a reading.
