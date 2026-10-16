@@ -598,7 +598,31 @@ only if step 7 says so.
 8. **AC6** `[ON PI]` `uv run --directory services/hw pytest -m hardware` → 3 passed; `pnpm verify` green;
    `git status --short` clean apart from this plan (and `core.env.example` if step 7 changed it).
 
-**Observed on R-101:** (executor fills in)
+**Observed on R-101 (2026-10-16):**
+- Step 1: owner set `HW_DRIVERS=ir=real,sensors=real` and ran install.sh; hw-service up 09:54:04 (+0530).
+- AC1: `/v1/health` → `"ir":"real"`, `"sensors":"real"`; snapshot `sensors: []` until the first report (D3).
+- AC2: breathed on, 14 reports in 3 min (every ~10 s); every z2m report gave one `temperature` + one `humidity`
+  `sensors.reading` within 1 s, values as D4 (59.6→60, 75.5→76, 69.1→69; temperature 24.9→25.9→26.9 at 1 dp).
+  Owner: S1 tiles and S2 "Room climate" followed.
+- AC3: owner confirmed `SNZB-02P` on both tiles, occupancy/door "No reading yet", "1 of 3 reporting", S1.E4 degraded.
+- AC4: `restart zigbee2mqtt` (09:57:56) → MQTT stayed connected, next report reached S1. `restart mosquitto`
+  (09:59:27) → "Connection reset by peer", reconnected 09:59:28 (1 s backoff), next report reached S1.
+  eduscope-hw `NRestarts=0`, active since 09:54:04 throughout.
+- Pi rebooted 10:07:19 and S3e "Restart controller" ran 10:11:32: the climate tiles showed "No reading yet" until
+  the sensor was breathed on (D3, as accepted).
+- AC5 / D2, **owner decision 2026-10-16:** the still-room measurement is 15 min instead of 1 hour. Every gap
+  ≤ 300 s → no change. Any gap > 300 s or no report → run the full hour before choosing a value (D2 unchanged).
+- 15 min (10:13:43–10:28:43, after a breath): 8 reports, gaps 10 → 45 → 65 → 126 → 271 s, then none for ≥ 346 s
+  → full hour.
+- AC5, 1 hour (10:30:05–11:30:05, untouched): 2 reports, 10:41:51 and 10:45:01 (previous report 10:22:57, so
+  1134 s before the first); then none for **2704 s** until the end (gap still open). Tiles went stale (H10) after
+  10 min, as expected with the 300 s default. `~/h03-report-gaps-1h.log`.
+- D2: longest gap 2704 s → `CLIMATE_REPORT_INTERVAL_S=3000` (stale after 100 min). The last gap was still open, so
+  the step-7 not-stale check is what confirms the value.
+- Step 7: owner added `CLIMATE_REPORT_INTERVAL_S=3000` to `/etc/eduscope/core.env` and restarted (core-api up
+  11:33:36; report 11:34:22, `stale: false`, 1 of 3). The 105-min not-stale check was **deferred by the owner**
+  (stopped 11:35). AC6 run early: `pytest -m hardware` 3 passed, `pnpm verify` green. **T5 stays open** until the
+  105-min check passes.
 
 **Verify:** every step passes as written; otherwise `## Blockers` and stop.
 **Commit:** `git commit -m "docs: H03 acceptance walk-through"`
