@@ -523,7 +523,7 @@ may be pressed during the IR learn test); `pytest -m "not hardware"` → 197 pas
 **Commit:** `git commit -m "test(hw): SNZB-03P and SNZB-04PR2 hardware test (r101_motion, r101_door online)"`
 
 ### T4 — deploy: README and hw.env.example note motion and door
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/README.md`, `deploy/pi/env/hw.env.example`
 **Context:** H04 Scope. `HW_DRIVERS=ir=real,sensors=real` is unchanged, so `tests/test_deploy_env.py` stays green

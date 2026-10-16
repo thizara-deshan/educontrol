@@ -91,8 +91,9 @@ sudo systemctl restart eduscope.target
 curl -s 127.0.0.1:8081/v1/health                    # "ir":"real", "sensors":"real"
 ```
 
-With `sensors=real` only the climate sensor (`r101_temp`) reports; motion and door show "No reading
-yet" until they are paired (H03).
+With `sensors=real` the climate sensor (`r101_temp`, H03), the motion sensor (`r101_motion`) and the
+door sensor (`r101_door`, H04) report through the same driver. None of them is retained, so after a
+restart each tile shows "No reading yet" until that sensor's next report.
 
 ## 6 Backup
 
