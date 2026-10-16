@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createIdleTimer, KIOSK_IDLE_TIMINGS, scaleTimings } from "./idle-timer";
+import { createIdleTimer, type IdleTimings, KIOSK_IDLE_TIMINGS, scaleTimings } from "./idle-timer";
 
 const MIN = 60_000;
+/** SPEC §2.6 timings with sleep on; the timer still supports them (D-29 turns them off for R-101). */
+const SLEEPING: IdleTimings = { returnHomeMs: 2 * MIN, dimMs: 5 * MIN, blankMs: 15 * MIN };
 
 describe("kiosk idle timer", () => {
   beforeEach(() => {
@@ -11,9 +13,9 @@ describe("kiosk idle timer", () => {
     vi.useRealTimers();
   });
 
-  function started() {
+  function started(timings: IdleTimings = SLEEPING) {
     const onReturnHome = vi.fn();
-    const timer = createIdleTimer({ timings: KIOSK_IDLE_TIMINGS, onReturnHome });
+    const timer = createIdleTimer({ timings, onReturnHome });
     timer.start();
     return { timer, onReturnHome };
   }
@@ -32,6 +34,15 @@ describe("kiosk idle timer", () => {
     vi.advanceTimersByTime(1);
     expect(timer.level.get()).toBe("blank");
     vi.advanceTimersByTime(60 * MIN);
+    expect(onReturnHome).toHaveBeenCalledTimes(1);
+  });
+
+  it("D-29: the kiosk returns home after 2 min but never dims or blanks", () => {
+    const { timer, onReturnHome } = started(KIOSK_IDLE_TIMINGS);
+    vi.advanceTimersByTime(2 * MIN);
+    expect(onReturnHome).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(24 * 60 * MIN);
+    expect(timer.level.get()).toBe("awake");
     expect(onReturnHome).toHaveBeenCalledTimes(1);
   });
 
@@ -65,6 +76,7 @@ describe("kiosk idle timer", () => {
   });
 
   it("scaleTimings shortens every step (?idle-scale=0.01)", () => {
-    expect(scaleTimings(KIOSK_IDLE_TIMINGS, 0.01)).toEqual({ returnHomeMs: 1_200, dimMs: 3_000, blankMs: 9_000 });
+    expect(scaleTimings(SLEEPING, 0.01)).toEqual({ returnHomeMs: 1_200, dimMs: 3_000, blankMs: 9_000 });
+    expect(scaleTimings(KIOSK_IDLE_TIMINGS, 0.01)).toEqual({ returnHomeMs: 1_200, dimMs: null, blankMs: null });
   });
 });
