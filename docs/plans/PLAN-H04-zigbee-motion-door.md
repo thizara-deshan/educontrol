@@ -38,7 +38,7 @@ work from `sensors.reading`; this milestone only makes the hardware behind them 
   message (one commit per task, plan file included).
 - Never edit SPEC, ARCHITECTURE, milestones or other plans. Never touch `reference/` or `/opt/zigbee2mqtt/data/`.
 
-### Decisions this plan makes (PROPOSED — owner to accept before T1)
+### Decisions this plan makes (accepted by the owner 2026-10-16 — do not re-open them)
 
 - **D1 — Values.** `occupancy` `true` → `detected`, `false` → `clear`; `contact` `true` → `closed`, `false` → `open`
   (observed: `true` with the magnet at the body). Only a JSON boolean counts: missing, number, string or null emits
@@ -66,7 +66,7 @@ work from `sensors.reading`; this milestone only makes the hardware behind them 
 ## Tasks
 
 ### T1 — hw: real SNZB-03P motion and SNZB-04PR2 door through zigbee2mqtt
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/sensors/driver_real.py`, `services/hw/tests/test_sensors_real.py`
 **Context:** H04 "Observed on the Pi"; D1, D2. The driver keeps the H03 shape (topics registered in `start()`, before
