@@ -38,7 +38,8 @@ class CoordinatorConfig(BaseModel):
 
 
 # R-101 as in screenshot 02 and fixtures/hw/response.snapshot.json. [ASSUMED] until intake, except
-# r101_temp's ieee and model (paired on the R-101 Pi 2026-10-16, H03); its lqi/battery stay fake.
+# the ieee and model of r101_temp (H03), r101_motion and r101_door (H04), paired on the R-101 Pi
+# 2026-10-16; their lqi/battery stay fake.
 DEFAULT_NODES = [
     ZigbeeNodeConfig(
         ieee="0xa4c1380f2b9e0001",
@@ -68,7 +69,7 @@ DEFAULT_NODES = [
         battery_pct=98,
     ),
     ZigbeeNodeConfig(
-        ieee="0x00124b0029b70004",
+        ieee="0x18690afffe1ca686",
         friendly_name="r101_motion",
         model="SNZB-03P",
         role="end_device",
@@ -77,7 +78,7 @@ DEFAULT_NODES = [
         battery_pct=91,
     ),
     ZigbeeNodeConfig(
-        ieee="0x00124b0029b70005",
+        ieee="0xa4c138128a8fffff",
         friendly_name="r101_door",
         model="SNZB-04PR2",
         role="end_device",
@@ -121,7 +122,7 @@ class Settings(BaseSettings):
     mqtt_publish_timeout_s: float = Field(default=2.0, gt=0)
 
     # Friendly names [ASSUMED] (ARCHITECTURE §7.1); confirmed on hardware: ir_node (INTAKE-01 §2C),
-    # temp_node (H03).
+    # temp_node (H03), motion_node and door_node (H04).
     lights_node: str = "r101_lights"
     proj_plug_node: str = "r101_proj_plug"
     ir_node: str = "r101_ir"

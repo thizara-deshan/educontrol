@@ -408,7 +408,7 @@ clean; `uv run --directory services/hw pytest -m "not hardware"` → 197 passed;
 **Commit:** `git commit -m "feat(hw): real SNZB-03P motion and SNZB-04PR2 door sensors through zigbee2mqtt"`
 
 ### T2 — hw: confirmed `r101_motion` and `r101_door` in config
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/config.py`
 **Context:** H04 Scope (ieee `0x18690afffe1ca686` motion, `0xa4c138128a8fffff` door; models and friendly names
