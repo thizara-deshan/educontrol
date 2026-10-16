@@ -23,8 +23,10 @@ if ! systemctl is-active -q eduscope-restart.path; then
   changed "started eduscope-restart.path"
 fi
 
+services_restarted=0
 if ((EDUSCOPE_CHANGES > 0)) || ! systemctl is-active -q eduscope.target; then
   systemctl restart eduscope.target
+  services_restarted=1
   log "restarted eduscope.target"
 fi
 
@@ -36,3 +38,15 @@ done
 curl -fsS -m 2 http://127.0.0.1/api/health >/dev/null ||
   die "core-api does not answer on port 80: journalctl -u eduscope-core -u eduscope-hw -b"
 log "core-api is up: http://$ROOM_HOSTNAME.local"
+
+# A running kiosk keeps the page (and JS bundle) it loaded before the restart. Stop its Chromium once
+# core-api answers; deploy/pi/kiosk/launch.sh starts it again on the new build within 2 s. Runs with or
+# without --kiosk, so a plain update run also refreshes the room screen. The oldest matching process is
+# the browser itself (its zygotes and renderers carry the same --user-data-dir).
+if ((services_restarted)); then
+  kiosk_pid=$(pgrep -o -f -- '--user-data-dir=[^ ]*/eduscope-kiosk( |$)' || true)
+  if [[ -n $kiosk_pid ]]; then
+    kill "$kiosk_pid" || true
+    log "reloaded the kiosk browser"
+  fi
+fi

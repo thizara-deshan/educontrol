@@ -46,7 +46,8 @@ sudo deploy/pi/install.sh            # add --kiosk if this Pi runs the kiosk
 ```
 
 It rebuilds and restarts the services only when something changed; otherwise it prints
-`No changes.`
+`No changes.` After a restart it also restarts a running kiosk browser, so the room screen loads the
+new build. Phones, laptops and the podium PC keep the old page until they are refreshed.
 
 ## 3 Check and logs
 
