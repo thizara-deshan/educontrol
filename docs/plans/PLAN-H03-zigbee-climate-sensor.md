@@ -65,7 +65,7 @@ test_contract_fixtures}.py`; `deploy/pi/{README.md,env/hw.env.example,env/core.e
 ## Tasks
 
 ### T1 — hw: real sensors driver for the SNZB-02P
-- [ ] done
+- [x] done
 
 **Files:** `services/hw/app/modules/sensors/driver_real.py`, `services/hw/app/registry.py`,
 `services/hw/tests/{test_sensors_real,test_sensors,test_registry}.py`

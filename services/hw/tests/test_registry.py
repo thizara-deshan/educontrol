@@ -77,6 +77,7 @@ def test_mqtt_runs_only_with_a_real_zigbee_driver() -> None:
     non_zigbee = make_settings(drivers="hdmi=real,projection_screen=real,audio=real")
     assert build_registry(non_zigbee, EventBus(8)).mqtt is None
     assert build_registry(make_settings(drivers="ir=real"), EventBus(8)).mqtt is not None
+    assert build_registry(make_settings(drivers="sensors=real"), EventBus(8)).mqtt is not None
     assert build_registry(make_settings(mode="real"), EventBus(8)).mqtt is not None
 
 
@@ -85,6 +86,17 @@ async def test_real_ir_starts_offline_without_a_broker() -> None:
     await registry.start()
     assert registry.health().modules.ir == "real"
     assert registry.snapshot().ir.blaster == HwIrBlasterData(online=False, lqi=None)
+    await registry.stop()
+
+
+async def test_real_sensors_start_empty_without_a_broker() -> None:
+    registry = build_registry(make_settings(drivers="sensors=real"), EventBus(64))
+    await registry.start()
+    assert registry.health().modules.sensors == "real"
+    assert registry.snapshot().sensors == []
+    assert "/v1/_fake/sensors/value" not in [
+        route.path for router in registry.fake_routers for route in router.routes
+    ]
     await registry.stop()
 
 

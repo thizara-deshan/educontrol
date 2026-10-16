@@ -211,7 +211,7 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
     if kinds["sensors"] == "fake":
         sensors_fake_driver = sensors_fake.FakeSensorsDriver(settings)
         fake_routers.append(sensors_fake.build_fake_router(sensors_fake_driver))
-    sensors = SensorsService(sensors_fake_driver or RealSensorsDriver(settings), bus)
+    sensors = SensorsService(sensors_fake_driver or RealSensorsDriver(settings, mqtt), bus)
 
     zigbee_fake_driver: zigbee_fake.FakeZigbeeStatusDriver | None = None
     if kinds["zigbee_status"] == "fake":

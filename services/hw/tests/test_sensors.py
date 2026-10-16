@@ -1,6 +1,5 @@
 from app.events import EventBus, Subscription
 from app.modules.sensors.driver_fake import FakeSensorsDriver, build_fake_router
-from app.modules.sensors.driver_real import RealSensorsDriver
 from app.modules.sensors.router import build_router
 from app.modules.sensors.schemas import HwContactReading, HwSensorsReadingEvent
 from app.modules.sensors.service import SensorsService
@@ -51,12 +50,6 @@ async def test_snapshot_keeps_the_latest_reading_per_node_and_kind() -> None:
     assert contacts == [HwContactReading(node="r101_door", kind="contact", value="open")]
     assert len(service.snapshot()) == 4
     await service.stop()
-
-
-async def test_real_driver_reports_nothing() -> None:
-    service = SensorsService(RealSensorsDriver(make_settings()), EventBus(8))
-    await service.start()
-    assert service.snapshot() == []
 
 
 async def test_fake_value_route() -> None:
