@@ -80,15 +80,19 @@ Restart everything: Settings → About → **Restart controller**, or
 ## 5 Hardware drivers
 
 `/etc/eduscope/hw.env` has `HW_MODE=fake` (every device simulated) plus a per-module override
-`HW_DRIVERS=`. Each hardware milestone switches its own module. Since H01 the IR blaster is real:
-`HW_DRIVERS=ir=real`. The installer creates this file once and never changes it, so on a Pi that
-was installed earlier set the line by hand, then restart:
+`HW_DRIVERS=`. Each hardware milestone switches its own module. Since H01 the IR blaster is real,
+since H03 the SNZB-02P climate sensor too: `HW_DRIVERS=ir=real,sensors=real`. The installer
+creates this file once and never changes it, so on a Pi that was installed earlier set the line by
+hand, then restart:
 
 ```sh
-sudoedit /etc/eduscope/hw.env                       # HW_DRIVERS=ir=real
+sudoedit /etc/eduscope/hw.env                       # HW_DRIVERS=ir=real,sensors=real
 sudo systemctl restart eduscope.target
-curl -s 127.0.0.1:8081/v1/health                    # "ir":"real"
+curl -s 127.0.0.1:8081/v1/health                    # "ir":"real", "sensors":"real"
 ```
+
+With `sensors=real` only the climate sensor (`r101_temp`) reports; motion and door show "No reading
+yet" until they are paired (H03).
 
 ## 6 Backup
 

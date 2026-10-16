@@ -483,7 +483,7 @@ green.
 **Commit:** `git commit -m "test(hw): SNZB-02P hardware test (r101_temp online)"`
 
 ### T4 — deploy: `HW_DRIVERS=ir=real,sensors=real`
-- [ ] done
+- [x] done
 
 **Files:** `deploy/pi/env/hw.env.example`, `deploy/pi/README.md`, `services/hw/tests/test_deploy_env.py`
 **Context:** H03 Scope; install.sh creates `/etc/eduscope/hw.env` once and never rewrites it, so T5 changes the live
