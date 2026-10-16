@@ -38,7 +38,8 @@ describe("mock rules", () => {
     expect(stepSetpoint([18, 20, 24], 24, "down")).toBe(20);
     expect(stepSetpoint([18, 20, 24], 20, "up")).toBe(24);
     expect(stepSetpoint([18, 20, 24], 24, "up")).toBe(24);
-    expect(stepSetpoint([18, 20, 24], null, "up")).toBe(18);
+    expect(stepSetpoint([18, 20, 24], null, "down")).toBe(18);
+    expect(stepSetpoint([18, 20, 24], null, "up")).toBe(24);
     const next = applyCommandToState(roomState(), { kind: "ac.step", direction: "up" }, ctx);
     expect(next.environment.ac.setpoint_c.value).toBe(25);
   });

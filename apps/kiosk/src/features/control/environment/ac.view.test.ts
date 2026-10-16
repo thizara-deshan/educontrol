@@ -35,6 +35,10 @@ describe("acView (S1.E34–E40)", () => {
       setpoint: "—", setpointDimmed: true, canStepDown: false, canStepUp: false, blasterLine: null,
     });
   });
+  it("assumed On with the setpoint unknown: both steps enabled (D-28), none without captured setpoints", () => {
+    expect(acView(ac("on", null), true)).toMatchObject({ setpoint: "—", canStepDown: true, canStepUp: true });
+    expect(acView({ ...ac("on", null), available_setpoints: [] }, true)).toMatchObject({ canStepDown: false, canStepUp: false });
+  });
   it("only captured setpoints count (R4)", () => {
     const sparse = { ...ac("on", 22), available_setpoints: [22, 26] };
     expect(acView(sparse, true)).toMatchObject({ canStepDown: false, canStepUp: true });

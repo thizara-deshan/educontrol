@@ -17,11 +17,17 @@ export function powerOnSetpoint(ac: AcState): number | null {
 
 export type StepResult = { ok: true; temp_c: number } | { ok: false; reason: string };
 
-/** R4 next lower/higher captured setpoint; Q5 rejects −/+ unless the AC is assumed on; H19 at the ends. */
+/**
+ * R4 next lower/higher captured setpoint; Q5 rejects −/+ unless the AC is assumed on; H19 at the ends.
+ * D-28: with the setpoint unknown, − sends the lowest captured setpoint and + the highest.
+ */
 export function stepTarget(ac: AcState, direction: "down" | "up"): StepResult {
   if (ac.power.value !== "on") return { ok: false, reason: "Turn the air conditioning on first" };
   const current = ac.setpoint_c.value;
-  if (current === null) return { ok: false, reason: "Air conditioning setpoint is unknown" };
+  if (current === null) {
+    if (ac.available_setpoints.length === 0) return { ok: false, reason: "Air conditioning has no captured setpoint frame" };
+    return { ok: true, temp_c: direction === "up" ? Math.max(...ac.available_setpoints) : Math.min(...ac.available_setpoints) };
+  }
   const candidates = ac.available_setpoints.filter((t) => (direction === "up" ? t > current : t < current));
   if (candidates.length === 0) {
     return { ok: false, reason: direction === "up" ? "Already at the highest setpoint" : "Already at the lowest setpoint" };

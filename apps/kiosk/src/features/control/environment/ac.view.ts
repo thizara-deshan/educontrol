@@ -3,6 +3,7 @@ import type { ActiveVariant, StateTone } from "@/components/state-styles";
 import { formatCelsius } from "@/lib/format";
 
 // S1.E34–E40: AC is never confirmed (R3); −/+ step through captured setpoints (R4, H19, Q5).
+// D-28: with the setpoint unknown, −/+ are enabled and send the lowest / highest captured setpoint.
 
 export interface AcView {
   tone: StateTone;
@@ -24,7 +25,10 @@ export function acView(ac: AcState, blasterOnline: boolean | null | undefined): 
   const on = !unknown && ac.power.value === "on";
   const current = ac.setpoint_c.value;
   const canStep = (direction: "down" | "up"): boolean =>
-    on && current !== null && ac.available_setpoints.some((t) => (direction === "down" ? t < current : t > current));
+    on &&
+    (current === null
+      ? ac.available_setpoints.length > 0
+      : ac.available_setpoints.some((t) => (direction === "down" ? t < current : t > current)));
   return {
     tone: unknown ? "unknown" : "assumed",
     stateLine: unknown ? "Unknown" : on ? "On · assumed" : "Off · assumed",

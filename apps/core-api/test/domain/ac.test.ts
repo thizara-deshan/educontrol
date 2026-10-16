@@ -27,7 +27,9 @@ describe("R4 AC setpoints", () => {
     [ac("on", 18, [18, 22]), "down", { ok: false, reason: "Already at the lowest setpoint" }],
     [ac("off", 24, [18, 24, 30]), "up", { ok: false, reason: "Turn the air conditioning on first" }], // Q5
     [ac(null, null, [18, 24]), "up", { ok: false, reason: "Turn the air conditioning on first" }], // R3 Unknown
-    [ac("on", null, [18, 24]), "up", { ok: false, reason: "Air conditioning setpoint is unknown" }],
+    [ac("on", null, [18, 19, 22]), "down", { ok: true, temp_c: 18 }], // D-28: unknown → lowest
+    [ac("on", null, [18, 19, 22]), "up", { ok: true, temp_c: 22 }], // D-28: unknown → highest
+    [ac("on", null, []), "up", { ok: false, reason: "Air conditioning has no captured setpoint frame" }],
   ] as const)("step %j %s → %j", (state, direction, expected) => {
     expect(stepTarget(state, direction)).toEqual(expected);
   });

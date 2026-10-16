@@ -32,7 +32,8 @@ function defaultSetpoint(available: readonly number[]): number | null {
 
 /** Next captured setpoint in a direction (R4); stays put at the ends. */
 export function stepSetpoint(available: readonly number[], current: number | null, direction: "down" | "up"): number | null {
-  if (current === null) return available[0] ?? null;
+  // D-28: unknown → − sends the lowest captured setpoint, + the highest.
+  if (current === null) return (direction === "up" ? available.at(-1) : available[0]) ?? null;
   const candidates = direction === "up" ? available.filter((t) => t > current) : available.filter((t) => t < current);
   if (candidates.length === 0) return current;
   return direction === "up" ? Math.min(...candidates) : Math.max(...candidates);
