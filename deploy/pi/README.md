@@ -26,6 +26,7 @@ The installer:
   `uv sync --frozen`);
 - installs mosquitto (broker on `127.0.0.1:1883` only), the `/dev/zigbee-coord` udev link and
   zigbee2mqtt 2.14.2 in `/opt/zigbee2mqtt` with `zigbee2mqtt.service` (section 10);
+- installs the `/dev/podium-mcu` udev link for the podium MCU (section 11);
 - installs and enables `eduscope.target`, `eduscope-hw.service`, `eduscope-core.service` and
   `eduscope-restart.path`, makes the journal persistent (max 200 MB) and sets the hostname to `r-101`;
 - with `--kiosk`: desktop autologin, OS screen blanking off, the Chromium launcher in the labwc
@@ -82,15 +83,16 @@ Restart everything: Settings → About → **Restart controller**, or
 
 `/etc/eduscope/hw.env` has `HW_MODE=fake` (every device simulated) plus a per-module override
 `HW_DRIVERS=`. Each hardware milestone switches its own module. Since H01 the IR blaster is real,
-since H03 the SNZB-02P climate sensor too, and since H05 the Zigbee status (coordinator, paired
-devices, permit joining): `HW_DRIVERS=ir=real,sensors=real,zigbee_status=real`. The installer
-creates this file once and never changes it, so on a Pi that was installed earlier set the line by
-hand, then restart:
+since H03 the SNZB-02P climate sensor too, since H05 the Zigbee status (coordinator, paired
+devices, permit joining), and since H06 audio and the HDMI switch (the podium MCU, section 11):
+`HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real`. The installer creates
+this file once and never changes it, so on a Pi that was installed earlier set the line by hand,
+then restart:
 
 ```sh
-sudoedit /etc/eduscope/hw.env      # HW_DRIVERS=ir=real,sensors=real,zigbee_status=real
+sudoedit /etc/eduscope/hw.env      # HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real
 sudo systemctl restart eduscope.target
-curl -s 127.0.0.1:8081/v1/health   # "ir":"real", "sensors":"real", "zigbee_status":"real"
+curl -s 127.0.0.1:8081/v1/health   # "ir", "sensors", "zigbee_status", "audio", "hdmi": "real"
 ```
 
 With `sensors=real` the climate sensor (`r101_temp`, H03), the motion sensor (`r101_motion`) and the
@@ -182,3 +184,41 @@ belongs to one network at a time, so each move is a re-pair. To bring them to Ce
 zigbee2mqtt keeps each device's name, so nothing else changes. The motion sensor's "no motion" delay
 goes back to 15 s by itself (`HW_MOTION_TIMEOUT_S`) after its first report. To move the devices back,
 reset them again and pair them on the Unistream.
+
+## 11 Podium MCU (audio levels and HDMI switch, H06)
+
+An ESP32 at the podium (firmware `eduscope-podium-mcu 2.1`, source in
+`reference/hardware-drops/2026-10-18-podium-mcu/`) on USB serial, CP2102 adapter, `/dev/podium-mcu`
+(udev, step 55) or `/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0`.
+It drives:
+
+- **PC audio** and **Lecturer microphone**: two pairs of X9C103S digital potentiometers (pair `a` =
+  PC, `b` = mic). They cannot be read back. The app shows the level it last set; mute turns the
+  pair to 0 (D-30). Levels 1-12 are as quiet as 0.
+- **The HDMI switch**: the MCU presses the switch's button and reads its two input LEDs, so the
+  source tiles show what the switch really selected. Input 1 = podium PC, 2 = smart board
+  (`HW_HDMI_PODIUM_PC_INPUT`). A press on the switch by hand shows up in the app within a second.
+
+Things to know:
+
+- **Opening the port restarts the ESP32.** Every hw-service start, and every reconnect after the
+  cable was out, sets both audio levels back to `HW_AUDIO_START_MIC` / `HW_AUDIO_START_PC`
+  (60 / 40). After a reconnect, a muted channel stays muted.
+- **hw-service is the only program that may use the port.** It locks it; a console or the
+  engineer's tools fail with "Could not exclusively lock port" while it runs (and a tool that does
+  not lock would garble both). The ESP32 has no IR (D-31); its RS232, SPI and spare GPIO are not
+  used by the app.
+- **LED calibration** (once, and after replacing the switch): the MCU decides which LED is lit with
+  thresholds stored on the ESP32. With hw-service stopped:
+  ```sh
+  sudo systemctl stop eduscope-hw
+  python3 -m serial.tools.miniterm /dev/podium-mcu 115200 --eol LF
+  ```
+  Press the switch's button until input 1 is lit, type `cal`, note `led1=… led2=…`; repeat on input
+  2. Then `thresh <t1> <t2>` with each value halfway between that LED's lit and unlit readings, and
+  `pol 0` only if a lit LED reads lower than an unlit one. `src?` must now print the lit input on
+  both inputs. Leave with Ctrl+], then `sudo systemctl start eduscope-hw`.
+  Never use `volsave`, `tap` or `taper` from the console: the app does not expect them, and
+  `volsave` wears out the potentiometers' memory.
+- **Check:** `uv run --directory services/hw pytest -m hardware` (stop hw-service first; it reads
+  `ping`, `ver`, `src?`, `vol?` and changes nothing except restarting the ESP32).

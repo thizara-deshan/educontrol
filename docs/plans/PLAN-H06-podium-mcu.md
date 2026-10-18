@@ -253,7 +253,7 @@ Tests with the fake MCU:
 **Commit:** `feat(hw): real audio levels and mute on the podium MCU digipots (H06 T4)`
 
 ### T5 — deploy: udev link, env, README
-- [ ] done
+- [x] done
 
 **Do:**
 - udev rule `SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="podium-mcu"`. Use the

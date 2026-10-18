@@ -1,0 +1,4 @@
+# Eduscope (H06, PLAN-H06 T0): /dev/podium-mcu → the podium MCU (ESP32 on a CP2102 10c4:ea60).
+# Its USB serial number is the generic "0001", so this matches vendor:product only. [ASSUMED] the
+# podium MCU is the only CP210x adapter on this Pi; a second one would take the same link.
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="podium-mcu"
