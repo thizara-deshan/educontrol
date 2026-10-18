@@ -136,7 +136,7 @@ mock mode. Tests: `pairing.view.test.ts` (each status, thresholds, unknown model
 **Commit:** `feat(kiosk): pair devices card in Settings › Devices (H05 T3)`
 
 ### T4 — deploy: switch on the real driver and document the swap
-- [ ] done
+- [x] done
 
 **Do:** `hw.env.example`: `HW_DRIVERS=ir=real,sensors=real,zigbee_status=real`, `# HW_MOTION_TIMEOUT_S=15`.
 README: new section "Moving the sensors between Central and Unistream": (1) Settings → Devices → Permit joining,

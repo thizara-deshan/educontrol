@@ -82,14 +82,15 @@ Restart everything: Settings → About → **Restart controller**, or
 
 `/etc/eduscope/hw.env` has `HW_MODE=fake` (every device simulated) plus a per-module override
 `HW_DRIVERS=`. Each hardware milestone switches its own module. Since H01 the IR blaster is real,
-since H03 the SNZB-02P climate sensor too: `HW_DRIVERS=ir=real,sensors=real`. The installer
+since H03 the SNZB-02P climate sensor too, and since H05 the Zigbee status (coordinator, paired
+devices, permit joining): `HW_DRIVERS=ir=real,sensors=real,zigbee_status=real`. The installer
 creates this file once and never changes it, so on a Pi that was installed earlier set the line by
 hand, then restart:
 
 ```sh
-sudoedit /etc/eduscope/hw.env                       # HW_DRIVERS=ir=real,sensors=real
+sudoedit /etc/eduscope/hw.env      # HW_DRIVERS=ir=real,sensors=real,zigbee_status=real
 sudo systemctl restart eduscope.target
-curl -s 127.0.0.1:8081/v1/health                    # "ir":"real", "sensors":"real"
+curl -s 127.0.0.1:8081/v1/health   # "ir":"real", "sensors":"real", "zigbee_status":"real"
 ```
 
 With `sensors=real` the climate sensor (`r101_temp`, H03), the motion sensor (`r101_motion`) and the
@@ -153,8 +154,8 @@ sudo systemctl start eduscope.target
   Keep the archive private (network key).
 - The installer writes `data/configuration.yaml` only when it is missing (template:
   `deploy/pi/zigbee/configuration.yaml`, keys `GENERATE`). It never changes the live file.
-- **Frontend** (pairing, logs): `ssh -L 8080:127.0.0.1:8080 eduscope@<pi>` then open
-  `http://localhost:8080` on the laptop.
+- **Frontend** (logs, advanced pairing): `ssh -L 8080:127.0.0.1:8080 eduscope@<pi>` then open
+  `http://localhost:8080` on the laptop. Everyday pairing is in the app (below).
 - **Coordinator:** ZG-808Z on a CH340 adapter, `/dev/zigbee-coord` (udev) or
   `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0`. Plug it straight into the Pi (USB extension
   cable), not into the hub with the keyboard: that hub dropped it once (INTAKE-01, Q-B3).
@@ -162,3 +163,22 @@ sudo systemctl start eduscope.target
   version. To upgrade: back up `data/` (above), stop the unit, check out the new tag in
   `/opt/zigbee2mqtt`, run `pnpm install --frozen-lockfile && pnpm run build` as `eduscope`, change
   `Z2M_VERSION` in `deploy/pi/steps/50-zigbee.sh`, run the installer.
+
+### Moving the sensors between Central and Unistream (H05)
+
+R-101's IR blaster (`r101_ir`), climate (`r101_temp`), motion (`r101_motion`) and door (`r101_door`)
+sensors are shared with the Eduscope Unistream board, which has its own coordinator. A Zigbee device
+belongs to one network at a time, so each move is a re-pair. To bring them to Central:
+
+1. In the app, unlock technician access and open **Settings › Devices**.
+2. Press **Permit joining** (open for 4 minutes).
+3. Reset each device: SNZB sensors, hold the button about 5 s until the LED flashes; ZS06, hold the
+   reset pin about 5 s until the LED flashes fast. The **Pair devices** card shows each one.
+4. Wait until all four show **Heard just now**. A door or motion sensor may need its magnet or a
+   hand wave to send a first report.
+5. In **Settings › Remote configuration**, press **Test** on one AC and one projector code. The codes are stored on the
+   Pi, so nothing has to be learned again.
+
+zigbee2mqtt keeps each device's name, so nothing else changes. The motion sensor's "no motion" delay
+goes back to 15 s by itself (`HW_MOTION_TIMEOUT_S`) after its first report. To move the devices back,
+reset them again and pair them on the Unistream.
