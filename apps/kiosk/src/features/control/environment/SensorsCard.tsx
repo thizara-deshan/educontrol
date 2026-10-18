@@ -13,8 +13,8 @@ const TILE_KINDS = ["temperature", "humidity", "occupancy", "contact"] as const;
 /** S1.E41–E45: header opens S2 (S1.E41); tiles 2×2 below `lg`, one row of four at `lg`. */
 export function SensorsCard() {
   const now = useServerNow();
-  const state = useRoomState((s) => ({ sensors: s.environment.sensors, devices: s.devices, serverTime: s.server_time }));
-  const view = state === undefined ? null : sensorsView(state.sensors, state.devices, now ?? new Date(state.serverTime));
+  const state = useRoomState((s) => ({ sensors: s.environment.sensors, devices: s.devices, nodes: s.zigbee.nodes, serverTime: s.server_time }));
+  const view = state === undefined ? null : sensorsView(state.sensors, state.devices, state.nodes, now ?? new Date(state.serverTime));
   const pressed = usePressed();
 
   return (
