@@ -194,7 +194,7 @@ Record under "Observed on the Pi" below. **Commit:** `docs: H06 podium MCU obser
 **Commit:** `docs: D-30 audio via podium MCU digipots, D-31 no MCU IR (H06 T1)`
 
 ### T2 — hw: podium MCU serial transport
-- [ ] done
+- [x] done
 
 **Do:**
 1. Build `PodiumMcuTransport` per D1. API:

@@ -27,6 +27,10 @@ def make_settings(**overrides: object) -> Settings:
         "mqtt_port": 1,
         "mqtt_reconnect_min_s": 0.01,
         "mqtt_reconnect_max_s": 0.05,
+        # Never the real board: opening /dev/podium-mcu resets it (PLAN-H06 T0).
+        "podium_port": "/nonexistent/podium-mcu",
+        "podium_reconnect_min_s": 0.01,
+        "podium_reconnect_max_s": 0.05,
         **overrides,
     }
     return Settings(_env_file=None, **values)

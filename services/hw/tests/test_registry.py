@@ -81,6 +81,15 @@ def test_mqtt_runs_only_with_a_real_zigbee_driver() -> None:
     assert build_registry(make_settings(mode="real"), EventBus(8)).mqtt is not None
 
 
+def test_the_podium_mcu_port_opens_only_with_real_audio_or_hdmi() -> None:
+    assert build_registry(make_settings(), EventBus(8)).podium is None
+    others = make_settings(drivers="ir=real,sensors=real,projection_screen=real")
+    assert build_registry(others, EventBus(8)).podium is None
+    assert build_registry(make_settings(drivers="audio=real"), EventBus(8)).podium is not None
+    assert build_registry(make_settings(drivers="hdmi=real"), EventBus(8)).podium is not None
+    assert build_registry(make_settings(mode="real"), EventBus(8)).podium is not None
+
+
 async def test_real_ir_starts_offline_without_a_broker() -> None:
     registry = build_registry(make_settings(drivers="ir=real"), EventBus(64))
     await registry.start()

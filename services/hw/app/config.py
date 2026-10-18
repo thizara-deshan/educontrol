@@ -133,6 +133,19 @@ class Settings(BaseSettings):
     # (a factory reset for re-pairing puts it back to 60 s). zigbee2mqtt allows 5-60.
     motion_timeout_s: int = Field(default=15, ge=5, le=60)
 
+    # Podium MCU (ESP32, USB serial, PLAN-H06 D1). Opening the port resets the board (T0), so
+    # nothing is sent until its `evt ready`, or until boot_wait_s passes without one.
+    podium_port: str = "/dev/podium-mcu"
+    podium_baud: int = Field(default=115200, gt=0)
+    podium_boot_wait_s: float = Field(default=2.0, gt=0)
+    podium_cmd_timeout_s: float = Field(default=1.0, gt=0)
+    # `src <n>` presses and re-reads up to 4 times (fw:setSource, about 3.3 s); core-api waits 5 s.
+    podium_src_timeout_s: float = Field(default=4.5, gt=0)
+    # Below the firmware's 60 s host_silent limit (fw:loop).
+    podium_ping_s: float = Field(default=20.0, gt=0)
+    podium_reconnect_min_s: float = Field(default=1.0, gt=0)
+    podium_reconnect_max_s: float = Field(default=30.0, gt=0)
+
     zigbee_nodes: list[ZigbeeNodeConfig] = Field(default_factory=lambda: list(DEFAULT_NODES))
     coordinator: CoordinatorConfig = DEFAULT_COORDINATOR
 

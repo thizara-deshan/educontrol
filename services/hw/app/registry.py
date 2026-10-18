@@ -45,6 +45,7 @@ from app.modules.zigbee_status.driver_real import RealZigbeeStatusDriver
 from app.modules.zigbee_status.service import ZigbeeStatusService
 from app.snapshot import HwSnapshot, HwSnapshotEvent
 from app.transports.mqtt import MqttTransport
+from app.transports.podium_mcu import PodiumMcuTransport
 
 MODULES: tuple[HwModule, ...] = get_args(HwModule)
 # Modules whose real driver talks to zigbee2mqtt; any of them real ⇒ the MQTT transport runs.
@@ -55,6 +56,8 @@ ZIGBEE_MODULES: tuple[HwModule, ...] = (
     "sensors",
     "zigbee_status",
 )
+# Modules whose real driver talks to the podium MCU (PLAN-H06); any of them real ⇒ the port opens.
+PODIUM_MODULES: tuple[HwModule, ...] = ("audio", "hdmi")
 
 
 def parse_driver_overrides(raw: str) -> dict[HwModule, HwDriverKind]:
@@ -93,6 +96,7 @@ class Registry:
     zigbee_status: ZigbeeStatusService
     fake_routers: list[APIRouter] = field(default_factory=list)
     mqtt: MqttTransport | None = None
+    podium: PodiumMcuTransport | None = None
 
     def routers(self) -> list[APIRouter]:
         return [
@@ -119,8 +123,12 @@ class Registry:
         # After the services: their drivers subscribe their topics in start().
         if self.mqtt is not None:
             await self.mqtt.start()
+        if self.podium is not None:
+            await self.podium.start()
 
     async def stop(self) -> None:
+        if self.podium is not None:
+            await self.podium.stop()
         if self.mqtt is not None:
             await self.mqtt.stop()
         await self.zigbee_status.stop()
@@ -167,6 +175,9 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
     # Building the transport does no I/O; it only connects when the registry starts it.
     mqtt = MqttTransport(settings)
     zigbee_real = any(kinds[module] == "real" for module in ZIGBEE_MODULES)
+    # Building it opens nothing either; opening the port resets the board (PLAN-H06 T0).
+    podium = PodiumMcuTransport(settings)
+    podium_real = any(kinds[module] == "real" for module in PODIUM_MODULES)
 
     lights_fake_driver: lights_fake.FakeLightsDriver | None = None
     if kinds["lights"] == "fake":
@@ -233,4 +244,5 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
         zigbee_status=zigbee_status,
         fake_routers=fake_routers,
         mqtt=mqtt if zigbee_real else None,
+        podium=podium if podium_real else None,
     )
