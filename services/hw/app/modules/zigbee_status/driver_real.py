@@ -8,11 +8,13 @@ Topics under `<base>` = HW_Z2M_BASE_TOPIC (zigbee2mqtt 2.14.2 on the R-101 Pi, o
 - `bridge/state` (retained): `{"state": "online"}` → coordinator status.
 - `bridge/devices` (retained): the paired devices; the `Coordinator` entry is not a node.
 - `bridge/event`: `device_joined`, `device_announce`, `device_interview` (successful) → last
-  seen now; `device_leave` → offline.
+  seen now and online; `device_leave` → offline. zigbee2mqtt does not publish availability again
+  after a leave + rejoin (observed 2026-10-18: r101_motion re-paired at 14:17, next availability
+  at the 15:16 restart), so the rejoin itself has to bring the node back.
 - `<node>` and `<node>/availability` for the configured nodes (HW_IR/TEMP/MOTION/DOOR_NODE):
-  any message → last seen now, `linkquality` → lqi, `battery` → battery_pct; availability →
-  online. zigbee2mqtt's own `last_seen` is disabled on the Pi, so last seen is when hw-service
-  heard the node.
+  any message → last seen now and online (the node was just heard), `linkquality` → lqi,
+  `battery` → battery_pct; availability → online. zigbee2mqtt's own `last_seen` is disabled on
+  the Pi, so last seen is when hw-service heard the node.
 - Permit join: `bridge/request/permit_join {"time": s, "transaction": id}` → `bridge/response/
   permit_join {"status": "ok" | "error", "transaction": id, …}` (zigbee2mqtt echoes `transaction`).
 """
@@ -244,6 +246,7 @@ class RealZigbeeStatusDriver:
             kind == "device_interview" and data.get("status") == "successful"
         ):
             live.last_seen = self._now()
+            live.online = True
         elif kind == "device_leave":
             live.online = False
         else:
@@ -262,6 +265,7 @@ class RealZigbeeStatusDriver:
         def on_message(payload: object) -> None:
             live = self._live[name]
             live.last_seen = self._now()
+            live.online = True
             if isinstance(payload, dict):
                 lqi = whole(payload, "linkquality", 0, 255)
                 battery = whole(payload, "battery", 0, 100)

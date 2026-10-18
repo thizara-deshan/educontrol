@@ -162,6 +162,7 @@ async def test_join_events_mark_the_node_seen(event: dict[str, str], seen: bool)
     data = {"friendly_name": "r101_door", "ieee_address": "0xa4c138128a8fffff", **status}
     mqtt.deliver(f"{BASE}/bridge/event", {"type": event["type"], "data": data})
     assert node(service, "r101_door").last_seen == (clock.now if seen else None)
+    assert node(service, "r101_door").online is seen
 
 
 async def test_device_leave_marks_offline() -> None:
@@ -171,6 +172,26 @@ async def test_device_leave_marks_offline() -> None:
     data = {"friendly_name": "r101_temp", "ieee_address": "0xb0e8e8fffe985dcd"}
     mqtt.deliver(f"{BASE}/bridge/event", {"type": "device_leave", "data": data})
     assert node(service, "r101_temp").online is False
+
+
+async def test_rejoin_after_leave_brings_the_node_back_without_availability() -> None:
+    service, mqtt, _, _ = await started()
+    online_bridge(mqtt)
+    mqtt.deliver(f"{BASE}/r101_motion/availability", {"state": "online"})
+    data = {"friendly_name": "r101_motion", "ieee_address": "0x18690afffe1ca686"}
+    mqtt.deliver(f"{BASE}/bridge/event", {"type": "device_leave", "data": data})
+    assert node(service, "r101_motion").online is False
+    mqtt.deliver(f"{BASE}/bridge/event", {"type": "device_announce", "data": data})
+    assert node(service, "r101_motion").online is True
+
+
+async def test_a_message_from_the_node_means_online() -> None:
+    service, mqtt, _, _ = await started()
+    online_bridge(mqtt)
+    data = {"friendly_name": "r101_motion", "ieee_address": "0x18690afffe1ca686"}
+    mqtt.deliver(f"{BASE}/bridge/event", {"type": "device_leave", "data": data})
+    mqtt.deliver(f"{BASE}/r101_motion", {"occupancy": True})
+    assert node(service, "r101_motion").online is True
 
 
 async def test_permit_join_end_drives_the_mesh() -> None:
