@@ -10,10 +10,14 @@ Topic `<base>/<node>` (`<base>` = HW_Z2M_BASE_TOPIC): one JSON object per report
 - SNZB-04PR2 (`HW_DOOR_NODE`), e.g. `{"battery":100,"contact":true,"tamper":false,…}`: one
   `contact` reading, `true` → closed (magnet at the body), `false` → open.
 Each message repeats the device's full state, so a report caused by another key (`tamper`) gives
-the same reading again. Every other key is ignored.
+the same reading again. Every other key is ignored, except the SNZB-03P's `motion_timeout`: when it
+differs from HW_MOTION_TIMEOUT_S the driver publishes `<node>/set {"motion_timeout": N}`, at most
+once per 60 s (PLAN-H05 D4; the sensor applies it when it next wakes, observed 2026-10-16).
 """
 
+import asyncio
 import math
+import time
 from collections.abc import Callable
 
 from app.config import Settings
@@ -30,6 +34,8 @@ from app.modules.sensors.service import SensorsEmit
 from app.transports.mqtt import MessageHandler, MqttLink
 
 Parse = Callable[[str, object], list[HwSensorReadingData]]
+
+MOTION_TIMEOUT_RETRY_S = 60.0
 
 
 def number(payload: dict[object, object], key: str) -> float | None:
@@ -91,8 +97,15 @@ def door_readings(node: str, payload: object) -> list[HwSensorReadingData]:
 class RealSensorsDriver:
     kind: HwDriverKind = "real"
 
-    def __init__(self, settings: Settings, mqtt: MqttLink) -> None:
+    def __init__(
+        self, settings: Settings, mqtt: MqttLink, monotonic: Callable[[], float] = time.monotonic
+    ) -> None:
         self._mqtt = mqtt
+        self._monotonic = monotonic
+        self._motion_timeout_s = settings.motion_timeout_s
+        self._motion_topic = f"{settings.z2m_base_topic}/{settings.motion_node}"
+        self._timeout_set_at: float | None = None
+        self._tasks: set[asyncio.Task[None]] = set()
         base = settings.z2m_base_topic
         self._nodes: list[tuple[str, str, Parse]] = [
             (f"{base}/{settings.temp_node}", settings.temp_node, climate_readings),
@@ -108,6 +121,9 @@ class RealSensorsDriver:
 
     async def stop(self) -> None:
         self._emit = None
+        for task in list(self._tasks):
+            task.cancel()
+        await asyncio.gather(*self._tasks, return_exceptions=True)
 
     def _handler(self, topic: str, node: str, parse: Parse) -> MessageHandler:
         def on_report(payload: object) -> None:
@@ -118,5 +134,33 @@ class RealSensorsDriver:
                 return
             for reading in parse(node, payload):
                 self._emit(HwSensorsReadingEvent(data=reading))
+            if topic == self._motion_topic:
+                self._keep_motion_timeout(payload)
 
         return on_report
+
+    def _keep_motion_timeout(self, payload: dict[object, object]) -> None:
+        """D4: a report with another `motion_timeout` → set ours (not more than once per 60 s)."""
+        reported = payload.get("motion_timeout")
+        if isinstance(reported, bool) or not isinstance(reported, int):
+            return
+        if reported == self._motion_timeout_s:
+            return
+        now = self._monotonic()
+        if self._timeout_set_at is not None and now - self._timeout_set_at < MOTION_TIMEOUT_RETRY_S:
+            return
+        self._timeout_set_at = now
+        task = asyncio.get_running_loop().create_task(self._set_motion_timeout(reported))
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
+
+    async def _set_motion_timeout(self, reported: int) -> None:
+        try:
+            await self._mqtt.publish(
+                f"{self._motion_topic}/set", {"motion_timeout": self._motion_timeout_s}
+            )
+            logger.info(
+                "sensors: motion_timeout %d s → %d s requested", reported, self._motion_timeout_s
+            )
+        except Exception as exc:
+            logger.warning("sensors: could not set motion_timeout: %s", exc)

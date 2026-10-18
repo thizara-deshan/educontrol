@@ -129,6 +129,9 @@ class Settings(BaseSettings):
     temp_node: str = "r101_temp"
     motion_node: str = "r101_motion"
     door_node: str = "r101_door"
+    # PLAN-H05 D4: the SNZB-03P's "no motion" delay, re-applied when a report shows another value
+    # (a factory reset for re-pairing puts it back to 60 s). zigbee2mqtt allows 5-60.
+    motion_timeout_s: int = Field(default=15, ge=5, le=60)
 
     zigbee_nodes: list[ZigbeeNodeConfig] = Field(default_factory=lambda: list(DEFAULT_NODES))
     coordinator: CoordinatorConfig = DEFAULT_COORDINATOR

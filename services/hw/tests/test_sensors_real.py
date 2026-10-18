@@ -2,6 +2,7 @@
 link. Payloads are copied from the captures in docs/milestones/H03-zigbee-climate-sensor.md and
 H04-zigbee-motion-door.md (R-101 Pi, zigbee2mqtt 2.14.2)."""
 
+import asyncio
 import logging
 
 import pytest
@@ -243,3 +244,70 @@ async def test_no_readings_after_stop() -> None:
     mqtt.deliver(MOTION, motion(occupancy=True))
     mqtt.deliver(DOOR, door(contact=True))
     assert readings(sub) == []
+
+
+class Clock:
+    def __init__(self) -> None:
+        self.now = 1000.0
+
+    def __call__(self) -> float:
+        return self.now
+
+
+async def start_with_clock(**overrides: object) -> tuple[SensorsService, FakeMqtt, Clock]:
+    mqtt = FakeMqtt()
+    clock = Clock()
+    settings = make_settings(drivers="sensors=real", **overrides)
+    service = SensorsService(RealSensorsDriver(settings, mqtt, monotonic=clock), EventBus(64))
+    await service.start()
+    return service, mqtt, clock
+
+
+async def settled() -> None:
+    for _ in range(5):
+        await asyncio.sleep(0)
+
+
+SET_15 = ("zigbee2mqtt/r101_motion/set", {"motion_timeout": 15})
+
+
+async def test_another_motion_timeout_is_set_back_once_per_minute() -> None:
+    service, mqtt, clock = await start_with_clock()
+    mqtt.deliver(MOTION, motion(True))  # captured with motion_timeout 60
+    await settled()
+    assert mqtt.published == [SET_15]
+    clock.now += 59
+    mqtt.deliver(MOTION, motion(False))
+    await settled()
+    assert mqtt.published == [SET_15]
+    clock.now += 1
+    mqtt.deliver(MOTION, motion(True))
+    await settled()
+    assert mqtt.published == [SET_15, SET_15]
+    await service.stop()
+
+
+async def test_the_configured_or_a_missing_timeout_publishes_nothing() -> None:
+    service, mqtt, _ = await start_with_clock(motion_timeout_s=60)
+    mqtt.deliver(MOTION, motion(True))
+    mqtt.deliver(MOTION, {"occupancy": True})
+    mqtt.deliver(MOTION, {"occupancy": True, "motion_timeout": "15"})
+    mqtt.deliver(DOOR, {**door(True), "motion_timeout": 30})
+    await settled()
+    assert mqtt.published == []
+    await service.stop()
+
+
+async def test_a_failed_set_keeps_the_reading(caplog: pytest.LogCaptureFixture) -> None:
+    bus = EventBus(64)
+    sub = bus.subscribe()
+    mqtt = FakeMqtt()
+    mqtt.fail_publish = ConnectionError("broker gone")
+    service = SensorsService(RealSensorsDriver(make_settings(drivers="sensors=real"), mqtt), bus)
+    await service.start()
+    with caplog.at_level(logging.WARNING):
+        mqtt.deliver(MOTION, motion(True))
+        await settled()
+    assert readings(sub) == [("r101_motion", "occupancy", "detected")]
+    assert "could not set motion_timeout" in caplog.text
+    await service.stop()

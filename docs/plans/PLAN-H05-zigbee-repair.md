@@ -109,7 +109,7 @@ Central UI and see each device come back, with no SSH, no zigbee2mqtt frontend a
 **Commit:** `feat(hw): real zigbee_status driver on zigbee2mqtt (H05 T1)`
 
 ### T2 — hw: re-apply the motion timeout after a re-pair
-- [ ] done
+- [x] done
 
 **Do:** `HW_MOTION_TIMEOUT_S: int = Field(default=15, ge=5, le=60)` in `config.py`; in the sensors driver, a motion
 report whose `motion_timeout` is an int ≠ the setting publishes `<motion_node>/set {"motion_timeout": N}`, not more than
