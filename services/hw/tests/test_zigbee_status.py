@@ -4,12 +4,10 @@ from app.config import ZigbeeNodeConfig
 from app.contracts import ACK_OK, ack_error, utc_now
 from app.events import EventBus, Subscription
 from app.modules.zigbee_status.driver_fake import FakeZigbeeStatusDriver, build_fake_router
-from app.modules.zigbee_status.driver_real import RealZigbeeStatusDriver
 from app.modules.zigbee_status.router import build_router
 from app.modules.zigbee_status.schemas import (
     HwZigbeeMeshEvent,
     HwZigbeeNodeEvent,
-    HwZigbeeSnapshot,
     HwZigbeeStatusPermitJoinRequest,
 )
 from app.modules.zigbee_status.service import ZigbeeStatusService
@@ -103,14 +101,6 @@ async def test_node_offline_and_back() -> None:
         "invalid", "Unknown Zigbee node r101_nope"
     )
     assert len(service.snapshot().nodes) == 5
-
-
-async def test_real_driver_answers_transport_error() -> None:
-    service = ZigbeeStatusService(RealZigbeeStatusDriver(make_settings()), EventBus(8))
-    await service.start()
-    ack = await service.permit_join(HwZigbeeStatusPermitJoinRequest(seconds=60))
-    assert ack == ack_error("transport", "zigbee_status: hardware intake pending")
-    assert service.snapshot() == HwZigbeeSnapshot(coordinator=None, nodes=[], joining_until=None)
 
 
 async def test_routes() -> None:

@@ -1,0 +1,97 @@
+[
+  {
+    "disabled": false,
+    "friendly_name": "Coordinator",
+    "ieee_address": "0x00124b003929c1ad",
+    "interview_completed": true,
+    "interview_state": "SUCCESSFUL",
+    "interviewing": false,
+    "network_address": 0,
+    "supported": true,
+    "type": "Coordinator",
+    "definition": null
+  },
+  {
+    "date_code": "",
+    "disabled": false,
+    "friendly_name": "r101_ir",
+    "ieee_address": "0x70d07efffe966e17",
+    "interview_completed": true,
+    "interview_state": "SUCCESSFUL",
+    "interviewing": false,
+    "manufacturer": "_TZ3290_nba3knpsarkawgnt",
+    "model_id": "TS1201",
+    "network_address": 20087,
+    "power_source": "Mains (single phase)",
+    "supported": true,
+    "type": "Router",
+    "definition": {
+      "model": "ZS06",
+      "vendor": "Tuya",
+      "description": "Universal smart IR remote control"
+    }
+  },
+  {
+    "date_code": "20250711",
+    "disabled": false,
+    "friendly_name": "r101_temp",
+    "ieee_address": "0xb0e8e8fffe985dcd",
+    "interview_completed": true,
+    "interview_state": "SUCCESSFUL",
+    "interviewing": false,
+    "manufacturer": "eWeLink",
+    "model_id": "SNZB-02P",
+    "network_address": 40334,
+    "power_source": "Battery",
+    "software_build_id": "2.2.0",
+    "supported": true,
+    "type": "EndDevice",
+    "definition": {
+      "model": "SNZB-02P",
+      "vendor": "SONOFF",
+      "description": "Temperature and humidity sensor"
+    }
+  },
+  {
+    "date_code": "20251029",
+    "disabled": false,
+    "friendly_name": "r101_door",
+    "ieee_address": "0xa4c138128a8fffff",
+    "interview_completed": true,
+    "interview_state": "SUCCESSFUL",
+    "interviewing": false,
+    "manufacturer": "SONOFF",
+    "model_id": "SNZB-04PR2",
+    "network_address": 64269,
+    "power_source": "Battery",
+    "software_build_id": "1.0.1",
+    "supported": true,
+    "type": "EndDevice",
+    "definition": {
+      "model": "SNZB-04PR2",
+      "vendor": "SONOFF",
+      "description": "Contact sensor"
+    }
+  },
+  {
+    "date_code": "20231018",
+    "disabled": false,
+    "friendly_name": "r101_motion",
+    "ieee_address": "0x18690afffe1ca686",
+    "interview_completed": true,
+    "interview_state": "SUCCESSFUL",
+    "interviewing": false,
+    "manufacturer": "eWeLink",
+    "model_id": "SNZB-03P",
+    "network_address": 57637,
+    "power_source": "Battery",
+    "software_build_id": "2.2.1",
+    "supported": true,
+    "type": "EndDevice",
+    "definition": {
+      "model": "SNZB-03P",
+      "vendor": "SONOFF",
+      "description": "Zigbee PIR sensor"
+    }
+  }
+]

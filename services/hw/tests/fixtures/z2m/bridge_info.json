@@ -1,0 +1,19 @@
+{
+  "version": "2.14.2",
+  "coordinator": {
+    "ieee_address": "0x00124b003929c1ad",
+    "meta": {
+      "maintrel": 1,
+      "majorrel": 2,
+      "minorrel": 7,
+      "product": 1,
+      "revision": 20250321,
+      "transportrev": 2
+    },
+    "type": "ZStack3x0"
+  },
+  "network": {
+    "channel": 25
+  },
+  "permit_join": false
+}

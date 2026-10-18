@@ -87,7 +87,7 @@ Central UI and see each device come back, with no SSH, no zigbee2mqtt frontend a
 ## Tasks
 
 ### T1 — hw: real zigbee_status driver on zigbee2mqtt
-- [ ] done
+- [x] done
 
 **Do:**
 1. Capture fixtures on the Pi (read-only): `mosquitto_sub -C 1` of `zigbee2mqtt/bridge/info`,
