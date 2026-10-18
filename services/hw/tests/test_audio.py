@@ -1,7 +1,6 @@
-from app.contracts import ACK_OK, ack_error
+from app.contracts import ACK_OK
 from app.events import EventBus, Subscription
 from app.modules.audio.driver_fake import FakeAudioDriver
-from app.modules.audio.driver_real import RealAudioDriver
 from app.modules.audio.router import build_router
 from app.modules.audio.schemas import (
     HwAudioChannelState,
@@ -44,14 +43,6 @@ async def test_level_keeps_mute_and_mute_keeps_level() -> None:
     )
     assert service.snapshot().pc == HwAudioChannelState(level=50, muted=True)
     assert service.snapshot().mic == HwAudioChannelState(level=62, muted=False)
-
-
-async def test_real_driver_answers_transport_error() -> None:
-    service = AudioService(RealAudioDriver(make_settings()), EventBus(8))
-    await service.start()
-    ack = await service.level(HwAudioLevelRequest(channel="mic", level=10))
-    assert ack == ack_error("transport", "audio: hardware intake pending")
-    assert service.snapshot() == HwAudioSnapshot(mic=None, pc=None)
 
 
 async def test_routes() -> None:

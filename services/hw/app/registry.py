@@ -215,7 +215,7 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
     audio = AudioService(
         audio_fake.FakeAudioDriver(settings)
         if kinds["audio"] == "fake"
-        else RealAudioDriver(settings),
+        else RealAudioDriver(settings, podium),
         bus,
     )
 

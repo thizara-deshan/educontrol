@@ -90,6 +90,7 @@ class FakePodiumMcu:
         self.received: list[str] = []  # every command line, in order
         self.silent: set[str] = set()  # command words that get no reply at all
         self.delay_s: dict[str, float] = {}  # command word → seconds before the reply
+        self.errors: dict[str, str] = {}  # command word → `err <reason>` instead of running it
         self.before_reply: list[str] = []  # evt lines sent before the next reply
         self.refuse_opens = 0
         self.opens = 0
@@ -169,6 +170,9 @@ class FakePodiumMcu:
             for evt in self.before_reply:
                 self.send(evt)
             self.before_reply = []
+            if word in self.errors:
+                self.send(f"err {self.errors[word]}")
+                continue
             for reply in self._handle(line):
                 self.send(reply)
 

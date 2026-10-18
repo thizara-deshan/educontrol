@@ -235,7 +235,7 @@ Tests with the fake MCU:
 **Commit:** `feat(hw): real HDMI switch driver on the podium MCU (H06 T3)`
 
 ### T4 — hw: real audio driver on the podium MCU
-- [ ] done
+- [x] done
 
 **Do:** `RealAudioDriver(settings, mcu)` per D3–D5 (D5 option a: start levels). It never sends `volsave`.
 Add the hardware test from the file map.

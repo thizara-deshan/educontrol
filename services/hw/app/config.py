@@ -148,6 +148,13 @@ class Settings(BaseSettings):
     # HDMI switch input (1 or 2) wired to the podium PC; the other one is the smart board.
     # [ASSUMED] until PLAN-H06 AC5.
     hdmi_podium_pc_input: Literal[1, 2] = 1
+    # Digipot pair per audio channel: CS A = U3+U4 "PC stereo", CS B = U5+U6 "Mic stereo"
+    # (firmware pin map). [ASSUMED] until PLAN-H06 AC3.
+    podium_pc_ch: Literal["a", "b"] = "a"
+    podium_mic_ch: Literal["a", "b"] = "b"
+    # Levels set when the MCU has not homed its digipots, i.e. after every boot (D-30, PLAN-H06 D5).
+    audio_start_mic: int = Field(default=60, ge=0, le=100)
+    audio_start_pc: int = Field(default=40, ge=0, le=100)
 
     zigbee_nodes: list[ZigbeeNodeConfig] = Field(default_factory=lambda: list(DEFAULT_NODES))
     coordinator: CoordinatorConfig = DEFAULT_COORDINATOR

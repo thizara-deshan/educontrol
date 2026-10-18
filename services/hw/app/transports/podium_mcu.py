@@ -175,6 +175,9 @@ class PodiumMcuTransport:
         port.baudrate = self._settings.podium_baud
         port.dtr = False
         port.rts = False
+        # flock: a second opener (the [ON PI] hardware test, a console) fails instead of
+        # silently sharing the reply stream with hw-service.
+        port.exclusive = True
         await asyncio.to_thread(port.open)
         loop = asyncio.get_running_loop()
         reader = asyncio.StreamReader(loop=loop)
