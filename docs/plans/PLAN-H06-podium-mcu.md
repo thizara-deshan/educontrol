@@ -172,7 +172,7 @@ No change to contracts, core-api or kiosk.
 ## Tasks
 
 ### T0 — `[ON PI · HUMAN]` intake: firmware drop and first contact
-- [ ] done
+- [x] done
 
 1. Owner saves the firmware as `reference/hardware-drops/2026-10-18-podium-mcu/podium_mcu.ino`, with a `NOTES.txt`
    giving the engineer, date and board.
@@ -293,7 +293,46 @@ Tests with the fake MCU:
 
 ## Observed on the Pi
 
-(filled by T0)
+**2026-10-18 (T0)**, with a throwaway pyserial 3.5 probe (system Python; not yet a hw-service dependency). Port
+opened at 115200 8N1 with `dtr = rts = False` set before `open()`. Only `ping`, `ver`, `help`, `status`, `src?` and
+`vol?` were sent. Nothing moved: no `vol`, `tap`, `src <n>` or settings commands.
+
+- **Device:** `/dev/ttyUSB1` = CP2102 `10c4:ea60`, `ID_SERIAL_SHORT=0001` (generic, so the T5 rule must not match
+  on it). Path `platform-xhci-hcd.0-usb-0:1:1.0`, by-id
+  `usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0`. The coordinator is `/dev/ttyUSB0`, CH340
+  `1a86:7523`, path `usb-0:2:1.0`, held by zigbee2mqtt; no clash. Nothing had `/dev/ttyUSB1` open.
+- **The link is healthy.** 1000 bytes, all readable, no garbage and no kernel errors. INTAKE-01 Q-A2 no longer
+  applies.
+- **Opening the port resets the ESP32, even with DTR/RTS off** (contradicts D1's `[ASSUMED]`). On open:
+  ```
+  [0.056s] ets Jul 29 2019 12:21:46
+  [0.056s] rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+           … 8 more ROM boot lines (configsip, clk_drv, mode:DIO, load…, entry 0x400805b4) …
+  [0.257s] evt ready
+  [0.757s] evt src changed 0 2
+  ```
+  What this means for the build (no decision changes):
+  - **T2:** treat every open as an MCU boot. Discard non-`evt` lines quietly (debug log, not warning) until
+    `evt ready`, and send no command before it (allow ≤ 2 s).
+  - **T4:** with D5(a), every hw-service start and every reconnect re-homes the pots to the start levels. The "MCU
+    already homed, use `vol?`" branch of D5 can only happen if the port stays open, i.e. never in practice. Keep it;
+    it costs nothing.
+  - **T3:** the first poll after boot sends `evt src changed 0 <n>`, which gives the source without asking.
+- **Replies** (exactly as the firmware describes; each arrived within the probe's 100 ms read slice):
+  ```
+  > ping      < ok
+  > ver       < eduscope-podium-mcu 2.1 · ok
+  > help      < the 7 lines of fw:printHelp · ok
+  > status    < gain a=-1 tap=-1 · gain b=-1 tap=-1 · src=2 · led1=0 led2=1916
+              · thr1=800 thr2=800 pol=1 taper=2.50 · rs232 baud=9600 eol=1
+              · spi ready=0 hz=1000000 mode=0 hold=0 · gpio1 mode=0 val=0 · gpio2 mode=0 val=0 · ok
+  > src?      < src=2 · ok
+  > vol?      < a=-1 · b=-1 · ok
+  ```
+- **HDMI LEDs with the switch on input 2:** led1 = 0, led2 = 1916. The default threshold 800 with lit = high already
+  reads `src=2` correctly. Input 1's readings and the input → device mapping (D8) still need T6.
+- **NVS settings are factory defaults** (thresholds, polarity, taper 2.5, RS232 9600/CR). Nobody has calibrated
+  them yet.
 
 ## Acceptance
 
