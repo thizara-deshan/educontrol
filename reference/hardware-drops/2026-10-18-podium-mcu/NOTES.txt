@@ -1,0 +1,5 @@
+From the hardware engineer, pasted by the owner on 2026-10-18 (copied verbatim).
+Firmware "eduscope-podium-mcu 2.1" for the ESP32-WROOM-32 at the podium, USB serial to the Pi.
+Drives the X9C103S digipots (PC stereo, mic stereo) and the 2x1 HDMI switch (opto button press,
+LED read-back); expansion block: RS232 (MAX3232), SPI, two AUX GPIO. No IR.
+Not yet run against the Pi: see docs/plans/PLAN-H06-podium-mcu.md T0.
