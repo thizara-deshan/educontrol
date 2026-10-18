@@ -336,7 +336,31 @@ opened at 115200 8N1 with `dtr = rts = False` set before `open()`. Only `ping`, 
 
 ## Acceptance
 
-(filled by T6)
+**2026-10-18, in progress.**
+
+- **Step 1 — LED calibration: done.** hw-service stopped. The owner pressed the switch while `cal` was read once a
+  second for 45 s:
+
+  | | LED 1 | LED 2 |
+  |---|---|---|
+  | lit | 1903–1918 | 1906–1920 |
+  | off | 0 | 0 |
+
+  Lit reads high, so `pol` stays 1. `thresh 954 957` (halfway) was saved. `status` after a reboot shows
+  `thr1=954 thr2=957 pol=1`, so it persists. `src` followed every press (`evt src changed 2 1` on the first).
+- **Step 2 — drivers on: done by the owner at 14:46.** `/etc/eduscope/hw.env` has `audio=real,hdmi=real` and
+  install.sh ran. `/dev/podium-mcu → ttyUSB1`. `/v1/health` shows `audio: real, hdmi: real`. The snapshot after
+  start: hdmi `smart_board` (input 2); audio mic 60 and pc 40, unmuted (D5a). There were no warnings for the next
+  6.5 min (keepalive OK).
+- **Observed, not blocking:**
+  - On open, hw-service logged 91 `podium: fault host_silent` warnings within 3 ms, before the board's boot text:
+    output buffered while no program held the port. The firmware sends `host_silent` once per silence and no
+    `host back` came in between, so the count is unexplained. Possible follow-up: flush the input buffer on open, or
+    log pre-`ready` `evt` lines at debug level.
+  - The firmware's `src?` updates `lastSrc` (`fw:handle` "src?"). A hand press that lands just before a `src?` is
+    therefore answered by `src?` but never sent as `evt src changed`. Seen once in the calibration watch. hw-service
+    only sends `src?` after a boot, so this matters only in that moment.
+- **AC1–AC8:** pending.
 
 ## Blockers
 
