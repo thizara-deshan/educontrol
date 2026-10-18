@@ -1,7 +1,6 @@
-from app.contracts import ACK_OK, ack_error
+from app.contracts import ACK_OK
 from app.events import EventBus, Subscription
 from app.modules.hdmi.driver_fake import FakeHdmiDriver
-from app.modules.hdmi.driver_real import RealHdmiDriver
 from app.modules.hdmi.router import build_router
 from app.modules.hdmi.schemas import HwHdmiSelectRequest, HwHdmiSnapshot, HwHdmiStateEvent
 from app.modules.hdmi.service import HdmiService
@@ -27,14 +26,6 @@ async def test_select_is_echoed_as_state() -> None:
     assert await service.select(HwHdmiSelectRequest(input="smart_board")) == ACK_OK
     assert (await next_event(sub, HwHdmiStateEvent)).data.input == "smart_board"
     assert service.snapshot() == HwHdmiSnapshot(input="smart_board")
-
-
-async def test_real_driver_answers_transport_error() -> None:
-    service = HdmiService(RealHdmiDriver(make_settings()), EventBus(8))
-    await service.start()
-    ack = await service.select(HwHdmiSelectRequest(input="smart_board"))
-    assert ack == ack_error("transport", "hdmi: hardware intake pending")
-    assert service.snapshot() == HwHdmiSnapshot(input=None)
 
 
 async def test_route() -> None:

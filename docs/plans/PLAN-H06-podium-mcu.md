@@ -218,7 +218,7 @@ Record under "Observed on the Pi" below. **Commit:** `docs: H06 podium MCU obser
 **Commit:** `feat(hw): podium MCU serial transport (H06 T2)`
 
 ### T3 — hw: real hdmi driver on the podium MCU
-- [ ] done
+- [x] done
 
 **Do:** `RealHdmiDriver(settings, mcu)` per D8. The registry passes the transport.
 Tests with the fake MCU:

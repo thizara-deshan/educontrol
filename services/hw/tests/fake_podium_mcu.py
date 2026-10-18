@@ -9,6 +9,10 @@ go back to -1 (fw:setup).
 
 import asyncio
 import math
+from collections.abc import Callable
+
+from app.config import Settings
+from tests.helpers import make_settings
 
 FW = "eduscope-podium-mcu 2.1"
 BOOT_TEXT = [
@@ -18,6 +22,24 @@ BOOT_TEXT = [
     "entry 0x400805b4",
 ]
 TAPER = 2.5
+
+
+def podium_settings(**overrides: object) -> Settings:
+    values: dict[str, object] = {
+        "podium_boot_wait_s": 0.05,
+        "podium_cmd_timeout_s": 0.2,
+        "podium_ping_s": 3600.0,
+        "podium_reconnect_min_s": 0.01,
+        "podium_reconnect_max_s": 0.05,
+        **overrides,
+    }
+    return make_settings(**values)
+
+
+async def until(condition: Callable[[], object], within: float = 1.0) -> None:
+    async with asyncio.timeout(within):
+        while not condition():  # noqa: ASYNC110 - polls state another task changes
+            await asyncio.sleep(0.001)
 
 
 def vol_to_tap(vol: int) -> int:

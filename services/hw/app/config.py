@@ -145,6 +145,9 @@ class Settings(BaseSettings):
     podium_ping_s: float = Field(default=20.0, gt=0)
     podium_reconnect_min_s: float = Field(default=1.0, gt=0)
     podium_reconnect_max_s: float = Field(default=30.0, gt=0)
+    # HDMI switch input (1 or 2) wired to the podium PC; the other one is the smart board.
+    # [ASSUMED] until PLAN-H06 AC5.
+    hdmi_podium_pc_input: Literal[1, 2] = 1
 
     zigbee_nodes: list[ZigbeeNodeConfig] = Field(default_factory=lambda: list(DEFAULT_NODES))
     coordinator: CoordinatorConfig = DEFAULT_COORDINATOR

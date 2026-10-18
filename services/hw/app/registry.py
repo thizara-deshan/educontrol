@@ -203,7 +203,8 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
     ir = IrService(ir_fake_driver or RealIrDriver(settings, mqtt), bus)
 
     hdmi = HdmiService(
-        FakeHdmiDriver(settings) if kinds["hdmi"] == "fake" else RealHdmiDriver(settings), bus
+        FakeHdmiDriver(settings) if kinds["hdmi"] == "fake" else RealHdmiDriver(settings, podium),
+        bus,
     )
     projection_screen = ProjectionScreenService(
         FakeProjectionScreenDriver(settings)
