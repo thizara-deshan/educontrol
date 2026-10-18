@@ -57,7 +57,19 @@ describe("pairingRows (PLAN-H05 D3)", () => {
     expect(pairingRows(devices, odd, NOW)[0]?.resetSteps).toBe("See the device manual.");
   });
 
-  it("no rows when the coordinator reports none of the registry's devices", () => {
-    expect(pairingRows(devices, [node("0x1234", "TS0601")], NOW)).toEqual([]);
+  it("paired devices missing from the registry follow, under their zigbee2mqtt name", () => {
+    const registry = devices.filter((device) => device.id !== "room_climate" && device.id !== "door");
+    const rows = pairingRows(registry, R101, NOW);
+    expect(rows.map((r) => [r.id, r.name, r.hwRef])).toEqual([
+      ["motion", "Motion", "r101_motion"],
+      ["ir_blaster", "ZS06", "r101_ir"],
+      ["0xr101_temp", "r101_temp", "r101_temp"],
+      ["0xr101_door", "r101_door", "r101_door"],
+    ]);
+    expect(rows[3]?.resetSteps).toBe("Hold the button about 5 s until the LED flashes.");
+  });
+
+  it("no rows when the coordinator reports no devices", () => {
+    expect(pairingRows(devices, [], NOW)).toEqual([]);
   });
 });

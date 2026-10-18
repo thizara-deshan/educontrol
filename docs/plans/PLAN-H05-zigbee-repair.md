@@ -125,7 +125,10 @@ Tests: differs → one publish; equals → none; two reports within 60 s → one
 `HW_*_NODE` zigbee2mqtt does not report" is not shown; with the real driver every node zigbee2mqtt lists appears,
 and on R-101 it lists all four. (2) "Never heard" is worded "Not heard yet": hw-service's last seen starts empty
 after every restart, so "never" would be wrong. (3) Checked in mock mode with headless Chromium at 1280×800 and
-390 wide (technician unlock → Permit joining → rows "Heard just now").
+390 wide (technician unlock → Permit joining → rows "Heard just now"). (4) Owner, 2026-10-18 during T5: the
+card must not lose a device whose registry row was removed (Room climate and Door had been removed from the
+registry and vanished from the card). Rows now cover every node zigbee2mqtt reports: registry devices first,
+then unregistered nodes under their friendly name.
 
 **Do:** `pairing.view.ts` (pure): registry devices + `zigbee.nodes` + server now → rows per D3 (status thresholds,
 reset text by model, unknown model → "See the device manual"). `PairDevicesCard.tsx` renders the rows under the

@@ -37,15 +37,29 @@ function status(node: ZigbeeNode, now: Date): Pick<PairingRow, "tone" | "status"
   return { tone: "off", status: `Last heard ${formatAgo(node.last_seen, now)}` };
 }
 
-/** One row per registry Zigbee device whose friendly name the coordinator reports, in registry order. */
+function row(id: string, name: string, node: ZigbeeNode, now: Date): PairingRow {
+  return {
+    id, name, model: node.model, hwRef: node.friendly_name,
+    resetSteps: RESET_STEPS[node.model] ?? RESET_UNKNOWN, ...status(node, now),
+  };
+}
+
+/**
+ * Every device the coordinator reports: registry Zigbee devices first (registry name and order), then
+ * paired devices with no registry entry under their zigbee2mqtt name, so removing a registry row
+ * never hides a device that still has to be paired.
+ */
 export function pairingRows(devices: readonly Device[], nodes: readonly ZigbeeNode[], now: Date): PairingRow[] {
-  return devices.flatMap((device) => {
+  const inRegistry = new Set<string>();
+  const registered = devices.flatMap((device) => {
     if (device.transport !== "zigbee" || device.hw_ref === null) return [];
     const node = nodes.find((candidate) => candidate.friendly_name === device.hw_ref);
     if (node === undefined) return [];
-    return [{
-      id: device.id, name: device.name, model: node.model, hwRef: device.hw_ref,
-      resetSteps: RESET_STEPS[node.model] ?? RESET_UNKNOWN, ...status(node, now),
-    }];
+    inRegistry.add(node.friendly_name);
+    return [row(device.id, device.name, node, now)];
   });
+  const unregistered = nodes
+    .filter((node) => !inRegistry.has(node.friendly_name))
+    .map((node) => row(node.ieee, node.friendly_name, node, now));
+  return [...registered, ...unregistered];
 }
