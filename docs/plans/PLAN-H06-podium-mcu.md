@@ -1,6 +1,6 @@
 # PLAN-H06 — Podium MCU: real audio levels and HDMI source
 Milestone: none (owner request 2026-10-18) · Start tag: `h06-start` · Verify-all: `pnpm verify`
-Status: **draft — D1–D8 need the owner's acceptance before T1.**
+Status: **D1–D8 accepted by the owner 2026-10-18 (D5: option a).**
 
 ## Goal
 
@@ -81,7 +81,7 @@ after the LEDs agree. Someone pressing the switch button by hand moves the tile 
 - SPEC R8 and S3.E11 say "The ESP32 emitter heads on GPIO 16 and 17 stay wired" (`ir_mcu`). This firmware has no IR,
   and GPIO 16/17 are now RS232. → D7.
 
-## Decisions (proposed — owner to accept or change before T1)
+## Decisions (accepted by the owner 2026-10-18 — do not re-open them)
 
 - **D1 — One serial transport owns the MCU.** New `services/hw/app/transports/podium_mcu.py` is the only code that
   opens `HW_PODIUM_PORT` (default `/dev/podium-mcu`):
@@ -118,7 +118,7 @@ after the LEDs agree. Someone pressing the switch button by hand moves the tile 
     start, which happens at boot when nobody is teaching.
   - (b) Leave the channel unreported (S1 shows no reading) until someone moves its slider.
 
-  **Recommended: (a)**, so S1 never opens with empty audio cards. If hw-service restarts and the MCU is already homed,
+  **Chosen: (a)**, so S1 never opens with empty audio cards. If hw-service restarts and the MCU is already homed,
   the driver uses `vol?` and reports those values, unmuted.
 - **D6 — Never call `volsave`.**
   - With D5(a), the wiper position stored in EEPROM only matters between MCU power-up and hw-service start, so
@@ -237,7 +237,7 @@ Tests with the fake MCU:
 ### T4 — hw: real audio driver on the podium MCU
 - [ ] done
 
-**Do:** `RealAudioDriver(settings, mcu)` per D3–D5 (the option the owner chose for D5). It never sends `volsave`.
+**Do:** `RealAudioDriver(settings, mcu)` per D3–D5 (D5 option a: start levels). It never sends `volsave`.
 Add the hardware test from the file map.
 Tests with the fake MCU:
 - level → `vol b 62` for mic and the event carries 62 (not the rounded value);
