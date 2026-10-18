@@ -1,6 +1,6 @@
 # PLAN-H05 — Re-pair the Zigbee sensors and IR blaster from Settings
 Milestone: none (owner request 2026-10-18) · Start tag: `h05-start` · Verify-all: `pnpm verify`
-Status: **draft — the owner accepts D1–D6 before T1 starts.**
+Status: **D1–D6 accepted by the owner 2026-10-18.**
 
 ## Goal
 
@@ -30,7 +30,7 @@ Central UI and see each device come back, with no SSH, no zigbee2mqtt frontend a
 - IR codes live in core-api's database (`ir_commands.code`), not in the blaster, so a reset ZS06 needs no re-learning.
 - A factory reset puts the SNZB-03P's `motion_timeout` back to 60 s (owner set 15 s on 2026-10-16 by hand).
 
-## Decisions (owner to accept)
+## Decisions (accepted by the owner 2026-10-18 — do not re-open them)
 
 - **D1 — Real `zigbee_status` on the Pi.** Implement `RealZigbeeStatusDriver` on zigbee2mqtt and switch the Pi to
   `HW_DRIVERS=ir=real,sensors=real,zigbee_status=real`. Consequence: S2 lists only devices zigbee2mqtt knows; the
