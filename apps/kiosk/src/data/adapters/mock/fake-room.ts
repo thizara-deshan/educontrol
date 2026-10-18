@@ -48,6 +48,8 @@ export const MOCK_JOIN_WINDOW_MS = (4 * 60 + 12) * 1000;
 export const MOCK_HOLDING_WATTS = 112;
 /** S3d "Permit joining": the mesh opens for 4 min (PermitJoinRequest). Not time-scaled. */
 export const MOCK_PERMIT_JOIN_MS = 240_000;
+/** PLAN-H05 "Pair devices": this long after Permit joining, every mock node is heard (as if reset and rejoined). */
+export const MOCK_PAIR_HEARD_MS = 3_000;
 /** S3e "Restart controller": sockets drop, then the controller accepts connections again. */
 export const MOCK_RESTART_MS = 5_000;
 /** S3e About: the mock controller has been up 3 d 4 h when the page loads. */
@@ -95,6 +97,7 @@ export class FakeRoom {
   private screenTimer: ReturnType<typeof setTimeout> | null = null;
   private noDrawChangeNext = false;
   private joinTimer: ReturnType<typeof setTimeout> | null = null;
+  private pairTimer: ReturnType<typeof setTimeout> | null = null;
   private roomPin = MOCK_ROOM_PIN;
   private technicianPin = MOCK_TECHNICIAN_PIN;
   /** Epoch ms of the (mock) controller start; uptime counts from here. */
@@ -258,6 +261,14 @@ export class FakeRoom {
   async permitJoin(): Promise<void> {
     await this.delay();
     this.openJoiningFor(MOCK_PERMIT_JOIN_MS);
+    // PLAN-H05: the devices rejoin a moment later, so S3d "Pair devices" turns "Heard just now".
+    if (this.pairTimer !== null) clearTimeout(this.pairTimer);
+    this.pairTimer = setTimeout(() => {
+      this.pairTimer = null;
+      const { zigbee } = this.state;
+      const nodes = zigbee.nodes.map((node) => ({ ...node, online: true, last_seen: this.iso() }));
+      this.commit({ ...this.state, zigbee: { ...zigbee, nodes } });
+    }, MOCK_PAIR_HEARD_MS);
   }
 
   async setRoomPin(pin: string): Promise<void> {

@@ -119,7 +119,13 @@ Tests: differs → one publish; equals → none; two reports within 60 s → one
 **Commit:** `feat(hw): keep the SNZB-03P motion timeout at HW_MOTION_TIMEOUT_S (H05 T2)`
 
 ### T3 — kiosk: "Pair devices" card in Settings → Devices
-- [ ] done
+- [x] done
+
+**Executor notes (T3):** (1) The kiosk cannot know hw-service's configured nodes, so D3's "plus every configured
+`HW_*_NODE` zigbee2mqtt does not report" is not shown; with the real driver every node zigbee2mqtt lists appears,
+and on R-101 it lists all four. (2) "Never heard" is worded "Not heard yet": hw-service's last seen starts empty
+after every restart, so "never" would be wrong. (3) Checked in mock mode with headless Chromium at 1280×800 and
+390 wide (technician unlock → Permit joining → rows "Heard just now").
 
 **Do:** `pairing.view.ts` (pure): registry devices + `zigbee.nodes` + server now → rows per D3 (status thresholds,
 reset text by model, unknown model → "See the device manual"). `PairDevicesCard.tsx` renders the rows under the

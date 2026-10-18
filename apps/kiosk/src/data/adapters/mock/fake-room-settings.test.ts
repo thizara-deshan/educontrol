@@ -1,7 +1,8 @@
 import type { RoomState, ServerEvent } from "@eduscope/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  FakeRoom, MOCK_ADDRESS, MOCK_LATENCY_MAX_MS, MOCK_PERMIT_JOIN_MS, MOCK_RESTART_MS, MOCK_UPTIME_AT_START_S,
+  FakeRoom, MOCK_ADDRESS, MOCK_LATENCY_MAX_MS, MOCK_PAIR_HEARD_MS, MOCK_PERMIT_JOIN_MS, MOCK_RESTART_MS,
+  MOCK_UPTIME_AT_START_S,
 } from "./fake-room";
 
 function connected() {
@@ -53,6 +54,17 @@ describe("FakeRoom registry (S3d)", () => {
     expect(last().zigbee.mesh.joining).toEqual({ state: "open", until: new Date(Date.now() + MOCK_PERMIT_JOIN_MS).toISOString() });
     await vi.advanceTimersByTimeAsync(MOCK_PERMIT_JOIN_MS);
     expect(last().zigbee.mesh.joining).toEqual({ state: "closed" });
+  });
+
+  it("after permit joining every node is heard a moment later (PLAN-H05 pair devices)", async () => {
+    const { room, last, settle } = connected();
+    await settle(room.permitJoin());
+    const before = last().zigbee.nodes.map((node) => node.last_seen);
+    await vi.advanceTimersByTimeAsync(MOCK_PAIR_HEARD_MS);
+    const heard = new Date().toISOString();
+    expect(last().zigbee.nodes.length).toBeGreaterThan(0);
+    expect(last().zigbee.nodes.every((node) => node.online && node.last_seen === heard)).toBe(true);
+    expect(before.every((seen) => seen !== heard)).toBe(true);
   });
 });
 
