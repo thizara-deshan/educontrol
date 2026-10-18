@@ -7,7 +7,7 @@ import { applyHwDown, applyHwEvent } from "../../src/domain/hw-events.ts";
 import type { RoomModel } from "../../src/domain/model.ts";
 import { bootModel, fakeHw, hwEvent, must, RULES, snapshotEvent, T0 } from "../helpers.ts";
 
-const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, irLearnMs: 25_000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000 };
+const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, irLearnMs: 25_000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000, projectorOffConfirmMs: 2000 };
 
 const ir = (codes: Record<string, string>): IrCodeLookup => ({
   find(deviceId, match) {
@@ -47,6 +47,14 @@ describe("command policies (§6.5)", () => {
     [{ kind: "projector.power", on: false }, "projector.power_off has no captured IR code"], // ir_code_missing
   ] as const)("%j → 409 %s", (body, message) => {
     expect(refusal(body)).toEqual({ status: 409, code: "precondition", message });
+  });
+
+  it("projector power off: the frame twice with the Epson confirm pause; power on once", () => {
+    const codes = ir({ "projector.power_on": "ON", "projector.power_off": "OFF" });
+    const off = planCommand({ kind: "projector.power", on: false }, live(), codes, TIMEOUTS);
+    expect(off.ok && { calls: off.plan.calls.length, gapMs: off.plan.gapMs, timeoutMs: off.plan.timeoutMs }).toEqual({ calls: 2, gapMs: 2000, timeoutMs: 8000 });
+    const on = planCommand({ kind: "projector.power", on: true }, live(), codes, TIMEOUTS);
+    expect(on.ok && { calls: on.plan.calls.length, gapMs: on.plan.gapMs }).toEqual({ calls: 1, gapMs: undefined });
   });
 
   it("H8/H25: device offline and blaster offline", () => {

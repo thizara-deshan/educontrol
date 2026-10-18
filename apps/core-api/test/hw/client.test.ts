@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createHwClient } from "../../src/hw/client.ts";
 import { must } from "../helpers.ts";
 
-const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, irLearnMs: 25_000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000 };
+const TIMEOUTS = { zigbeeMs: 5000, irSendMs: 3000, irLearnMs: 25_000, hdmiMs: 5000, mixerMs: 2000, screenMs: 5000, projectorOffConfirmMs: 2000 };
 
 describe("hw client", () => {
   it("POSTs JSON to the §3.4 path and returns the parsed ack", async () => {

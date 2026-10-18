@@ -85,6 +85,7 @@ export function hwTimeouts(config: Config): HwTimeouts {
     hdmiMs: config.TIMEOUT_HDMI_MS,
     mixerMs: config.TIMEOUT_MIXER_MS,
     screenMs: config.TIMEOUT_SCREEN_MS,
+    projectorOffConfirmMs: config.PROJECTOR_OFF_CONFIRM_MS,
   };
 }
 

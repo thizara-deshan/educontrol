@@ -33,6 +33,8 @@ export interface HwTimeouts {
   hdmiMs: number;
   mixerMs: number;
   screenMs: number;
+  /** Not a timeout: the pause between the projector's Power off frame and its confirming repeat. */
+  projectorOffConfirmMs: number;
 }
 
 type Failure = { code: "timeout" | "transport"; message: string };

@@ -16,6 +16,8 @@ export type HwCall = (hw: HwClient) => Promise<HwAck>;
 export interface CommandPlan {
   key: OutputKey;
   calls: readonly HwCall[];
+  /** Pause before each call after the first (the projector's Power off confirmation). */
+  gapMs?: number;
   /** Deadline for the whole command: acks + read-back (Q12). */
   timeoutMs: number;
   /** H6a line when hw refuses. */
@@ -59,13 +61,22 @@ function withAc(model: RoomModel, change: Parameters<typeof acSent>[1], at: stri
 
 function irPlan(
   model: RoomModel, ir: IrCodeLookup, timeouts: HwTimeouts, deviceId: string, match: IrMatch, key: OutputKey,
-  extra: Pick<CommandPlan, "before" | "revert" | "after">,
+  extra: Pick<CommandPlan, "before" | "revert" | "after">, repeatAfterMs?: number,
 ): PlanResult {
   const found = ir.find(deviceId, match);
   if (!found.ok) return refuse(found.message);
   if (found.transport === "ir_zs06" && model.state.ir_blaster.online.value === false) return refuse("IR blaster offline"); // H25
   const send: HwCall = (hw) => hw.irSend({ transport: found.transport, code_format: "tuya", code: found.code });
-  return { ok: true, plan: { key, calls: [send], timeoutMs: timeouts.irSendMs, failureText: FAILURE_TEXT.ir, ir: true, ...extra } };
+  if (repeatAfterMs === undefined) {
+    return { ok: true, plan: { key, calls: [send], timeoutMs: timeouts.irSendMs, failureText: FAILURE_TEXT.ir, ir: true, ...extra } };
+  }
+  return {
+    ok: true,
+    plan: {
+      key, calls: [send, send], gapMs: repeatAfterMs, timeoutMs: 2 * timeouts.irSendMs + repeatAfterMs,
+      failureText: FAILURE_TEXT.ir, ir: true, ...extra,
+    },
+  };
 }
 
 export function planCommand(body: CommandBody, model: RoomModel, ir: IrCodeLookup, timeouts: HwTimeouts): PlanResult {
@@ -93,7 +104,7 @@ export function planCommand(body: CommandBody, model: RoomModel, ir: IrCodeLooku
           return { ...m, state: { ...m.state, display: { ...m.state.display, projector: { ...projector, feedback } } } };
         },
         revert: (m) => ({ ...m, state: { ...m.state, display: { ...m.state.display, projector: { ...m.state.display.projector, feedback: previous } } } }),
-      });
+      }, body.on ? undefined : timeouts.projectorOffConfirmMs); // Epson: Power off, "Power off?" prompt, Power off again
     }
     case "projector.mains": {
       const offline = deviceOffline(state, "projector_socket");

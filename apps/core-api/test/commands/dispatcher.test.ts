@@ -40,6 +40,27 @@ describe("dispatcher outcomes", () => {
     expect(r.store.get().display.projector.feedback.phase).toBe("idle");
   });
 
+  it("assumed: projector power off sends the frame, pauses, and sends it again to confirm the Epson prompt", async () => {
+    const r = room();
+    const command = r.send({ kind: "projector.power", on: false });
+    await expect.poll(() => r.hw.calls.length).toBe(1);
+    expect(r.statuses(command)).toEqual(["pending"]);
+    await expect.poll(() => r.statuses(command)).toEqual(["pending", "sent", "assumed"]);
+    const off = { method: "irSend", body: { transport: "ir_zs06", code_format: "tuya", code: "OFF" } };
+    expect(r.hw.calls).toEqual([off, off]);
+  });
+
+  it("projector power off superseded during the pause: the confirming frame is not sent", async () => {
+    const r = room();
+    const off = r.send({ kind: "projector.power", on: false });
+    await expect.poll(() => r.hw.calls.length).toBe(1);
+    const on = r.send({ kind: "projector.power", on: true });
+    await expect.poll(() => r.statuses(on).at(-1)).toBe("assumed");
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    expect(r.hw.calls.map((c) => c.body)).toEqual([expect.objectContaining({ code: "OFF" }), expect.objectContaining({ code: "ON" })]);
+    expect(r.statuses(off)).toEqual(["pending", "assumed"]);
+  });
+
   it("failed: hw refuses → H6a text per transport; projector feedback is reverted", async () => {
     const r = room();
     r.hw.nextAcks.push({ ok: false, error: { code: "device_offline", message: "r101_lights is offline" } });

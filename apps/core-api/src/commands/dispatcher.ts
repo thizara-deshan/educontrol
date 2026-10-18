@@ -41,6 +41,8 @@ interface Inflight {
   plan: CommandPlan;
   issuer: Issuer;
   done: boolean;
+  /** A newer command took this output (R12): calls not yet made are dropped. */
+  superseded: boolean;
   timer: ReturnType<typeof setTimeout> | null;
 }
 
@@ -97,7 +99,9 @@ export function createDispatcher(deps: {
 
   async function run(entry: Inflight): Promise<void> {
     const { plan } = entry;
-    for (const call of plan.calls) {
+    for (const [index, call] of plan.calls.entries()) {
+      if (index > 0 && plan.gapMs !== undefined) await new Promise((resolve) => setTimeout(resolve, plan.gapMs));
+      if (entry.superseded) return;
       const ack = await call(deps.hw);
       if (!ack.ok) {
         if (plan.revert !== undefined) deps.store.update((model) => plan.revert?.(model) ?? model);
@@ -129,8 +133,11 @@ export function createDispatcher(deps: {
         status: "pending", error: null, at: deps.clock.now().toISOString(),
       };
       const older = inflight.get(plan.key);
-      if (older !== undefined) finish(older, "assumed", null, false); // last write wins (R12)
-      const entry: Inflight = { command, plan, issuer, done: false, timer: null };
+      if (older !== undefined) {
+        older.superseded = true;
+        finish(older, "assumed", null, false); // last write wins (R12)
+      }
+      const entry: Inflight = { command, plan, issuer, done: false, superseded: false, timer: null };
       entry.timer = setTimeout(() => finish(entry, "timed_out", null, false), plan.timeoutMs);
       inflight.set(plan.key, entry);
       deps.emit({ type: "command", command });
