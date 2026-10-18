@@ -187,7 +187,7 @@ No change to contracts, core-api or kiosk.
 Record under "Observed on the Pi" below. **Commit:** `docs: H06 podium MCU observed on the Pi`
 
 ### T1 — decision records D-30, D-31
-- [ ] done
+- [x] done
 
 **Do:** Write D-30 (D3 + D4 + D6) and D-31 (D7) in the format of D-29, citing this plan and the firmware drop.
 **Verify:** `pnpm verify`
