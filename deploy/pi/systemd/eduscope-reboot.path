@@ -1,0 +1,11 @@
+# D-35 S1 power menu "Restart": core-api's REBOOT_COMMAND touches the request file; this path unit
+# then starts eduscope-reboot.service (as root, outside core-api's cgroup).
+[Unit]
+Description=Watch for Eduscope reboot requests
+
+[Path]
+PathChanged=/var/lib/eduscope/reboot.request
+Unit=eduscope-reboot.service
+
+[Install]
+WantedBy=multi-user.target

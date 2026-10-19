@@ -1,10 +1,11 @@
 import { spawnDetached, type Spawn } from "./restart.ts";
 
-// D-32 "Power off" (S1 header). SHUTDOWN_COMMAND is configuration (the Pi touches a request file that
-// eduscope-shutdown.path turns into `systemctl poweroff`): split on spaces, run without a shell,
-// detached. Nothing from a request ever reaches it. Unset (dev): only reported, nothing powers off.
+// D-32/D-35 S1 power menu: Shut down (SHUTDOWN_COMMAND) and Restart (REBOOT_COMMAND). Both are
+// configuration (the Pi touches a request file that a path unit turns into `systemctl poweroff` /
+// `systemctl reboot`): split on spaces, run without a shell, detached. Nothing from a request ever
+// reaches them. Unset (dev): only reported, the Pi stays up.
 
-export function createShutdown(options: {
+export function createPowerCommand(options: {
   command: string | undefined;
   onUnset: () => void;
   onError: (error: Error) => void;

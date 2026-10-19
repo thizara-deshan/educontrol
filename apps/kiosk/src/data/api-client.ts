@@ -44,7 +44,7 @@ export interface SettingsApi {
   setTechnicianPin(pin: string): Promise<void>;
 }
 
-/** S3b / S3e, D-32 Power off. */
+/** S3b / S3e, D-32/D-35 power menu. */
 export interface SystemApi {
   network(): Promise<NetworkInfo>;
   about(): Promise<AboutInfo>;
@@ -52,6 +52,8 @@ export interface SystemApi {
   restart(): Promise<void>;
   /** D-32: 202, then the Pi powers off; every socket drops and stays down (H3 → unreachable). */
   shutdown(): Promise<void>;
+  /** D-35: 202, then the Pi reboots; every socket drops and the client reconnects when it is back (H3 → H4). */
+  reboot(): Promise<void>;
 }
 
 export interface RealtimeHandlers {

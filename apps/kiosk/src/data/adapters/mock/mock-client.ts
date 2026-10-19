@@ -45,6 +45,7 @@ export function createMockApiClient(room: FakeRoom = fakeRoom): ApiClient {
       about: () => room.about(),
       restart: () => room.restart(),
       shutdown: () => room.shutdown(),
+      reboot: () => room.restart(),
     },
   };
 }

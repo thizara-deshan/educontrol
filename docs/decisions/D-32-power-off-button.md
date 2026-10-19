@@ -1,6 +1,6 @@
 # D-32 — S1 header "Power off" shuts the Pi down
 
-Date: 2026-10-19 · Status: **requested by the owner 2026-10-19** · Adds to: SPEC S1 header (new element after
+Date: 2026-10-19 · Status: **requested by the owner 2026-10-19**, decision 1 superseded by D-35 · Adds to: SPEC S1 header (new element after
 S1.E8), ARCHITECTURE §3.3 `api/system.ts` and §9 systemd units.
 
 ## Context

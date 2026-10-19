@@ -1,0 +1,7 @@
+# Started only by eduscope-reboot.path (D-35). --no-block: queue the reboot and return.
+[Unit]
+Description=Reboot the Eduscope controller on request
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --no-block reboot

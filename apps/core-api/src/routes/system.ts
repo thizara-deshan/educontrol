@@ -7,7 +7,7 @@ import type { Hub } from "../plugins/realtime.ts";
 import { aboutInfo, networkInfo, type SystemProbe } from "../system/info.ts";
 
 // ARCHITECTURE §3.3 api/system.ts — S3b Network, S3e About and Restart: technician only.
-// D-32 Power off (S1 header): control, like every other S1 control.
+// D-32/D-35 S1 power menu (Shut down, Restart = Pi reboot): control, like every other S1 control.
 
 const TECHNICIAN = { access: "technician" } as const;
 const CONTROL = { access: "control" } as const;
@@ -16,7 +16,7 @@ export const RESTART_DELAY_MS = 250;
 
 export async function systemRoutes(
   app: FastifyInstance,
-  options: { store: StateStore; hub: Hub; probe: SystemProbe; config: Config; clock: Clock; bootedAt: Date; restart: () => void; shutdown: () => void; log: EventLogger },
+  options: { store: StateStore; hub: Hub; probe: SystemProbe; config: Config; clock: Clock; bootedAt: Date; restart: () => void; shutdown: () => void; reboot: () => void; log: EventLogger },
 ) {
   const { store, hub, probe, config, clock } = options;
 
@@ -35,6 +35,12 @@ export async function systemRoutes(
   app.post("/system/shutdown", { config: CONTROL }, async (request, reply) => {
     options.log({ type: "system", actor: request.client.label, public_id: request.client.row?.public_id ?? null, subject: "shutdown" });
     setTimeout(options.shutdown, RESTART_DELAY_MS);
+    return reply.status(202).send();
+  });
+
+  app.post("/system/reboot", { config: CONTROL }, async (request, reply) => {
+    options.log({ type: "system", actor: request.client.label, public_id: request.client.row?.public_id ?? null, subject: "reboot" });
+    setTimeout(options.reboot, RESTART_DELAY_MS);
     return reply.status(202).send();
   });
 }

@@ -20,6 +20,6 @@ export function stubApi(): ApiClient {
     },
     devices: { list: vi.fn(), update: vi.fn(), remove: vi.fn(), permitJoin: vi.fn() },
     settings: { setRoomPin: vi.fn(), setTechnicianPin: vi.fn() },
-    system: { network: vi.fn(), about: vi.fn(), restart: vi.fn(), shutdown: vi.fn() },
+    system: { network: vi.fn(), about: vi.fn(), restart: vi.fn(), shutdown: vi.fn(), reboot: vi.fn() },
   };
 }

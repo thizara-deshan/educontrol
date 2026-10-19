@@ -28,7 +28,7 @@ The installer:
   zigbee2mqtt 2.14.2 in `/opt/zigbee2mqtt` with `zigbee2mqtt.service` (section 10);
 - installs the `/dev/podium-mcu` udev link for the podium MCU (section 11);
 - installs and enables `eduscope.target`, `eduscope-hw.service`, `eduscope-core.service` and
-  `eduscope-restart.path` and `eduscope-shutdown.path`, makes the journal persistent (max 200 MB) and sets the hostname to `r-101`;
+  `eduscope-restart.path`, `eduscope-shutdown.path` and `eduscope-reboot.path`, makes the journal persistent (max 200 MB) and sets the hostname to `r-101`;
 - with `--kiosk`: desktop autologin, OS screen blanking off, the Chromium launcher in the labwc
   autostart. Reboot afterwards.
 
@@ -63,11 +63,17 @@ cat ~/.cache/eduscope-kiosk.log                     # kiosk browser (desktop use
 Restart everything: Settings → About → **Restart controller**, or
 `sudo systemctl restart eduscope.target`.
 
-Power the Pi off: S1 header → **Power off** (any `control` session, the kiosk included; D-32). It needs
-`SHUTDOWN_COMMAND=/usr/bin/touch /var/lib/eduscope/shutdown.request` in `/etc/eduscope/core.env`;
-install.sh never edits an existing `core.env`, so add that line by hand on a Pi installed before D-32 and
-`sudo systemctl restart eduscope.target`. Without it the button only logs a warning. The Pi comes back
-only when its power is cycled.
+Reboot or power off the Pi: S1 header → power icon → **Restart** or **Shut down** (any `control`
+session, the kiosk included; D-32, D-35). They need these lines in `/etc/eduscope/core.env`:
+
+```
+SHUTDOWN_COMMAND=/usr/bin/touch /var/lib/eduscope/shutdown.request
+REBOOT_COMMAND=/usr/bin/touch /var/lib/eduscope/reboot.request
+```
+
+install.sh never edits an existing `core.env`, so add missing lines by hand on an older Pi and
+`sudo systemctl restart eduscope.target`. Without them the menu items only log a warning. After
+Shut down the Pi comes back only when its power is cycled.
 
 ## 4 PINs
 
@@ -145,6 +151,7 @@ sudo systemctl start eduscope.target
 | `eduscope-hw.service` | `services/hw/.venv/bin/uvicorn` as `eduscope` | `127.0.0.1:8081` only |
 | `eduscope-restart.path` | watches `/var/lib/eduscope/restart.request` | — |
 | `eduscope-shutdown.path` | watches `/var/lib/eduscope/shutdown.request` → `systemctl poweroff` | — |
+| `eduscope-reboot.path` | watches `/var/lib/eduscope/reboot.request` → `systemctl reboot` | — |
 | `eduscope.target` | starts both services at boot | — |
 | `mosquitto.service` | MQTT broker (Debian package) | `127.0.0.1:1883` only |
 | `zigbee2mqtt.service` | `/usr/bin/node index.js` in `/opt/zigbee2mqtt` as `eduscope` | `127.0.0.1:8080` (frontend) |

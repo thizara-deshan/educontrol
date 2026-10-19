@@ -3,7 +3,7 @@ import logoUrl from "@/assets/eduscope-central-logo.png";
 import { Link, useMatch, useNavigate } from "react-router";
 import { kioskEnv } from "@/data/env";
 import { useRequireAccess, useRoomState } from "@/data/hooks";
-import { PowerOffButton } from "@/features/control/PowerOffButton";
+import { PowerMenu } from "@/features/control/PowerMenu";
 import { CoordinatorStatus } from "@/features/devices/header/CoordinatorStatus";
 import { HeaderLockButton } from "@/features/session/HeaderLockButton";
 import { TechnicianAccess } from "@/features/settings/TechnicianAccess";
@@ -96,13 +96,13 @@ function SettingsHeaderContent() {
   );
 }
 
-/** S1.E1–E8 + Power off (D-32), rightmost. Phone (<600): one 56px row (SPEC §2.2). */
+/** S1.E1–E8 + power menu (D-32, D-35), rightmost. Phone (<600): one 56px row (SPEC §2.2). */
 function ControlHeaderContent() {
   const now = useServerNow();
 
   return (
     <>
-      {/* D-33 logo. Phone: it shrinks to whatever width status, R-101, Devices, Settings, Lock and Power off leave (SPEC §2.2). */}
+      {/* D-33 logo. Phone: it shrinks to whatever width status, R-101, Devices, Settings, Lock and Power leave (SPEC §2.2). */}
       <div className="flex min-w-0 flex-1 items-center">
         <img src={logoUrl} alt="eduscope CENTRAL" className="h-6 w-auto min-w-0 max-w-full object-contain object-left sm:h-8" />
       </div>
@@ -124,7 +124,7 @@ function ControlHeaderContent() {
         <HeaderLink to="/devices" icon={Wifi} label="Devices" />
         <SettingsButton />
         <HeaderLockButton />
-        <PowerOffButton />
+        <PowerMenu />
       </div>
     </>
   );

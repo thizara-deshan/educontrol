@@ -148,6 +148,7 @@ export function createHttpApiClient(options: HttpClientOptions): ApiClient {
       about: () => request(GetAboutResponse, "/api/system/about"),
       restart: () => requestVoid("/api/system/restart", postJson({})),
       shutdown: () => requestVoid("/api/system/shutdown", postJson({})),
+      reboot: () => requestVoid("/api/system/reboot", postJson({})),
     },
     connect(label, handlers): RealtimeConnection {
       let socket: SocketLike | null = null;

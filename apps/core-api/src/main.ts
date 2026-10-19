@@ -4,7 +4,7 @@ import { loadConfig } from "./config.ts";
 import { createHwClient } from "./hw/client.ts";
 import { startHwStream } from "./hw/stream.ts";
 import { createRestart } from "./system/restart.ts";
-import { createShutdown } from "./system/shutdown.ts";
+import { createPowerCommand } from "./system/power.ts";
 
 // ARCHITECTURE §6.1 boot: config → db migrate/seed (inside buildApp) → store → listen → hw stream.
 
@@ -23,11 +23,16 @@ const app = await buildApp({
     exit: () => shutdown(),
     onError: (error) => app.log.error({ err: error }, "RESTART_COMMAND failed"),
   }),
-  // D-32: SHUTDOWN_COMMAND when set (systemd on the Pi), else only logged.
-  shutdown: createShutdown({
+  // D-32/D-35: SHUTDOWN_COMMAND / REBOOT_COMMAND when set (systemd on the Pi), else only logged.
+  shutdown: createPowerCommand({
     command: config.SHUTDOWN_COMMAND,
     onUnset: () => app.log.warn("SHUTDOWN_COMMAND is not set; not powering off"),
     onError: (error) => app.log.error({ err: error }, "SHUTDOWN_COMMAND failed"),
+  }),
+  reboot: createPowerCommand({
+    command: config.REBOOT_COMMAND,
+    onUnset: () => app.log.warn("REBOOT_COMMAND is not set; not rebooting"),
+    onError: (error) => app.log.error({ err: error }, "REBOOT_COMMAND failed"),
   }),
 });
 await app.listen({ port: config.PORT, host: config.HOST });

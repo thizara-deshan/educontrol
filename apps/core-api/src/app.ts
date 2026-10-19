@@ -50,8 +50,10 @@ export interface AppDeps {
   logger?: FastifyServerOptions["logger"];
   /** S3e "Restart controller" (main.ts: system/restart.ts). Default: nothing happens (tests). */
   restart?: () => void;
-  /** D-32 "Power off" (main.ts: system/shutdown.ts). Default: nothing happens (tests). */
+  /** D-32 "Shut down" (main.ts: system/power.ts). Default: nothing happens (tests). */
   shutdown?: () => void;
+  /** D-35 "Restart" = Pi reboot (main.ts: system/power.ts). Default: nothing happens (tests). */
+  reboot?: () => void;
   /** S3b/S3e OS facts. Default: the real probe. */
   system?: SystemProbe;
 }
@@ -169,7 +171,7 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(settingsRoutes, { db, sessions, clock, log });
       await api.register(systemRoutes, {
         store, hub, probe: deps.system ?? systemProbe, config, clock, bootedAt, restart: deps.restart ?? (() => undefined),
-        shutdown: deps.shutdown ?? (() => undefined), log,
+        shutdown: deps.shutdown ?? (() => undefined), reboot: deps.reboot ?? (() => undefined), log,
       });
     },
     { prefix: "/api" },

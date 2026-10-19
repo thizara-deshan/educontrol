@@ -17,10 +17,11 @@ async function start() {
   const clock = fixedClock(T0);
   const restart = vi.fn();
   const shutdown = vi.fn();
-  const app = await buildApp({ db: ":memory:", hw: fakeHw(), clock, config: testConfig(), restart, shutdown, system: PROBE });
+  const reboot = vi.fn();
+  const app = await buildApp({ db: ":memory:", hw: fakeHw(), clock, config: testConfig(), restart, shutdown, reboot, system: PROBE });
   await app.ready();
   app.room.ingest.handle(snapshotEvent());
-  return { app, clock, restart, shutdown, cookie: await sessionAt(app, "technician") };
+  return { app, clock, restart, shutdown, reboot, cookie: await sessionAt(app, "technician") };
 }
 
 describe("system routes (S3b, S3e)", () => {
@@ -64,6 +65,19 @@ describe("system routes (S3b, S3e)", () => {
     expect(response.statusCode).toBe(202);
     expect(shutdown).not.toHaveBeenCalled();
     await expect.poll(() => shutdown.mock.calls.length).toBe(1);
+    await app.close();
+  });
+
+  it("reboot (D-35) needs control: view is refused, control gets 202 first, then the Pi reboots", async () => {
+    const { app, reboot, shutdown } = await start();
+    const view = await sessionAt(app, "view", "192.168.1.63");
+    expect((await call(app, "POST", "/api/system/reboot", { payload: {}, cookie: view, remoteAddress: "192.168.1.63" })).statusCode).toBe(401);
+    const control = await sessionAt(app, "control", "192.168.1.64");
+    const response = await call(app, "POST", "/api/system/reboot", { payload: {}, cookie: control, remoteAddress: "192.168.1.64" });
+    expect(response.statusCode).toBe(202);
+    expect(reboot).not.toHaveBeenCalled();
+    await expect.poll(() => reboot.mock.calls.length).toBe(1);
+    expect(shutdown).not.toHaveBeenCalled();
     await app.close();
   });
 });
