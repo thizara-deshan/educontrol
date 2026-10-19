@@ -1,4 +1,5 @@
 import { ArrowLeft, Settings, Wifi, type LucideIcon } from "lucide-react";
+import logoUrl from "@/assets/eduscope-central-logo.png";
 import { Link, useMatch, useNavigate } from "react-router";
 import { kioskEnv } from "@/data/env";
 import { useRequireAccess, useRoomState } from "@/data/hooks";
@@ -101,10 +102,10 @@ function ControlHeaderContent() {
 
   return (
     <>
-      {/* Phone: two short lines so the row fits status, R-101, Devices, Settings and Lock (SPEC §2.2). */}
-      <p className="flex min-w-0 flex-1 flex-col text-caption font-bold text-text-1 sm:block sm:truncate sm:text-wordmark">
-        eduscope <span className="tracking-wordmark text-brand">CENTRAL</span>
-      </p>
+      {/* D-33 logo. Phone: it shrinks to whatever width status, R-101, Devices, Settings, Lock and Power off leave (SPEC §2.2). */}
+      <div className="flex min-w-0 flex-1 items-center">
+        <img src={logoUrl} alt="eduscope CENTRAL" className="h-6 w-auto min-w-0 max-w-full object-contain object-left sm:h-8" />
+      </div>
 
       <div className="hidden items-baseline gap-3 lg:flex" aria-label="Controller time">
         {now === null ? (
