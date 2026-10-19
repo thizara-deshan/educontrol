@@ -44,12 +44,14 @@ export interface SettingsApi {
   setTechnicianPin(pin: string): Promise<void>;
 }
 
-/** S3b / S3e. */
+/** S3b / S3e, D-32 Power off. */
 export interface SystemApi {
   network(): Promise<NetworkInfo>;
   about(): Promise<AboutInfo>;
   /** 202, then the controller drops every socket and comes back (H3 → H4). */
   restart(): Promise<void>;
+  /** D-32: 202, then the Pi powers off; every socket drops and stays down (H3 → unreachable). */
+  shutdown(): Promise<void>;
 }
 
 export interface RealtimeHandlers {

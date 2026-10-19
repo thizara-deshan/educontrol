@@ -1,0 +1,11 @@
+# D-32 "Power off" (S1 header): core-api's SHUTDOWN_COMMAND touches the request file; this path unit
+# then starts eduscope-shutdown.service (as root, outside core-api's cgroup).
+[Unit]
+Description=Watch for Eduscope power-off requests
+
+[Path]
+PathChanged=/var/lib/eduscope/shutdown.request
+Unit=eduscope-shutdown.service
+
+[Install]
+WantedBy=multi-user.target

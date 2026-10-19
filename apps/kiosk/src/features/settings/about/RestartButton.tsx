@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { CommandButton } from "@/components/CommandButton";
 import { useApiClient } from "@/data/api-context";
-import { ConfirmDialog } from "../shared/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useWritable } from "../shared/use-writable";
 
 /** S3e "Restart controller" → confirm → the connection banner shows Reconnecting…, then Back online (H3/H4). */

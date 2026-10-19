@@ -332,6 +332,12 @@ export class FakeRoom {
     }, 0);
   }
 
+  /** D-32 "Power off": answers first, then drops every socket and refuses reconnects (mock panel Restore brings it back). */
+  async shutdown(): Promise<void> {
+    await this.delay();
+    setTimeout(() => this.dropConnection(), 0);
+  }
+
   // ── Mock panel (`?mock-panel`) ───────────────────────────────────────────────────────
 
   /** Close every socket now and refuse reconnects until restore(). */

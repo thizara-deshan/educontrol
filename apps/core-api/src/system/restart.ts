@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 
 export type Spawn = (file: string, args: readonly string[], onError: (error: Error) => void) => void;
 
-const spawnDetached: Spawn = (file, args, onError) => {
+export const spawnDetached: Spawn = (file, args, onError) => {
   const child = spawn(file, [...args], { detached: true, stdio: "ignore" });
   child.on("error", onError);
   child.unref();

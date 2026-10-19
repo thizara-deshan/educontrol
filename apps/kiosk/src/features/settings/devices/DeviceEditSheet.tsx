@@ -4,7 +4,7 @@ import { CommandButton } from "@/components/CommandButton";
 import { queryKeys } from "@/data/query-keys";
 import { useServerMutation } from "@/data/settings/hooks";
 import { ChoiceGroup } from "../shared/ChoiceGroup";
-import { ConfirmDialog } from "../shared/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { SettingsRow } from "../shared/SettingsRow";
 import { SettingsSheet } from "../shared/SettingsSheet";
 import { SheetActions } from "../shared/SheetActions";

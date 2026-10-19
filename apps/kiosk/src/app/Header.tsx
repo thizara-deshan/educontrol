@@ -2,6 +2,7 @@ import { ArrowLeft, Settings, Wifi, type LucideIcon } from "lucide-react";
 import { Link, useMatch, useNavigate } from "react-router";
 import { kioskEnv } from "@/data/env";
 import { useRequireAccess, useRoomState } from "@/data/hooks";
+import { PowerOffButton } from "@/features/control/PowerOffButton";
 import { CoordinatorStatus } from "@/features/devices/header/CoordinatorStatus";
 import { HeaderLockButton } from "@/features/session/HeaderLockButton";
 import { TechnicianAccess } from "@/features/settings/TechnicianAccess";
@@ -94,7 +95,7 @@ function SettingsHeaderContent() {
   );
 }
 
-/** S1.E1–E8. Phone (<600): one 56px row (SPEC §2.2). */
+/** S1.E1–E8 + Power off (D-32), rightmost. Phone (<600): one 56px row (SPEC §2.2). */
 function ControlHeaderContent() {
   const now = useServerNow();
 
@@ -122,6 +123,7 @@ function ControlHeaderContent() {
         <HeaderLink to="/devices" icon={Wifi} label="Devices" />
         <SettingsButton />
         <HeaderLockButton />
+        <PowerOffButton />
       </div>
     </>
   );

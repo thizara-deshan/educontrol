@@ -303,12 +303,14 @@ describe("http adapter: settings routes (S3–S3e)", () => {
     });
   });
 
-  it("system: about is parsed; a restart is a POST", async () => {
+  it("system: about is parsed; a restart and a shutdown are POSTs", async () => {
     const about = { room: "R-101", version: "0.6.0", uptime_s: 12, pi_model: null, url: "http://r-101.local" };
     const fetchMock = fetchBy((path) => (path === "/api/system/about" ? json(200, about) : empty(202)));
     const api = client(fetchMock);
     expect(await api.system.about()).toEqual(about);
     await api.system.restart();
     expect(fetchMock).toHaveBeenLastCalledWith("/api/system/restart", expect.objectContaining({ method: "POST" }));
+    await api.system.shutdown();
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/system/shutdown", expect.objectContaining({ method: "POST" }));
   });
 });

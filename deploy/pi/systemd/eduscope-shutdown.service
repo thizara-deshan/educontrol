@@ -1,0 +1,7 @@
+# Started only by eduscope-shutdown.path (D-32). --no-block: queue the power-off and return.
+[Unit]
+Description=Power off the Eduscope controller on request
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --no-block poweroff

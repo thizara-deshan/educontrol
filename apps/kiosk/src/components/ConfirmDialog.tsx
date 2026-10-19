@@ -2,7 +2,7 @@ import { CommandButton } from "@/components/CommandButton";
 import { InlineError } from "@/components/InlineError";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/ui/dialog";
 
-/** "Restart controller?", "Remove {device}?": Cancel · confirm (48px), pending while the request runs. */
+/** "Restart controller?", "Remove {device}?", "Power off the controller?": Cancel · confirm (48px), pending while the request runs. */
 export function ConfirmDialog({ open, onOpenChange, title, description, confirmLabel, onConfirm, pending, error = null }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;

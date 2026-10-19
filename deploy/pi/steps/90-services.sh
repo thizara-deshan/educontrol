@@ -1,10 +1,11 @@
 # shellcheck shell=bash
-# install.sh step 90: systemd units (ARCHITECTURE §9, D-23). Restarts eduscope.target only when this
+# install.sh step 90: systemd units (ARCHITECTURE §9, D-23, D-32). Restarts eduscope.target only when this
 # run changed something, so a second run leaves the running services alone (M10 AC1).
 
 unit_tmp=$(mktemp)
 units_changed=0
-for unit in eduscope.target eduscope-hw.service eduscope-core.service eduscope-restart.path eduscope-restart.service; do
+for unit in eduscope.target eduscope-hw.service eduscope-core.service eduscope-restart.path eduscope-restart.service \
+  eduscope-shutdown.path eduscope-shutdown.service; do
   render "$HERE/systemd/$unit" "REPO=$REPO" >"$unit_tmp"
   install_if_changed "$unit_tmp" "/etc/systemd/system/$unit" 644 root root
   if ((EDUSCOPE_CHANGED)); then units_changed=1; fi
@@ -12,16 +13,18 @@ done
 rm -f "$unit_tmp"
 if ((units_changed)); then systemctl daemon-reload; fi
 
-for unit in eduscope.target eduscope-hw.service eduscope-core.service eduscope-restart.path; do
+for unit in eduscope.target eduscope-hw.service eduscope-core.service eduscope-restart.path eduscope-shutdown.path; do
   if ! systemctl is-enabled -q "$unit"; then
     systemctl enable "$unit"
     changed "enabled $unit"
   fi
 done
-if ! systemctl is-active -q eduscope-restart.path; then
-  systemctl start eduscope-restart.path
-  changed "started eduscope-restart.path"
-fi
+for unit in eduscope-restart.path eduscope-shutdown.path; do
+  if ! systemctl is-active -q "$unit"; then
+    systemctl start "$unit"
+    changed "started $unit"
+  fi
+done
 
 services_restarted=0
 if ((EDUSCOPE_CHANGES > 0)) || ! systemctl is-active -q eduscope.target; then

@@ -125,4 +125,17 @@ describe("FakeRoom PINs and system (S3d, S3b, S3e)", () => {
     expect(reconnect.at(-1)?.type).toBe("snapshot");
     expect((await settle(room.about())).uptime_s).toBeLessThan(5);
   });
+
+  it("shutdown answers, drops every socket and stays down (D-32)", async () => {
+    const { room, onClose, settle } = connected();
+    await settle(room.shutdown());
+    await vi.advanceTimersByTimeAsync(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
+
+    const refused = vi.fn();
+    await vi.advanceTimersByTimeAsync(MOCK_RESTART_MS);
+    room.connect("laptop", { onOpen: vi.fn(), onEvent: vi.fn(), onClose: refused });
+    await vi.advanceTimersByTimeAsync(MOCK_LATENCY_MAX_MS);
+    expect(refused).toHaveBeenCalledTimes(1);
+  });
 });

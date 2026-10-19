@@ -35,6 +35,8 @@ export const Config = z.object({
   PROJECTOR_OFF_CONFIRM_MS: Ms.default(2000),
   /** S3e "Restart controller": split on spaces and run without a shell (M10 sets it). Unset: core-api exits. */
   RESTART_COMMAND: z.string().trim().min(1).optional(),
+  /** D-32 "Power off": split on spaces and run without a shell. Unset: logged, nothing powers off. */
+  SHUTDOWN_COMMAND: z.string().trim().min(1).optional(),
   /** §6.7: hw down this long ⇒ every hw-backed device offline. */
   HW_DOWN_GRACE_MS: Ms.default(10_000),
   /** §6.3: no SSE frame this long ⇒ the stream is dead and reconnects. */

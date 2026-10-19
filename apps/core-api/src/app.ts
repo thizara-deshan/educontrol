@@ -50,6 +50,8 @@ export interface AppDeps {
   logger?: FastifyServerOptions["logger"];
   /** S3e "Restart controller" (main.ts: system/restart.ts). Default: nothing happens (tests). */
   restart?: () => void;
+  /** D-32 "Power off" (main.ts: system/shutdown.ts). Default: nothing happens (tests). */
+  shutdown?: () => void;
   /** S3b/S3e OS facts. Default: the real probe. */
   system?: SystemProbe;
 }
@@ -166,7 +168,8 @@ export async function buildApp(deps: AppDeps): Promise<FastifyInstance> {
       await api.register(deviceRoutes, { db, store, hw: deps.hw, sync, emit: (event) => hub.broadcast(event) });
       await api.register(settingsRoutes, { db, sessions, clock, log });
       await api.register(systemRoutes, {
-        store, hub, probe: deps.system ?? systemProbe, config, clock, bootedAt, restart: deps.restart ?? (() => undefined), log,
+        store, hub, probe: deps.system ?? systemProbe, config, clock, bootedAt, restart: deps.restart ?? (() => undefined),
+        shutdown: deps.shutdown ?? (() => undefined), log,
       });
     },
     { prefix: "/api" },
