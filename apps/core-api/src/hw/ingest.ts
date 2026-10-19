@@ -1,4 +1,4 @@
-import type { ChangedBy, HwEvent, ServerEvent } from "@eduscope/contracts";
+import type { ChangedBy, HwEvent, RoomState, ServerEvent } from "@eduscope/contracts";
 import type { Claim, Dispatcher } from "../commands/dispatcher.ts";
 import type { EventLogger } from "../db/event-log.ts";
 import { attributionFor } from "../domain/attribution.ts";
@@ -18,7 +18,14 @@ export interface Ingest {
 const BY_HAND_TEXT: Record<string, (on: boolean) => string> = {
   "lights.front": (on) => `Front of room turned ${on ? "on" : "off"}`,
   "lights.rear": (on) => `Rear of room turned ${on ? "on" : "off"}`,
+  plug: (on) => `Smart plug turned ${on ? "on" : "off"}`,
 };
+
+/** The new on/off value of an output in BY_HAND_TEXT. */
+function switchedOn(state: RoomState, key: string): boolean {
+  if (key === "plug") return state.plug.on.value === true;
+  return state.environment.lights[key === "lights.front" ? "front" : "rear"].value === true;
+}
 
 export function createIngest(deps: {
   store: StateStore;
@@ -55,10 +62,7 @@ export function createIngest(deps: {
           const by: ChangedBy | null | undefined =
             event.type === "snapshot" ? (claim?.by ?? undefined) : attributionFor(key, changed, claim?.by ?? null);
           if (by !== undefined) state = setChangedBy(state, key, by);
-          if (by === "by hand" && key in BY_HAND_TEXT) {
-            const gang = key === "lights.front" ? "front" : "rear";
-            byHand.push({ key, on: state.environment.lights[gang].value === true });
-          }
+          if (by === "by hand" && key in BY_HAND_TEXT) byHand.push({ key, on: switchedOn(state, key) });
         }
         return { ...next, state };
       });

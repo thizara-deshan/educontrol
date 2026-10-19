@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Timestamp } from "../common.ts";
 import {
   HwAudioStateData, HwCoordinator, HwErrorData, HwHdmiStateData, HwHeartbeatData, HwIrBlasterData,
-  HwIrLearnStateData, HwLightsStateData, HwMeshData, HwPowerReadingData, HwRelayStateData,
+  HwIrLearnStateData, HwLightsStateData, HwMeshData, HwPlugStateData, HwPowerReadingData, HwRelayStateData,
   HwScreenStateData, HwSensorReadingData, HwZigbeeNode,
 } from "./data.ts";
 import { HwSnapshot } from "./snapshot.ts";
@@ -26,6 +26,7 @@ export const HwEvent = z.discriminatedUnion("type", [
   event("zigbee.mesh", HwMeshData),
   event("ir.blaster", HwIrBlasterData),
   event("ir.learn", HwIrLearnStateData),
+  event("plug.state", HwPlugStateData),
   event("hw.error", HwErrorData),
   event("heartbeat", HwHeartbeatData),
 ]);

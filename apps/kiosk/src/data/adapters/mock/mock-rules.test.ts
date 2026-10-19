@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { roomState } from "@/data/test/room-state";
-import { applyCommandToState, describeCommand, statusFor, stepSetpoint } from "./mock-rules";
+import { applyCommandToState, describeCommand, MOCK_PLUG_WATTS, statusFor, stepSetpoint } from "./mock-rules";
 
 const ctx = { at: "2026-10-05T10:43:00Z", by: "phone" } as const;
 
@@ -83,6 +83,15 @@ describe("mock rules", () => {
     expect(on.environment.ac.setpoint_c).toMatchObject({ value: 24, confidence: "assumed" });
     const off = applyCommandToState(on, { kind: "ac.power", on: false }, ctx);
     expect(applyCommandToState(off, { kind: "ac.step", direction: "up" }, ctx).environment.ac.setpoint_c.value).toBe(24);
+  });
+
+  it("plug.set switches the relay and the mock load (D-34)", () => {
+    const off = applyCommandToState(roomState(), { kind: "plug.set", on: false }, ctx);
+    expect(off.plug.on).toMatchObject({ value: false, confidence: "confirmed" });
+    expect(off.plug.reading.value).toMatchObject({ watts: 0, amps: 0 });
+    const on = applyCommandToState(off, { kind: "plug.set", on: true }, ctx);
+    expect(on.plug.reading.value).toMatchObject({ watts: MOCK_PLUG_WATTS, volts: 231.2 });
+    expect(describeCommand({ kind: "plug.set", on: true })).toBe("Smart plug turned on");
   });
 
   it("describes commands for activity toasts", () => {

@@ -13,6 +13,7 @@ from app.modules.audio import schemas as audio
 from app.modules.hdmi import schemas as hdmi
 from app.modules.ir import schemas as ir
 from app.modules.lights import schemas as lights
+from app.modules.plug import schemas as plug
 from app.modules.projection_screen import schemas as projection_screen
 from app.modules.projector_power import schemas as projector_power
 from app.modules.sensors import schemas as sensors
@@ -30,6 +31,7 @@ SCHEMA_MODULES: tuple[ModuleType, ...] = (
     audio,
     sensors,
     zigbee_status,
+    plug,
 )
 
 

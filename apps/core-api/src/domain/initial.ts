@@ -57,6 +57,7 @@ export function initialModel(input: InitialModelInput): RoomModel {
         reporting: { count: 0, of: 0 },
       },
     },
+    plug: { on: unknown("switch"), reading: unknown("power_meter"), online: false }, // D-34
     zigbee: {
       coordinator: placeholderCoordinator(coordinator?.model ?? null, coordinator?.hw_ref ?? null),
       mesh: { paired: 0, routers: 0, end_devices: 0, joining: { state: "closed" } },

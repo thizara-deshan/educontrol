@@ -3,6 +3,7 @@ import { applyAudioReport } from "./audio.ts";
 import { applyLightsReport } from "./lights.ts";
 import type { RoomModel } from "./model.ts";
 import { reported, sameValue, withChangedBy } from "./observed.ts";
+import { applyPlugReport } from "./plug.ts";
 import { applyPowerReading } from "./projector.ts";
 import { applySensorReading } from "./sensors.ts";
 import { upsertNode } from "./zigbee.ts";
@@ -12,10 +13,11 @@ import { upsertNode } from "./zigbee.ts";
 /** A controllable output as commands and reports name it (LWW and correlation key, §6.5). */
 export type OutputKey =
   | "display.source" | "projector.ir" | "projector.mains" | "screen" | "audio.mic" | "audio.pc" | "audio.mute"
-  | "lights.front" | "lights.rear" | "ac";
+  | "lights.front" | "lights.rear" | "ac" | "plug";
 
 const REPORTED_BY_SNAPSHOT: readonly OutputKey[] = [
   "display.source", "projector.mains", "screen", "audio.mic", "audio.pc", "audio.mute", "lights.front", "lights.rear",
+  "plug",
 ];
 
 /** Outputs whose value an event reports (an echo of a command, or a change by hand). */
@@ -33,6 +35,8 @@ export function reportedKeys(event: HwEvent): readonly OutputKey[] {
       return ["screen"];
     case "audio.state":
       return [event.data.channel === "mic" ? "audio.mic" : "audio.pc", "audio.mute"];
+    case "plug.state":
+      return ["plug"];
     default:
       return [];
   }
@@ -56,6 +60,8 @@ function observedAt(state: RoomState, key: OutputKey): Observed<unknown> | null 
       return state.environment.lights.front;
     case "lights.rear":
       return state.environment.lights.rear;
+    case "plug":
+      return state.plug.on;
     case "projector.ir":
     case "ac":
       return null; // IR outputs have no read-back (R2, R3)
@@ -90,6 +96,8 @@ export function setChangedBy(state: RoomState, key: OutputKey, by: ChangedBy | n
       const lights = { ...environment.lights, [gang]: withChangedBy(environment.lights[gang], by) };
       return { ...state, environment: { ...environment, lights } };
     }
+    case "plug":
+      return { ...state, plug: { ...state.plug, on: withChangedBy(state.plug.on, by) } };
     case "projector.ir":
     case "ac":
       return state;
@@ -128,6 +136,7 @@ export function applySnapshot(model: RoomModel, snap: HwSnapshot, at: string): R
   };
   if (snap.ir.blaster !== null) state = applyBlaster(state, snap.ir.blaster, at);
   for (const sample of snap.sensors) state = applySensorReading(state, sample.reading, sample.at);
+  state = applyPlugReport(state, snap.plug, at);
 
   let next: RoomModel = { ...model, state, facts: { ...model.facts, hw_down_since: null, joining_until: snap.zigbee.joining_until } };
   const reading = snap.projector_power.reading;
@@ -170,6 +179,8 @@ export function applyHwEvent(model: RoomModel, event: HwEvent): RoomModel {
       return { ...model, facts: { ...model.facts, joining_until: event.data.joining_until } };
     case "ir.blaster":
       return withState(model, applyBlaster(state, event.data, at));
+    case "plug.state":
+      return withState(model, applyPlugReport(state, event.data, at));
     case "ir.learn":
     case "hw.error":
     case "heartbeat":

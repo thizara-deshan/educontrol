@@ -4,6 +4,7 @@ export * from "./domain/device.ts";
 export * from "./domain/display.ts";
 export * from "./domain/audio.ts";
 export * from "./domain/environment.ts";
+export * from "./domain/plug.ts";
 export * from "./domain/zigbee.ts";
 export * from "./domain/interlock.ts";
 export * from "./domain/ir.ts";

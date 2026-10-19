@@ -43,6 +43,7 @@ function markAllStale(state: RoomState): RoomState {
         contact: { ...sensors.contact, stale: true },
       },
     },
+    plug: { ...state.plug, on: withStale(state.plug.on, true), reading: withStale(state.plug.reading, true) },
   };
 }
 
@@ -59,6 +60,7 @@ export function derive(model: RoomModel, now: Date, cfg: RuleConfig): RoomModel 
     state = {
       ...state,
       ir_blaster: { ...state.ir_blaster, online: withStale(blaster, true) },
+      plug: { ...state.plug, online: false },
       zigbee: { ...state.zigbee, coordinator: { ...state.zigbee.coordinator, status: "offline" } },
     };
   }

@@ -46,6 +46,11 @@
       "reporting": { "count": 3, "of": 3 }
     }
   },
+  "plug": {
+    "on": { "value": true, "confidence": "confirmed", "source": "switch", "updated_at": "2026-10-05T10:41:40Z", "stale": false, "changed_by": null },
+    "reading": { "value": { "watts": 42.5, "volts": 231.2, "amps": 0.21, "kwh_today": 0.34 }, "confidence": "confirmed", "source": "power_meter", "updated_at": "2026-10-05T10:41:55Z", "stale": false, "changed_by": null },
+    "online": true
+  },
   "zigbee": {
     "coordinator": {
       "model": "ZG-808Z", "chipset": "CC2652P1", "firmware": "Z-Stack 3.x.0", "channel": 25,

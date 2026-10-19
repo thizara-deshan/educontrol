@@ -1,7 +1,7 @@
 import {
   HwAck, HwIrLearnResult, type HwAudioLevelRequest, type HwAudioMuteRequest, type HwHdmiSelectRequest,
   type HwIrLearnRequest, type HwIrSendRequest, type HwLightsSetRequest, type HwProjectionScreenMoveRequest,
-  type HwProjectorPowerRelayRequest, type HwZigbeeStatusPermitJoinRequest,
+  type HwPlugSetRequest, type HwProjectorPowerRelayRequest, type HwZigbeeStatusPermitJoinRequest,
 } from "@eduscope/contracts";
 import type { z } from "zod";
 
@@ -24,6 +24,7 @@ export interface HwClient {
   audioLevel(body: HwAudioLevelRequest): Promise<HwAck>;
   audioMute(body: HwAudioMuteRequest): Promise<HwAck>;
   permitJoin(body: HwZigbeeStatusPermitJoinRequest): Promise<HwAck>;
+  plugSet(body: HwPlugSetRequest): Promise<HwAck>;
 }
 
 export interface HwTimeouts {
@@ -83,5 +84,6 @@ export function createHwClient(options: { baseUrl: string; timeouts: HwTimeouts;
     audioLevel: (body) => post("/v1/audio/level", body, timeouts.mixerMs),
     audioMute: (body) => post("/v1/audio/mute", body, timeouts.mixerMs),
     permitJoin: (body) => post("/v1/zigbee_status/permit_join", body, timeouts.zigbeeMs),
+    plugSet: (body) => post("/v1/plug/set", body, timeouts.zigbeeMs),
   };
 }

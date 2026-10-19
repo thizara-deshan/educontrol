@@ -1,0 +1,12 @@
+{
+  "type": "plug.state",
+  "at": "2026-10-19T09:12:00Z",
+  "data": {
+    "online": true,
+    "on": true,
+    "watts": 42.5,
+    "volts": 231.2,
+    "amps": 0.21,
+    "kwh_today": 0.34
+  }
+}

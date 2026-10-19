@@ -20,6 +20,7 @@ def test_modules_match_the_contract() -> None:
         "audio",
         "sensors",
         "zigbee_status",
+        "plug",
     )
 
 
@@ -37,7 +38,7 @@ def test_parse_driver_overrides_rejects_typos(raw: str) -> None:
 def test_driver_kinds_apply_mode_then_overrides() -> None:
     kinds = driver_kinds(make_settings(mode="real", drivers="lights=fake"))
     assert kinds["lights"] == "fake"
-    assert [kinds[m] for m in MODULES if m != "lights"] == ["real"] * 7
+    assert [kinds[m] for m in MODULES if m != "lights"] == ["real"] * 8
 
 
 def fake_paths(mode: str, drivers: str = "") -> list[str]:

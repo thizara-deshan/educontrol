@@ -9,6 +9,7 @@
     "projection_screen": "fake",
     "audio": "fake",
     "sensors": "fake",
-    "zigbee_status": "fake"
+    "zigbee_status": "fake",
+    "plug": "fake"
   }
 }

@@ -14,6 +14,7 @@ export const CommandBody = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("lights.set"), gang: LightGang, on: z.boolean() }),
   z.object({ kind: z.literal("ac.power"), on: z.boolean() }),
   z.object({ kind: z.literal("ac.step"), direction: z.enum(["down", "up"]) }),
+  z.object({ kind: z.literal("plug.set"), on: z.boolean() }), // D-34
 ]);
 export const CommandRequest = z.object({ client_cmd_id: z.uuid(), body: CommandBody });
 export const CommandStatus = z.enum(["pending", "sent", "confirmed", "assumed", "failed", "timed_out"]);

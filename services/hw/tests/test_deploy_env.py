@@ -16,7 +16,7 @@ def test_hw_env_example_is_real_zigbee_modules_on_loopback() -> None:
     assert settings.host == "127.0.0.1"
     real = [module for module, kind in driver_kinds(settings).items() if kind == "real"]
     # H01, H03, H05, H06; each Hxx adds its modules
-    assert sorted(real) == ["audio", "hdmi", "ir", "sensors", "zigbee_status"]
+    assert sorted(real) == ["audio", "hdmi", "ir", "plug", "sensors", "zigbee_status"]
     assert settings.motion_timeout_s == 15
     assert settings.podium_port == "/dev/podium-mcu"
 
@@ -27,7 +27,10 @@ def test_hw_env_example_has_no_placeholders() -> None:
 
 @pytest.mark.parametrize(
     "line",
-    ["HW_MODE=fake", "HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real"],
+    [
+        "HW_MODE=fake",
+        "HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real,plug=real",
+    ],
 )
 def test_hw_env_example_sets(line: str) -> None:
     assert line in EXAMPLE.read_text(encoding="utf-8").splitlines()

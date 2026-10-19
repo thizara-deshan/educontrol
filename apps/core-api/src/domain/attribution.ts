@@ -22,15 +22,17 @@ export function describeCommand(body: CommandBody): string {
       return body.on ? "Air conditioning turned on" : "Air conditioning turned off";
     case "ac.step":
       return body.direction === "up" ? "Air conditioning setpoint raised" : "Air conditioning setpoint lowered";
+    case "plug.set":
+      return `Smart plug turned ${body.on ? "on" : "off"}`;
   }
 }
 
 /**
  * Who changed a reported output: the issuer of a matching in-flight command, else "by hand" for a
- * light that changed (R6), else nobody. `undefined` = the value did not change: keep what it had.
+ * light (R6) or the smart plug (D-34, its own button) that changed, else nobody. `undefined` = the value did not change: keep what it had.
  */
 export function attributionFor(output: string, changed: boolean, claimedBy: ChangedBy | null): ChangedBy | null | undefined {
   if (claimedBy !== null) return claimedBy;
   if (!changed) return undefined;
-  return output.startsWith("lights.") ? "by hand" : null;
+  return output.startsWith("lights.") || output === "plug" ? "by hand" : null;
 }

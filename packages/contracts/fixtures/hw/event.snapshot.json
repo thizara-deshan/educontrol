@@ -140,6 +140,14 @@
         "online": true,
         "lqi": 196
       }
+    },
+    "plug": {
+      "online": true,
+      "on": true,
+      "watts": 42.5,
+      "volts": 231.2,
+      "amps": 0.21,
+      "kwh_today": 0.34
     }
   }
 }

@@ -24,6 +24,8 @@ export const HwProjectionScreenMoveRequest = z.strictObject({ to: z.enum(["raise
 export const HwAudioLevelRequest = z.strictObject({ channel: AudioChannel, level: Level });
 export const HwAudioMuteRequest = z.strictObject({ channel: AudioChannel, muted: z.boolean() });
 export const HwZigbeeStatusPermitJoinRequest = z.strictObject({ seconds: z.number().int().min(0).max(254) });
+/** D-34: the general-purpose S60ZBTPG smart plug relay. */
+export const HwPlugSetRequest = z.strictObject({ on: z.boolean() });
 
 export type HwLightsSetRequest = z.infer<typeof HwLightsSetRequest>;
 export type HwProjectorPowerRelayRequest = z.infer<typeof HwProjectorPowerRelayRequest>;
@@ -35,3 +37,4 @@ export type HwProjectionScreenMoveRequest = z.infer<typeof HwProjectionScreenMov
 export type HwAudioLevelRequest = z.infer<typeof HwAudioLevelRequest>;
 export type HwAudioMuteRequest = z.infer<typeof HwAudioMuteRequest>;
 export type HwZigbeeStatusPermitJoinRequest = z.infer<typeof HwZigbeeStatusPermitJoinRequest>;
+export type HwPlugSetRequest = z.infer<typeof HwPlugSetRequest>;

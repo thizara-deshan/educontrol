@@ -197,6 +197,16 @@ export function planCommand(body: CommandBody, model: RoomModel, ir: IrCodeLooku
         after: (m, at, by) => withAc(m, { power: "on", setpoint_c: setpoint }, at, by),
       });
     }
+    case "plug.set": {
+      if (!state.plug.online) return refuse("Smart plug offline");
+      return {
+        ok: true,
+        plan: {
+          key: "plug", calls: [(hw) => hw.plugSet({ on: body.on })], timeoutMs: timeouts.zigbeeMs,
+          failureText: FAILURE_TEXT.zigbee, ir: false, confirmedBy: (s) => s.plug.on.value === body.on,
+        },
+      };
+    }
     case "ac.step": {
       const step = stepTarget(state.environment.ac, body.direction);
       if (!step.ok) return refuse(step.reason);

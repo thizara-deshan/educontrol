@@ -36,6 +36,7 @@ HwModule = Literal[
     "audio",
     "sensors",
     "zigbee_status",
+    "plug",
 ]
 HwDriverKind = Literal["fake", "real"]
 HwErrorCode = Literal["device_offline", "timeout", "transport", "invalid"]
@@ -74,6 +75,7 @@ class HwHealthModules(HwModel):
     audio: HwDriverKind
     sensors: HwDriverKind
     zigbee_status: HwDriverKind
+    plug: HwDriverKind
 
 
 class HwHealth(HwModel):

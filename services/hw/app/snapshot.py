@@ -12,6 +12,7 @@ from app.modules.audio.schemas import HwAudioSnapshot, HwAudioStateEvent
 from app.modules.hdmi.schemas import HwHdmiSnapshot, HwHdmiStateEvent
 from app.modules.ir.schemas import HwIrBlasterEvent, HwIrLearnEvent, HwIrSnapshot
 from app.modules.lights.schemas import HwLightsSnapshot, HwLightsStateEvent
+from app.modules.plug.schemas import HwPlugStateData, HwPlugStateEvent
 from app.modules.projection_screen.schemas import (
     HwProjectionScreenSnapshot,
     HwProjectionScreenStateEvent,
@@ -41,6 +42,7 @@ class HwSnapshot(HwModel):
     sensors: list[HwSensorSample]  # latest reading per (node, kind)
     zigbee: HwZigbeeSnapshot
     ir: HwIrSnapshot
+    plug: HwPlugStateData | None
 
 
 class HwSnapshotEvent(HwEnvelope):
@@ -63,6 +65,7 @@ HwEvent = Annotated[
     | HwZigbeeMeshEvent
     | HwIrBlasterEvent
     | HwIrLearnEvent
+    | HwPlugStateEvent
     | HwErrorEvent
     | HwHeartbeatEvent,
     Field(discriminator="type"),

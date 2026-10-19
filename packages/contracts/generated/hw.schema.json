@@ -248,7 +248,8 @@
             "projection_screen",
             "audio",
             "sensors",
-            "zigbee_status"
+            "zigbee_status",
+            "plug"
           ]
         },
         "code": {
@@ -779,6 +780,80 @@
                     "blaster"
                   ],
                   "additionalProperties": false
+                },
+                "plug": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "online": {
+                          "type": "boolean"
+                        },
+                        "on": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "watts": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "volts": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "amps": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "kwh_today": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "online",
+                        "on",
+                        "watts",
+                        "volts",
+                        "amps",
+                        "kwh_today"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               },
               "required": [
@@ -789,7 +864,8 @@
                 "audio",
                 "sensors",
                 "zigbee",
-                "ir"
+                "ir",
+                "plug"
               ],
               "additionalProperties": false
             }
@@ -1449,6 +1525,93 @@
           "properties": {
             "type": {
               "type": "string",
+              "const": "plug.state"
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "online": {
+                  "type": "boolean"
+                },
+                "on": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "watts": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "volts": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "amps": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "kwh_today": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "online",
+                "on",
+                "watts",
+                "volts",
+                "amps",
+                "kwh_today"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "at",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
               "const": "hw.error"
             },
             "at": {
@@ -1469,7 +1632,8 @@
                     "projection_screen",
                     "audio",
                     "sensors",
-                    "zigbee_status"
+                    "zigbee_status",
+                    "plug"
                   ]
                 },
                 "code": {
@@ -1633,6 +1797,13 @@
                 "fake",
                 "real"
               ]
+            },
+            "plug": {
+              "type": "string",
+              "enum": [
+                "fake",
+                "real"
+              ]
             }
           },
           "required": [
@@ -1643,7 +1814,8 @@
             "projection_screen",
             "audio",
             "sensors",
-            "zigbee_status"
+            "zigbee_status",
+            "plug"
           ],
           "additionalProperties": false
         }
@@ -1885,8 +2057,90 @@
         "projection_screen",
         "audio",
         "sensors",
-        "zigbee_status"
+        "zigbee_status",
+        "plug"
       ]
+    },
+    "HwPlugSetRequest": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "on": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "on"
+      ],
+      "additionalProperties": false
+    },
+    "HwPlugStateData": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "properties": {
+        "online": {
+          "type": "boolean"
+        },
+        "on": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "watts": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "volts": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amps": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kwh_today": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "online",
+        "on",
+        "watts",
+        "volts",
+        "amps",
+        "kwh_today"
+      ],
+      "additionalProperties": false
     },
     "HwPowerReadingData": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -2721,6 +2975,80 @@
             "blaster"
           ],
           "additionalProperties": false
+        },
+        "plug": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "online": {
+                  "type": "boolean"
+                },
+                "on": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "watts": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "volts": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "amps": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "kwh_today": {
+                  "anyOf": [
+                    {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "online",
+                "on",
+                "watts",
+                "volts",
+                "amps",
+                "kwh_today"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -2731,7 +3059,8 @@
         "audio",
         "sensors",
         "zigbee",
-        "ir"
+        "ir",
+        "plug"
       ],
       "additionalProperties": false
     },

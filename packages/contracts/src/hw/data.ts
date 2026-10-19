@@ -47,6 +47,15 @@ export const HwCoordinator = z.strictObject({
 export const HwMeshData = z.strictObject({ joining_until: Timestamp.nullable() });
 export const HwIrBlasterData = z.strictObject({ online: z.boolean(), lqi: z.number().int().min(0).max(255).nullable() });
 export const HwIrLearnStateData = z.strictObject({ status: z.enum(["listening", "captured", "timeout", "cancelled"]) });
+/** D-34: the smart plug's full state as last reported; null = not reported yet. */
+export const HwPlugStateData = z.strictObject({
+  online: z.boolean(),
+  on: z.boolean().nullable(),
+  watts: z.number().nonnegative().nullable(),
+  volts: z.number().nonnegative().nullable(),
+  amps: z.number().nonnegative().nullable(),
+  kwh_today: z.number().nonnegative().nullable(),
+});
 export const HwErrorData = z.strictObject({ module: HwModule, code: HwErrorCode, message: z.string() });
 export const HwHeartbeatData = z.strictObject({});
 
@@ -63,5 +72,6 @@ export type HwCoordinator = z.infer<typeof HwCoordinator>;
 export type HwMeshData = z.infer<typeof HwMeshData>;
 export type HwIrBlasterData = z.infer<typeof HwIrBlasterData>;
 export type HwIrLearnStateData = z.infer<typeof HwIrLearnStateData>;
+export type HwPlugStateData = z.infer<typeof HwPlugStateData>;
 export type HwErrorData = z.infer<typeof HwErrorData>;
 export type HwHeartbeatData = z.infer<typeof HwHeartbeatData>;

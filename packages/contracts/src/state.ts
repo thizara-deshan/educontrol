@@ -5,6 +5,7 @@ import { Device } from "./domain/device.ts";
 import { HdmiInput, PowerReading, ProjectorFeedback, ProjectorState, ScreenPosition } from "./domain/display.ts";
 import { AcState, SensorReading } from "./domain/environment.ts";
 import { Interlock } from "./domain/interlock.ts";
+import { PlugReading } from "./domain/plug.ts";
 import { IrBlaster } from "./domain/ir.ts";
 import { Room } from "./domain/room.ts";
 import { Coordinator, Mesh, ZigbeeNode } from "./domain/zigbee.ts";
@@ -37,6 +38,8 @@ export const RoomState = z.object({
       reporting: z.object({ count: z.number().int(), of: z.number().int() }), // S1.E41
     }),
   }),
+  /** D-34: the general-purpose smart plug (not the projector socket). */
+  plug: z.object({ on: observed(z.boolean()), reading: observed(PlugReading), online: z.boolean() }),
   zigbee: z.object({ coordinator: Coordinator, mesh: Mesh, nodes: z.array(ZigbeeNode) }),
   ir_blaster: IrBlaster,
   interlock: Interlock,

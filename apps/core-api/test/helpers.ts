@@ -90,6 +90,7 @@ export function fakeHw(): FakeHw {
     audioMute: vi.fn(async (body) => record("audioMute", body)),
     irLearnCancel: vi.fn(async () => record("irLearnCancel", {})),
     permitJoin: vi.fn(async (body) => record("permitJoin", body)),
+    plugSet: vi.fn(async (body) => record("plugSet", body)),
     irLearn: vi.fn(async (body): Promise<IrLearnOutcome> => {
       hw.calls.push({ method: "irLearn", body });
       hw.onCall?.("irLearn", body);

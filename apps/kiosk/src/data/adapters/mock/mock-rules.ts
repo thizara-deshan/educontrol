@@ -22,6 +22,9 @@ export function statusFor(body: CommandBody): "confirmed" | "assumed" {
   return body.kind === "ac.power" || body.kind === "ac.step" || body.kind === "projector.power" ? "assumed" : "confirmed";
 }
 
+/** D-34: the mock smart plug's load while on. */
+export const MOCK_PLUG_WATTS = 42.5;
+
 /** AC Power on with no setpoint sent since start (R3 "Unknown"): this frame is sent [ASSUMED]. */
 export const DEFAULT_AC_SETPOINT_C = 24;
 
@@ -98,6 +101,14 @@ export function applyCommandToState(state: RoomState, body: CommandBody, ctx: Ch
           lights: { ...environment.lights, [body.gang]: observe(environment.lights[body.gang], body.on, ctx) },
         },
       };
+    case "plug.set": {
+      // D-34: the relay follows at once; the mock load is MOCK_PLUG_WATTS at 231 V while on.
+      const { plug } = state;
+      const watts = body.on ? MOCK_PLUG_WATTS : 0;
+      const prev = plug.reading.value;
+      const reading = { watts, volts: prev?.volts ?? 231, amps: Math.round((watts / 231) * 100) / 100, kwh_today: prev?.kwh_today ?? 0 };
+      return { ...state, plug: { ...plug, on: observe(plug.on, body.on, ctx), reading: observe(plug.reading, reading, ctx) } };
+    }
     case "ac.power": {
       const { ac } = environment;
       // Power on sends the frame for the current setpoint (S1.E35); after a start that is the default.
@@ -150,6 +161,8 @@ export function describeCommand(body: CommandBody): string {
       return body.on ? "Air conditioning turned on" : "Air conditioning turned off";
     case "ac.step":
       return body.direction === "up" ? "Air conditioning setpoint raised" : "Air conditioning setpoint lowered";
+    case "plug.set":
+      return `Smart plug turned ${body.on ? "on" : "off"}`;
   }
 }
 

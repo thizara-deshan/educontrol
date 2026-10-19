@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Level, Timestamp } from "../common.ts";
 import { HdmiInput } from "../domain/display.ts";
 import {
-  HwCoordinator, HwIrBlasterData, HwScreenPosition, HwSensorReadingData, HwZigbeeNode,
+  HwCoordinator, HwIrBlasterData, HwPlugStateData, HwScreenPosition, HwSensorReadingData, HwZigbeeNode,
 } from "./data.ts";
 
 export const HwPowerSample = z.strictObject({
@@ -27,6 +27,7 @@ export const HwSnapshot = z.strictObject({
     joining_until: Timestamp.nullable(),
   }),
   ir: z.strictObject({ blaster: HwIrBlasterData.nullable() }),
+  plug: HwPlugStateData.nullable(),
 });
 
 export type HwPowerSample = z.infer<typeof HwPowerSample>;

@@ -91,14 +91,15 @@ only when its power is cycled.
 `HW_DRIVERS=`. Each hardware milestone switches its own module. Since H01 the IR blaster is real,
 since H03 the SNZB-02P climate sensor too, since H05 the Zigbee status (coordinator, paired
 devices, permit joining), and since H06 audio and the HDMI switch (the podium MCU, section 11):
-`HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real`. The installer creates
+`HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real,plug=real` (since D-34 also
+the S60ZBTPG smart plug, `r101_plug`). The installer creates
 this file once and never changes it, so on a Pi that was installed earlier set the line by hand,
 then restart:
 
 ```sh
-sudoedit /etc/eduscope/hw.env      # HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real
+sudoedit /etc/eduscope/hw.env      # HW_DRIVERS=ir=real,sensors=real,zigbee_status=real,audio=real,hdmi=real,plug=real
 sudo systemctl restart eduscope.target
-curl -s 127.0.0.1:8081/v1/health   # "ir", "sensors", "zigbee_status", "audio", "hdmi": "real"
+curl -s 127.0.0.1:8081/v1/health   # "ir", "sensors", "zigbee_status", "audio", "hdmi", "plug": "real"
 ```
 
 With `sensors=real` the climate sensor (`r101_temp`, H03), the motion sensor (`r101_motion`) and the
@@ -176,7 +177,8 @@ sudo systemctl start eduscope.target
 ### Moving the sensors between Central and Unistream (H05)
 
 R-101's IR blaster (`r101_ir`), climate (`r101_temp`), motion (`r101_motion`) and door (`r101_door`)
-sensors are shared with the Eduscope Unistream board, which has its own coordinator. A Zigbee device
+sensors and the smart plug (`r101_plug`, S60ZBTPG: hold its button about 5 s until the blue LED
+flashes quickly) are shared with the Eduscope Unistream board, which has its own coordinator. A Zigbee device
 belongs to one network at a time, so each move is a re-pair. To bring them to Central:
 
 1. In the app, unlock technician access and open **Settings › Devices**.

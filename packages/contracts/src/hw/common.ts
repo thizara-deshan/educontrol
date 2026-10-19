@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const HwModule = z.enum([
-  "lights", "projector_power", "ir", "hdmi", "projection_screen", "audio", "sensors", "zigbee_status",
+  "lights", "projector_power", "ir", "hdmi", "projection_screen", "audio", "sensors", "zigbee_status", "plug",
 ]);
 export const HwDriverKind = z.enum(["fake", "real"]);
 export const HwErrorCode = z.enum(["device_offline", "timeout", "transport", "invalid"]);
@@ -24,6 +24,7 @@ export const HwHealth = z.strictObject({
     audio: HwDriverKind,
     sensors: HwDriverKind,
     zigbee_status: HwDriverKind,
+    plug: HwDriverKind,
   }),
 });
 

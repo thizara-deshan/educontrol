@@ -27,6 +27,10 @@ from app.modules.lights import driver_fake as lights_fake
 from app.modules.lights import router as lights_router
 from app.modules.lights.driver_real import RealLightsDriver
 from app.modules.lights.service import LightsService
+from app.modules.plug import router as plug_router
+from app.modules.plug.driver_fake import FakePlugDriver
+from app.modules.plug.driver_real import RealPlugDriver
+from app.modules.plug.service import PlugService
 from app.modules.projection_screen import router as screen_router
 from app.modules.projection_screen.driver_fake import FakeProjectionScreenDriver
 from app.modules.projection_screen.driver_real import RealProjectionScreenDriver
@@ -55,6 +59,7 @@ ZIGBEE_MODULES: tuple[HwModule, ...] = (
     "ir",
     "sensors",
     "zigbee_status",
+    "plug",
 )
 # Modules whose real driver talks to the podium MCU (PLAN-H06); any of them real ⇒ the port opens.
 PODIUM_MODULES: tuple[HwModule, ...] = ("audio", "hdmi")
@@ -94,6 +99,7 @@ class Registry:
     audio: AudioService
     sensors: SensorsService
     zigbee_status: ZigbeeStatusService
+    plug: PlugService
     fake_routers: list[APIRouter] = field(default_factory=list)
     mqtt: MqttTransport | None = None
     podium: PodiumMcuTransport | None = None
@@ -108,6 +114,7 @@ class Registry:
             audio_router.build_router(self.audio),
             sensors_router.build_router(self.sensors),
             zigbee_router.build_router(self.zigbee_status),
+            plug_router.build_router(self.plug),
             *self.fake_routers,
         ]
 
@@ -120,6 +127,7 @@ class Registry:
         await self.audio.start()
         await self.sensors.start()
         await self.zigbee_status.start()
+        await self.plug.start()
         # After the services: their drivers subscribe their topics in start().
         if self.mqtt is not None:
             await self.mqtt.start()
@@ -131,6 +139,7 @@ class Registry:
             await self.podium.stop()
         if self.mqtt is not None:
             await self.mqtt.stop()
+        await self.plug.stop()
         await self.zigbee_status.stop()
         await self.sensors.stop()
         await self.audio.stop()
@@ -150,6 +159,7 @@ class Registry:
             audio=self.audio.driver.kind,
             sensors=self.sensors.driver.kind,
             zigbee_status=self.zigbee_status.driver.kind,
+            plug=self.plug.driver.kind,
         )
         return HwHealth(ok=True, mode=self.settings.mode, modules=modules)
 
@@ -163,6 +173,7 @@ class Registry:
             sensors=self.sensors.snapshot(),
             zigbee=self.zigbee_status.snapshot(),
             ir=self.ir.snapshot(),
+            plug=self.plug.snapshot(),
         )
 
     def snapshot_event(self) -> HwSnapshotEvent:
@@ -233,6 +244,10 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
         zigbee_fake_driver or RealZigbeeStatusDriver(settings, mqtt), bus
     )
 
+    plug = PlugService(
+        FakePlugDriver(settings) if kinds["plug"] == "fake" else RealPlugDriver(settings, mqtt), bus
+    )
+
     return Registry(
         settings=settings,
         lights=lights,
@@ -243,6 +258,7 @@ def build_registry(settings: Settings, bus: EventBus) -> Registry:
         audio=audio,
         sensors=sensors,
         zigbee_status=zigbee_status,
+        plug=plug,
         fake_routers=fake_routers,
         mqtt=mqtt if zigbee_real else None,
         podium=podium if podium_real else None,
